@@ -221,6 +221,32 @@ svg {
   font-size:12px; fill:var(--muted);
 }
 .exercise-table td,.exercise-table th { font-size:13px; }
+.cases-grid {
+  display:grid; grid-template-columns:repeat(2, minmax(280px, 1fr)); gap:16px;
+}
+.case-card {
+  background:#fcfdff; border:1px solid var(--line); border-radius:16px; padding:16px;
+  box-shadow:0 8px 18px rgba(24,49,83,.05);
+}
+.case-top {
+  display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:10px;
+}
+.case-title { margin:0; font-size:18px; line-height:1.2; }
+.case-market { color:var(--muted); font-size:13px; margin-top:4px; }
+.case-num {
+  flex:0 0 auto; min-width:34px; height:34px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+  background:var(--navy); color:#fff; font-weight:700;
+}
+.case-list { margin:0; padding-left:18px; }
+.case-list li { margin:8px 0; }
+.case-probar {
+  margin-top:12px; padding:11px 12px; border-radius:12px; background:var(--soft-blue); border:1px solid #cad8ee;
+}
+.case-probar strong { display:block; margin-bottom:4px; }
+.edit-tip {
+  margin-top:12px; font-size:13px; color:var(--muted);
+}
+
 .mini-title {
   font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;
 }
@@ -256,7 +282,7 @@ hr.sep {
       <button class="tab" data-target="uso">Cómo usar</button>
       <button class="tab" data-target="simulador">Simulador</button>
       <button class="tab" data-target="comparador">Comparador</button>
-      <button class="tab" data-target="ejercicios">Ejercicios</button>
+      <button class="tab" data-target="casos">Casos guiados</button>
       <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
     </nav>
   </div>
@@ -278,12 +304,13 @@ hr.sep {
         </ul>
       </div>
       <hr class="sep">
+      <!-- TEXTO EDITABLE: ejemplo causal de Inicio -->
       <h3>Ejemplo breve ilustrativo</h3>
-      <p><strong>Evento:</strong> sube el ingreso de los consumidores.<br>
-      <strong>Variable:</strong> aumenta <code class="inline">Y</code>.<br>
+      <p><strong>Evento:</strong> mejora el mercado laboral y sube el ingreso disponible de los hogares.<br>
+      <strong>Variable:</strong> en el modelo, esto se representa como un aumento de <code class="inline">Y</code>.<br>
       <strong>Curva:</strong> si el bien es normal, la <strong>demanda</strong> se desplaza a la <strong>derecha</strong>.<br>
       <strong>Equilibrio:</strong> si la oferta no cambia, tienden a subir <strong>P*</strong> y <strong>Q*</strong>.</p>
-      <div class="footer-note">La meta no es repetir la frase mecánicamente, sino conectar el hecho observado con la variable económica relevante y con el resultado en el equilibrio.</div>
+      <div class="footer-note">Conviene distinguir el <strong>evento</strong> (hecho del caso) de la <strong>variable</strong> (cómo traducimos ese hecho al modelo). Mientras más claro sea ese paso de traducción, mejor será la explicación causal.</div>
     </div>
 
     <div class="card">
@@ -580,19 +607,13 @@ hr.sep {
   </div>
 </section>
 
-<section id="ejercicios" class="section">
+<section id="casos" class="section">
   <div class="card">
-    <h2>Banco de ejercicios</h2>
-    <p class="note">Casos listos para práctica, discusión guiada o evaluación. La idea pedagógica es que el estudiante primero analice el shock y haga una predicción, y solo después use la plataforma para verificarla.</p>
-    <div style="overflow:auto;">
-      <table class="exercise-table">
-        <tr>
-          <th>Nº</th><th>Mercado</th><th>Qd base</th><th>Qs base</th><th>P* base</th><th>Q* base</th>
-          <th>Qd post</th><th>Qs post</th><th>P* post</th><th>Q* post</th><th>Shock</th>
-        </tr>
-        <tbody id="exerciseRows"></tbody>
-      </table>
-    </div>
+    <h2>Casos guiados</h2>
+    <p class="note">Estos casos están diseñados para aprovechar una fortaleza central del simulador: trabajar con <strong>variables exógenas explícitas</strong>, no solo con cambios mecánicos en interceptos. La secuencia sugerida es: leer el evento, traducirlo a la variable relevante, anticipar el desplazamiento de curva y recién después verificarlo en el simulador o en el comparador.</p>
+    <div class="warning"><strong>Sugerencia de uso:</strong> antes de tocar los parámetros, pide una predicción verbal breve del tipo <em>evento → variable → curva → equilibrio</em>.</div>
+    <div id="caseCards" class="cases-grid" style="margin-top:14px;"></div>
+    <div class="edit-tip">Para modificar o reemplazar estos casos, busca en el archivo <code class="inline">index.html</code> la sección <strong>TEXTO EDITABLE: casos guiados</strong>.</div>
   </div>
 </section>
 
@@ -626,7 +647,90 @@ hr.sep {
 </main>
 
 <script>
-const exercises = [{"n": 1, "mercado": "Petróleo crudo mundial", "qd_base": "Qd = 120 - P", "qs_base": "Qs = -30 + 2P", "p_base": 50, "q_base": 70, "qd_post": "Qd = 120 - P", "qs_post": "Qs = -60 + 2P", "p_post": 60, "q_post": 60, "shock": "Oferta (←)"}, {"n": 2, "mercado": "Diésel en Chile", "qd_base": "Qd = 100 - 2P", "qs_base": "Qs = -20 + 3P", "p_base": 24, "q_base": 52, "qd_post": "Qd = 100 - 2P", "qs_post": "Qs = -45 + 3P", "p_post": 29, "q_post": 42, "shock": "Oferta (←)"}, {"n": 3, "mercado": "GNL (gas natural licuado)", "qd_base": "Qd = 150 - 3P", "qs_base": "Qs = -30 + 2P", "p_base": 36, "q_base": 42, "qd_post": "Qd = 150 - 3P", "qs_post": "Qs = -55 + 2P", "p_post": 41, "q_post": 27, "shock": "Oferta (←)"}, {"n": 4, "mercado": "Flete marítimo (contenedor)", "qd_base": "Qd = 90 - 2P", "qs_base": "Qs = -10 + 3P", "p_base": 20, "q_base": 50, "qd_post": "Qd = 90 - 2P", "qs_post": "Qs = -35 + 3P", "p_post": 25, "q_post": 40, "shock": "Oferta (←)"}, {"n": 5, "mercado": "Urea (fertilizante)", "qd_base": "Qd = 80 - 2P", "qs_base": "Qs = -10 + 3P", "p_base": 18, "q_base": 44, "qd_post": "Qd = 80 - 2P", "qs_post": "Qs = -30 + 3P", "p_post": 22, "q_post": 36, "shock": "Oferta (←)"}, {"n": 6, "mercado": "Gasolina 93 octanos", "qd_base": "Qd = 80 - P", "qs_base": "Qs = -10 + 2P", "p_base": 30, "q_base": 50, "qd_post": "Qd = 110 - P", "qs_post": "Qs = -10 + 2P", "p_post": 40, "q_post": 70, "shock": "Demanda (→)"}, {"n": 7, "mercado": "Transporte público Santiago", "qd_base": "Qd = 200 - 5P", "qs_base": "Qs = 20 + 5P", "p_base": 18, "q_base": 110, "qd_post": "Qd = 250 - 5P", "qs_post": "Qs = 20 + 5P", "p_post": 23, "q_post": 135, "shock": "Demanda (→)"}, {"n": 8, "mercado": "Turismo doméstico", "qd_base": "Qd = 60 - P", "qs_base": "Qs = -15 + 2P", "p_base": 25, "q_base": 35, "qd_post": "Qd = 42 - P", "qs_post": "Qs = -15 + 2P", "p_post": 19, "q_post": 23, "shock": "Demanda (←)"}, {"n": 9, "mercado": "Ropa (bien normal)", "qd_base": "Qd = 100 - 2P", "qs_base": "Qs = -20 + 3P", "p_base": 24, "q_base": 52, "qd_post": "Qd = 80 - 2P", "qs_post": "Qs = -20 + 3P", "p_post": 20, "q_post": 40, "shock": "Demanda (←)"}, {"n": 10, "mercado": "Pasajes aéreos al exterior", "qd_base": "Qd = 60 - P", "qs_base": "Qs = -15 + 2P", "p_base": 25, "q_base": 35, "qd_post": "Qd = 45 - P", "qs_post": "Qs = -15 + 2P", "p_post": 20, "q_post": 25, "shock": "Demanda (←)"}, {"n": 11, "mercado": "Pasajes aéreos (doble shock)", "qd_base": "Qd = 60 - P", "qs_base": "Qs = -15 + 2P", "p_base": 25, "q_base": 35, "qd_post": "Qd = 51 - P", "qs_post": "Qs = -33 + 2P", "p_post": 28, "q_post": 23, "shock": "Simultáneo: S(←) + D(←)"}, {"n": 12, "mercado": "Diésel Chile (doble shock)", "qd_base": "Qd = 100 - 2P", "qs_base": "Qs = -20 + 3P", "p_base": 24, "q_base": 52, "qd_post": "Qd = 115 - 2P", "qs_post": "Qs = -45 + 3P", "p_post": 32, "q_post": 51, "shock": "Simultáneo: S(←) + D(→)"}, {"n": 13, "mercado": "Alimentos básicos (bien inferior)", "qd_base": "Qd = 100 - 2P", "qs_base": "Qs = -20 + 3P", "p_base": 24, "q_base": 52, "qd_post": "Qd = 120 - 2P", "qs_post": "Qs = -35 + 3P", "p_post": 31, "q_post": 58, "shock": "Simultáneo: S(←) + D(→)"}, {"n": 14, "mercado": "Parafina (kerosene)", "qd_base": "Qd = 90 - 3P", "qs_base": "Qs = -10 + 2P", "p_base": 20, "q_base": 30, "qd_post": "Qd = 110 - 3P", "qs_post": "Qs = -30 + 2P", "p_post": 28, "q_post": 26, "shock": "Simultáneo: S(←) + D(→)"}, {"n": 15, "mercado": "Petróleo post-reapertura Ormuz", "qd_base": "Qd = 120 - P", "qs_base": "Qs = -60 + 2P", "p_base": 60, "q_base": 60, "qd_post": "Qd = 120 - P", "qs_post": "Qs = -45 + 2P", "p_post": 55, "q_post": 65, "shock": "Oferta (→) — recuperación"}];
+// TEXTO EDITABLE: casos guiados
+const guidedCases = [
+  {
+    n: 1,
+    titulo: 'Mayor ingreso de hogares',
+    mercado: 'Ropa o electrodomésticos como bien normal',
+    evento: 'Mejora el mercado laboral y sube el ingreso disponible de los hogares.',
+    variable: 'Aumenta Y.',
+    curva: 'Si el bien es normal, la demanda se desplaza a la derecha.',
+    equilibrio: 'Si la oferta no cambia, tienden a subir P* y Q*.',
+    probar: 'En Simulador, aumenta Y y mantén todo lo demás constante.'
+  },
+  {
+    n: 2,
+    titulo: 'Alza del precio del insumo',
+    mercado: 'Pan, cemento o un bien que usa un insumo clave',
+    evento: 'Sube el costo del principal insumo utilizado por las empresas.',
+    variable: 'Aumenta Pi.',
+    curva: 'La oferta se desplaza a la izquierda.',
+    equilibrio: 'Si la demanda no cambia, tienden a subir P* y bajar Q*.',
+    probar: 'En Simulador, aumenta Pi y observa el nuevo equilibrio.'
+  },
+  {
+    n: 3,
+    titulo: 'Mejora tecnológica',
+    mercado: 'Producción agrícola o manufactura simple',
+    evento: 'Las empresas incorporan una tecnología que reduce costos por unidad.',
+    variable: 'Aumenta Tec.',
+    curva: 'La oferta se desplaza a la derecha.',
+    equilibrio: 'Si la demanda no cambia, tienden a bajar P* y subir Q*.',
+    probar: 'En Simulador, aumenta Tec y compara antes y después.'
+  },
+  {
+    n: 4,
+    titulo: 'Ingreso de nuevos oferentes',
+    mercado: 'Comida preparada, transporte local o servicios simples',
+    evento: 'Entran nuevas empresas al mercado.',
+    variable: 'Aumenta N.',
+    curva: 'La oferta se desplaza a la derecha.',
+    equilibrio: 'Si la demanda no cambia, tienden a bajar P* y subir Q*.',
+    probar: 'En Simulador, aumenta N.'
+  },
+  {
+    n: 5,
+    titulo: 'Cambio en el precio del sustituto',
+    mercado: 'Té frente a café, o mantequilla frente a margarina',
+    evento: 'Sube el precio de un bien sustituto.',
+    variable: 'Aumenta Ps.',
+    curva: 'La demanda del bien analizado se desplaza a la derecha.',
+    equilibrio: 'Si la oferta no cambia, tienden a subir P* y Q*.',
+    probar: 'En Simulador, aumenta Ps y verifica la predicción.'
+  },
+  {
+    n: 6,
+    titulo: 'Cambio en el precio del complemento',
+    mercado: 'Impresoras y cartuchos, autos y combustible',
+    evento: 'Sube el precio de un bien complementario.',
+    variable: 'Aumenta Pc.',
+    curva: 'Si el bien es complementario, la demanda del bien analizado se desplaza a la izquierda.',
+    equilibrio: 'Si la oferta no cambia, tienden a bajar P* y Q*.',
+    probar: 'En Simulador, aumenta Pc. Revisa que el signo del coeficiente de Pc sea consistente con un complemento.'
+  },
+  {
+    n: 7,
+    titulo: 'Expectativas de alza futura',
+    mercado: 'Bienes durables o bienes almacenables',
+    evento: 'Los consumidores esperan que el precio del bien suba pronto.',
+    variable: 'Aumenta Exp.',
+    curva: 'Si las expectativas elevan la compra presente, la demanda se desplaza a la derecha.',
+    equilibrio: 'Si la oferta no cambia, tienden a subir P* y Q*.',
+    probar: 'En Simulador, aumenta Exp. Revisa el signo del coeficiente de Exp para interpretar el resultado.'
+  },
+  {
+    n: 8,
+    titulo: 'Desaceleración económica',
+    mercado: 'Turismo, vestuario o restaurantes',
+    evento: 'La actividad económica se enfría y cae el ingreso disponible de los hogares.',
+    variable: 'Disminuye Y.',
+    curva: 'Si el bien es normal, la demanda se desplaza a la izquierda.',
+    equilibrio: 'Si la oferta no cambia, tienden a bajar P* y Q*.',
+    probar: 'En Simulador, reduce Y y verifica el cambio en el equilibrio.'
+  }
+];
+
 const defaults = {"sim": {"a0": 120, "a1": -2, "a2": 0.5, "a3": 0.3, "a4": -0.2, "a5": 0, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -30, "b1": 3, "b2": -0.4, "b3": 0.2, "b4": 0.5, "Pi": 50, "Tec": 100, "N": 20}, "cmp": {"a0": -10, "a1": -2, "a2": 1, "a3": 1, "a4": -1, "a5": 2, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -85, "b1": 3, "b2": -1, "b3": 1, "b4": 1, "Pi": 50, "Tec": 100, "N": 20, "Y_post": 100, "Ps_post": 50, "Pc_post": 30, "Exp_post": 0, "Pi_post": 50, "Tec_post": 100, "N_post": 20}};
 
 const $ = (id) => document.getElementById(id);
@@ -891,21 +995,26 @@ function renderExampleChart() {
   ], 'Contracción de oferta: ejemplo resuelto');
 }
 
-function renderExercises() {
-  $('exerciseRows').innerHTML = exercises.map(e => `
-    <tr>
-      <td>${e.n}</td>
-      <td>${e.mercado}</td>
-      <td>${e.qd_base}</td>
-      <td>${e.qs_base}</td>
-      <td>${e.p_base}</td>
-      <td>${e.q_base}</td>
-      <td>${e.qd_post}</td>
-      <td>${e.qs_post}</td>
-      <td>${e.p_post}</td>
-      <td>${e.q_post}</td>
-      <td>${e.shock}</td>
-    </tr>
+function renderCases() {
+  const container = $('caseCards');
+  if (!container) return;
+  container.innerHTML = guidedCases.map(c => `
+    <article class="case-card">
+      <div class="case-top">
+        <div>
+          <h3 class="case-title">${c.titulo}</h3>
+          <div class="case-market">${c.mercado}</div>
+        </div>
+        <div class="case-num">${c.n}</div>
+      </div>
+      <ul class="case-list">
+        <li><strong>Evento:</strong> ${c.evento}</li>
+        <li><strong>Variable:</strong> ${c.variable}</li>
+        <li><strong>Curva:</strong> ${c.curva}</li>
+        <li><strong>Equilibrio esperado:</strong> ${c.equilibrio}</li>
+      </ul>
+      <div class="case-probar"><strong>Qué probar en el simulador</strong>${c.probar}</div>
+    </article>
   `).join('');
 }
 
@@ -919,7 +1028,7 @@ $('cmp_reset').addEventListener('click', () => {
   Object.entries(defaults.cmp).forEach(([k, v]) => { if ($('cmp_' + k)) $('cmp_' + k).value = v; });
   updateCmp();
 });
-renderExercises();
+renderCases();
 updateSim();
 updateCmp();
 renderExampleChart();
