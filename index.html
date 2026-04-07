@@ -279,7 +279,7 @@ hr.sep {
       <div>
         <div class="eyebrow">Plataforma institucional 2026</div>
         <h1>Introducción a la Economía — Simulador de mercados</h1>
-        <div class="subtitle">Versión HTML offline, pensada para docencia de bajo costo de fricción: funciona en navegador común, sin Microsoft Office, y orienta explícitamente la discusión causal esperada en el curso.</div>
+        <div class="subtitle">Herramienta pedagógica para modelar mercados con funciones lineales de demanda y oferta. Calcula el equilibrio (P*, Q*), compara escenarios antes y después de un shock, y estima las elasticidades precio, ingreso y cruzada de la demanda (Epd, Eid, Ecd) y de la oferta (Epo) en cualquier punto válido de la función. Funciona en cualquier navegador, sin instalación ni conexión a internet.</div>
       </div>
       <div class="meta">
         <div class="meta-card"><div class="label">Curso</div><div class="value">Introducción a la Economía</div></div>
@@ -511,40 +511,48 @@ hr.sep {
       </div>
       <!-- PANEL ELASTICIDADES: Simulador -->
       <div style="margin-top:14px;">
-        <div class="table-title">Elasticidades en el equilibrio (punto)</div>
+        <div class="table-title">Elasticidades puntuales</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <label style="font-size:13px;font-weight:700;white-space:nowrap;">Precio de evaluación (P):</label>
+          <input id="simEvalP" type="number" step="any" style="width:110px;">
+          <button id="simEvalPReset" style="border:1px solid var(--line);background:#fff;color:var(--ink);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">↺ Usar P*</button>
+          <span class="desc" style="font-size:12px;">Por defecto = P* (equilibrio). Ingresa otro precio válido para evaluar la elasticidad en ese punto de la función.</span>
+        </div>
+        <div id="simEvalWarning" class="warning" style="display:none;margin-bottom:8px;"></div>
         <table>
-          <tr><th>Elasticidad</th><th>Fórmula</th><th>Valor</th><th>Clasificación</th></tr>
+          <tr><th>Elasticidad</th><th>Fórmula general</th><th>Valor en P</th><th>Clasificación</th></tr>
           <tr>
-            <td><strong>Epd</strong> <span class="desc">precio propia</span></td>
-            <td class="desc">α₁ · P* / Q*</td>
+            <td><strong>Epd</strong> <span class="desc">precio propia demanda</span></td>
+            <td class="desc">α₁ · P / Qd(P)</td>
             <td id="simEpd" class="elast-val"></td>
             <td id="simEpdClass" class="elast-class"></td>
           </tr>
           <tr>
             <td><strong>Eid</strong> <span class="desc">ingreso</span></td>
-            <td class="desc">α₂ · Y / Q*</td>
+            <td class="desc">α₂ · Y / Qd(P)</td>
             <td id="simEid" class="elast-val"></td>
             <td id="simEidClass" class="elast-class"></td>
           </tr>
           <tr>
             <td><strong>Ecd</strong> <span class="desc">sustituto</span></td>
-            <td class="desc">α₃ · Ps / Q*</td>
+            <td class="desc">α₃ · Ps / Qd(P)</td>
             <td id="simEcdS" class="elast-val"></td>
             <td id="simEcdSClass" class="elast-class"></td>
           </tr>
           <tr>
             <td><strong>Ecd</strong> <span class="desc">complemento</span></td>
-            <td class="desc">α₄ · Pc / Q*</td>
+            <td class="desc">α₄ · Pc / Qd(P)</td>
             <td id="simEcdC" class="elast-val"></td>
             <td id="simEcdCClass" class="elast-class"></td>
           </tr>
           <tr>
             <td><strong>Epo</strong> <span class="desc">precio oferta</span></td>
-            <td class="desc">β₁ · P* / Q*</td>
+            <td class="desc">β₁ · P / Qs(P)</td>
             <td id="simEpo" class="elast-val"></td>
             <td id="simEpoClass" class="elast-class"></td>
           </tr>
         </table>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">Qd(P) = A − B·P  |  Qs(P) = C + D·P  |  Las elasticidades de demanda (Epd, Eid, Ecd) y de oferta (Epo) son puntuales: dependen del precio P y de la cantidad resultante en ese punto de la función.</div>
         <div id="simElastInterp" class="elast-interp"></div>
       </div>
 
@@ -942,15 +950,23 @@ function svgChart(el, series, eqPoints, title='') {
 }
 
 // ── Elasticidades ────────────────────────────────────────────────
-function computeElasticities(p, m) {
-  const { eqP, eqQ } = m;
-  if (!Number.isFinite(eqP) || !Number.isFinite(eqQ) || Math.abs(eqQ) < 1e-9) return null;
+// Calcula elasticidades en un precio P arbitrario (por defecto P*)
+function computeElasticities(p, m, evalP) {
+  if (!Number.isFinite(m.eqP)) return null;
+  const P = (Number.isFinite(evalP) && evalP !== null) ? evalP : m.eqP;
+  if (!Number.isFinite(P) || P < 0) return null;
+  const Qd = m.A - m.B * P;   // cantidad demandada en P
+  const Qs = m.C + m.D * P;   // cantidad ofrecida en P
+  if (Math.abs(Qd) < 1e-9 || Math.abs(Qs) < 1e-9) return null;
   return {
-    Epd:  p.a1 * eqP / eqQ,
-    Eid:  p.a2 * p.Y  / eqQ,
-    EcdS: p.a3 * p.Ps / eqQ,
-    EcdC: p.a4 * p.Pc / eqQ,
-    Epo:  p.b1 * eqP / eqQ
+    P,
+    Qd,
+    Qs,
+    Epd:  p.a1 * P / Qd,
+    Eid:  p.a2 * p.Y  / Qd,
+    EcdS: p.a3 * p.Ps / Qd,
+    EcdC: p.a4 * p.Pc / Qd,
+    Epo:  p.b1 * P / Qs
   };
 }
 
@@ -997,14 +1013,18 @@ function renderElastRow(idVal, idClass, v, classifier) {
 
 function buildInterpText(e) {
   if (!e) return '';
+  const atEq = !Number.isFinite(parseFloat($('simEvalP') ? $('simEvalP').value : ''));
+  const pLabel = atEq ? `P* = ${fmt(e.P,2)} (equilibrio)` : `P = ${fmt(e.P,2)} (punto elegido)`;
+  const qdLabel = `Qd(${fmt(e.P,2)}) = ${fmt(e.Qd,2)}`;
+  const qsLabel = `Qs(${fmt(e.P,2)}) = ${fmt(e.Qs,2)}`;
   const epdAbs = Math.abs(e.Epd);
   const epdDesc = epdAbs > 1 ? 'elástica' : epdAbs < 1 ? 'inelástica' : 'de elasticidad unitaria';
   const eidDesc = e.Eid > 1 ? 'de lujo o superior' : e.Eid > 0 ? 'normal' : e.Eid < 0 ? 'inferior' : 'neutro al ingreso';
   const epoDesc = e.Epo > 1 ? 'elástica' : e.Epo < 1 ? 'inelástica' : 'de elasticidad unitaria';
-  return `<strong>Lectura rápida:</strong> La demanda es <strong>${epdDesc}</strong> al precio propio ` +
-    `(Epd = ${fmt(e.Epd,2)}): un alza de 1% en P cambia Qd en ${fmt(e.Epd,2)}%. ` +
-    `El bien es <strong>${eidDesc}</strong> según ingreso (Eid = ${fmt(e.Eid,2)}). ` +
-    `La oferta es <strong>${epoDesc}</strong> al precio (Epo = ${fmt(e.Epo,2)}).`;
+  return `<strong>Evaluadas en ${pLabel}</strong> — ${qdLabel} | ${qsLabel}<br>` +
+    `Epd = ${fmt(e.Epd,2)}: demanda <strong>${epdDesc}</strong> (un alza de 1% en P cambia Qd en ${fmt(e.Epd,2)}%). ` +
+    `Eid = ${fmt(e.Eid,2)}: bien <strong>${eidDesc}</strong>. ` +
+    `Epo = ${fmt(e.Epo,2)}: oferta <strong>${epoDesc}</strong>.`;
 }
 
 function renderSimElasticities(e) {
@@ -1085,7 +1105,27 @@ function updateSim() {
     {p:m.eqP, q:m.eqQ, label:'E', color:'#0f766e'}
   ], 'Demanda y oferta');
 
-  renderSimElasticities(computeElasticities(p, m));
+  // Lee precio de evaluación: si el campo está vacío o inválido, usa P*
+  const evalPInput = $('simEvalP');
+  const evalPRaw = evalPInput ? parseFloat(evalPInput.value) : NaN;
+  const evalP = Number.isFinite(evalPRaw) ? evalPRaw : m.eqP;
+
+  // Valida que el precio elegido dé cantidades positivas
+  const evalWarn = $('simEvalWarning');
+  if (evalWarn) {
+    const Qd_eval = m.A - m.B * evalP;
+    const Qs_eval = m.C + m.D * evalP;
+    if (Number.isFinite(evalPRaw) && (evalP < 0 || Qd_eval <= 0 || Qs_eval <= 0)) {
+      evalWarn.style.display = 'block';
+      evalWarn.textContent = `P = ${fmt(evalP,2)} produce Qd = ${fmt(Qd_eval,2)} o Qs = ${fmt(Qs_eval,2)}: al menos una cantidad no es positiva. Las elasticidades no son válidas en este punto. Ingresa un precio en el rango donde ambas curvas tienen cantidad positiva.`;
+      renderSimElasticities(null);
+      return;
+    } else {
+      evalWarn.style.display = 'none';
+    }
+  }
+
+  renderSimElasticities(computeElasticities(p, m, evalP));
 }
 
 function updateCmp() {
@@ -1184,8 +1224,11 @@ function renderCases() {
 
 populateDefaults();
 document.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { updateSim(); updateCmp(); }));
+$('simEvalP').addEventListener('input', () => updateSim());
+$('simEvalPReset').addEventListener('click', () => { $('simEvalP').value = ''; updateSim(); });
 $('sim_reset').addEventListener('click', () => {
   Object.entries(defaults.sim).forEach(([k, v]) => { if ($('sim_' + k)) $('sim_' + k).value = v; });
+  $('simEvalP').value = '';
   updateSim();
 });
 $('cmp_reset').addEventListener('click', () => {
