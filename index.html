@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introducción a la Economía — Simulador de mercados (versión web 2026)</title>
+<style>
+:root {
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --line:#d7deea;
+  --ink:#1f2a37;
+  --muted:#5d6b7c;
+  --navy:#183153;
+  --navy-2:#244a7b;
+  --soft-blue:#eaf2ff;
+  --soft-gold:#fff8df;
+  --soft-rose:#fff1ec;
+  --soft-green:#eaf7ee;
+  --soft-teal:#e9f7f7;
+  --shadow:0 12px 32px rgba(24,49,83,.08);
+  --radius:18px;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+header {
+  position:sticky; top:0; z-index:50;
+  background:rgba(255,255,255,.96);
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.header-wrap {
+  max-width:1440px; margin:0 auto; padding:18px 24px 16px 24px;
+}
+.header-top {
+  display:flex; justify-content:space-between; gap:18px; align-items:flex-start; flex-wrap:wrap;
+}
+.eyebrow {
+  font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--navy-2); font-weight:700;
+}
+h1 {
+  margin:4px 0 0 0; font-size:30px; line-height:1.15;
+}
+.subtitle {
+  margin-top:8px; color:var(--muted); max-width:900px;
+}
+.meta {
+  display:grid; grid-template-columns:repeat(3, minmax(120px, 1fr)); gap:10px;
+}
+.meta-card {
+  background:var(--soft-blue);
+  border:1px solid #cad8ee;
+  border-radius:14px;
+  padding:10px 12px;
+  min-width:150px;
+}
+.meta-card .label {
+  font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+}
+.meta-card .value {
+  font-size:15px; font-weight:700; margin-top:4px;
+}
+nav {
+  display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;
+}
+nav button {
+  border:1px solid var(--line);
+  background:#fff; color:var(--ink);
+  padding:10px 14px; border-radius:999px;
+  cursor:pointer; font-weight:700;
+}
+nav button.active {
+  background:var(--navy); color:#fff; border-color:var(--navy);
+}
+main {
+  max-width:1440px; margin:0 auto; padding:24px;
+}
+.section { display:none; }
+.section.active { display:block; }
+.hero {
+  display:grid; grid-template-columns:1.2fr .8fr; gap:20px; align-items:stretch;
+}
+.card {
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.card h2, .card h3 {
+  margin:0 0 12px 0;
+}
+.grid {
+  display:grid; grid-template-columns:1.25fr 1fr; gap:20px; align-items:start;
+}
+.grid-3 {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+}
+.grid-4 {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+}
+.two-cols {
+  display:grid; grid-template-columns:1fr 1fr; gap:18px;
+}
+.table-title {
+  background:var(--soft-blue);
+  padding:9px 11px;
+  border-radius:12px;
+  font-weight:700;
+  margin:0 0 10px 0;
+}
+table {
+  width:100%; border-collapse:collapse; font-size:14px;
+}
+th, td {
+  border:1px solid var(--line);
+  padding:8px 10px; vertical-align:top;
+}
+th {
+  background:var(--navy); color:#fff; text-align:left;
+}
+td.desc, .note, small {
+  color:var(--muted);
+}
+input[type=number] {
+  width:100%;
+  padding:8px 10px;
+  border:1px solid #c8d2e3;
+  border-radius:9px;
+  background:var(--soft-gold);
+  font-size:14px;
+}
+.output {
+  background:var(--soft-rose);
+  border:1px solid #f2d2c9;
+  border-radius:14px;
+  padding:10px 12px;
+}
+.output strong {
+  display:block; font-size:14px; margin-bottom:4px;
+}
+.kpis {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
+}
+.kpi {
+  padding:12px; border-radius:14px; background:var(--soft-rose); border:1px solid #f2d2c9;
+}
+.kpi .label {
+  font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;
+}
+.kpi .value {
+  font-size:30px; font-weight:700; margin-top:4px;
+}
+.badge {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 12px; border-radius:999px; font-weight:700;
+  background:var(--soft-green); border:1px solid #cde9d6;
+}
+.callout {
+  padding:14px 16px; border-radius:16px; background:var(--soft-teal); border:1px solid #caebea;
+}
+.warning {
+  padding:12px 14px;
+  border-radius:14px;
+  background:#fff3cd; border:1px solid #ead081; color:#6b5a00;
+}
+.actions {
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;
+}
+.actions button, .actions label.button-like {
+  border:none; background:var(--navy); color:#fff; padding:10px 14px; border-radius:10px;
+  cursor:pointer; font-weight:700; display:inline-flex; align-items:center;
+}
+.actions .secondary {
+  background:#fff; color:var(--ink); border:1px solid var(--line);
+}
+.legend {
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+}
+.legend span {
+  display:inline-flex; align-items:center; gap:8px; color:var(--muted); font-size:13px;
+}
+.swatch { width:12px; height:12px; border-radius:3px; display:inline-block; }
+.elast-val { font-weight:700; font-family: monospace; font-size:14px; }
+.elast-class { font-weight:700; font-size:13px; }
+.elast-interp {
+  background:var(--soft-teal); border:1px solid #caebea;
+  border-radius:14px; padding:12px 14px; margin-top:10px;
+  font-size:13px; line-height:1.6;
+}
+.delta-pos { color:#166534; font-weight:700; }
+.delta-neg { color:#92400e; font-weight:700; }
+.delta-neu { color:#64748b; font-weight:700; }
+.checklist {
+  margin:0; padding-left:20px;
+}
+.checklist li {
+  margin:8px 0;
+}
+.steps {
+  counter-reset: step;
+  display:grid; gap:12px;
+}
+.step {
+  display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:start;
+  padding:12px; border-radius:14px; background:#fafcff; border:1px solid var(--line);
+}
+.step-num {
+  width:30px; height:30px; border-radius:999px; background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:700;
+}
+.quick-box {
+  background:var(--soft-blue); border:1px solid #cad8ee; border-radius:16px; padding:14px;
+}
+.quick-box h3 {
+  margin-bottom:8px;
+}
+code.inline {
+  background:#f1f4f8; padding:2px 6px; border-radius:6px;
+}
+svg {
+  width:100%; height:auto; border:1px solid var(--line); background:#fff; border-radius:16px;
+}
+.axis-label {
+  font-size:12px; fill:var(--muted);
+}
+.exercise-table td,.exercise-table th { font-size:13px; }
+.cases-grid {
+  display:grid; grid-template-columns:repeat(2, minmax(280px, 1fr)); gap:16px;
+}
+.case-card {
+  background:#fcfdff; border:1px solid var(--line); border-radius:16px; padding:16px;
+  box-shadow:0 8px 18px rgba(24,49,83,.05);
+}
+.case-top {
+  display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:10px;
+}
+.case-title { margin:0; font-size:18px; line-height:1.2; }
+.case-market { color:var(--muted); font-size:13px; margin-top:4px; }
+.case-num {
+  flex:0 0 auto; min-width:34px; height:34px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+  background:var(--navy); color:#fff; font-weight:700;
+}
+.case-list { margin:0; padding-left:18px; }
+.case-list li { margin:8px 0; }
+.case-probar {
+  margin-top:12px; padding:11px 12px; border-radius:12px; background:var(--soft-blue); border:1px solid #cad8ee;
+}
+.case-probar strong { display:block; margin-bottom:4px; }
+.edit-tip {
+  margin-top:12px; font-size:13px; color:var(--muted);
+}
+
+.mini-title {
+  font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;
+}
+.footer-note {
+  margin-top:14px; font-size:13px; color:var(--muted);
+}
+hr.sep {
+  border:none; border-top:1px solid var(--line); margin:18px 0;
+}
+@media (max-width: 1100px) {
+  .hero, .grid, .two-cols, .grid-3, .grid-4 { grid-template-columns:1fr; }
+  header { position:static; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-wrap">
+    <div class="header-top">
+      <div>
+        <div class="eyebrow">Plataforma institucional 2026</div>
+        <h1>Introducción a la Economía — Simulador de mercados</h1>
+        <div class="subtitle">Versión HTML offline, pensada para docencia de bajo costo de fricción: funciona en navegador común, sin Microsoft Office, y orienta explícitamente la discusión causal esperada en el curso.</div>
+      </div>
+      <div class="meta">
+        <div class="meta-card"><div class="label">Curso</div><div class="value">Introducción a la Economía</div></div>
+        <div class="meta-card"><div class="label">Profesor</div><div class="value">Pável Gómez Valera</div></div>
+        <div class="meta-card"><div class="label">Año</div><div class="value">2026</div></div>
+      </div>
+    </div>
+    <nav>
+      <button class="tab active" data-target="inicio">Inicio</button>
+      <button class="tab" data-target="uso">Cómo usar</button>
+      <button class="tab" data-target="simulador">Simulador</button>
+      <button class="tab" data-target="comparador">Comparador</button>
+      <button class="tab" data-target="casos">Casos guiados</button>
+      <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section id="inicio" class="section active">
+  <div class="hero">
+    <div class="card">
+      <h2>Qué es esta plataforma</h2>
+      <p>Esta versión web permite trabajar el modelo de demanda y oferta con funciones lineales, calcular automáticamente el equilibrio y comparar escenarios antes y después de un shock. Está diseñada para apoyar el aprendizaje analítico del curso: no basta con decir “sube la demanda” o “baja la oferta”; se espera una explicación ordenada del mecanismo económico.</p>
+      <div class="callout">
+        <strong>Discusión causal esperada:</strong> <span>evento → variable → curva → equilibrio.</span>
+        <ul class="checklist">
+          <li><strong>Evento:</strong> ¿qué pasó en la realidad o en el caso?</li>
+          <li><strong>Variable:</strong> ¿qué variable exógena del modelo cambió?</li>
+          <li><strong>Curva:</strong> ¿qué curva se desplaza y en qué dirección?</li>
+          <li><strong>Equilibrio:</strong> ¿qué ocurre con el precio y la cantidad de equilibrio?</li>
+        </ul>
+      </div>
+      <hr class="sep">
+      <!-- TEXTO EDITABLE: ejemplo causal de Inicio -->
+      <h3>Ejemplo breve ilustrativo</h3>
+      <p><strong>Evento:</strong> mejora el mercado laboral y sube el ingreso disponible de los hogares.<br>
+      <strong>Variable:</strong> en el modelo, esto se representa como un aumento de <code class="inline">Y</code>.<br>
+      <strong>Curva:</strong> si el bien es normal, la <strong>demanda</strong> se desplaza a la <strong>derecha</strong>.<br>
+      <strong>Equilibrio:</strong> si la oferta no cambia, tienden a subir <strong>P*</strong> y <strong>Q*</strong>.</p>
+      <div class="footer-note">Conviene distinguir el <strong>evento</strong> (hecho del caso) de la <strong>variable</strong> (cómo traducimos ese hecho al modelo). Mientras más claro sea ese paso de traducción, mejor será la explicación causal.</div>
+    </div>
+
+    <div class="card">
+      <h2>Configuración base por defecto</h2>
+      <div class="output">
+        <strong>Demanda efectiva</strong>
+        <span id="baseDemandEq"></span>
+      </div>
+      <div class="output">
+        <strong>Oferta efectiva</strong>
+        <span id="baseSupplyEq"></span>
+      </div>
+      <div class="kpis" style="margin-top:10px;">
+        <div class="kpi"><div class="label">Precio de equilibrio</div><div id="baseP" class="value"></div></div>
+        <div class="kpi"><div class="label">Cantidad de equilibrio</div><div id="baseQ" class="value"></div></div>
+      </div>
+      <div class="footer-note">Esta configuración sirve como punto de partida. En <strong>Simulador</strong> puedes modificar parámetros y variables; en <strong>Comparador</strong> puedes analizar un antes y un después.</div>
+      <div class="actions">
+        <button onclick="activateTab('simulador')">Ir al simulador</button>
+        <button class="secondary" onclick="activateTab('comparador')">Ir al comparador</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:20px;">
+    <div class="card">
+      <h3>Parámetros de demanda</h3>
+      <ul class="checklist">
+        <li><code class="inline">α₀</code>: intercepto.</li>
+        <li><code class="inline">α₁</code>: coeficiente del precio propio.</li>
+        <li><code class="inline">α₂</code> con <code class="inline">Y</code>: ingreso.</li>
+        <li><code class="inline">α₃</code> con <code class="inline">Ps</code>: precio del sustituto.</li>
+        <li><code class="inline">α₄</code> con <code class="inline">Pc</code>: precio del complemento.</li>
+        <li><code class="inline">α₅</code> con <code class="inline">Exp</code>: expectativas.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Parámetros de oferta</h3>
+      <ul class="checklist">
+        <li><code class="inline">β₀</code>: intercepto.</li>
+        <li><code class="inline">β₁</code>: coeficiente del precio propio.</li>
+        <li><code class="inline">β₂</code> con <code class="inline">Pi</code>: precio del insumo.</li>
+        <li><code class="inline">β₃</code> con <code class="inline">Tec</code>: tecnología.</li>
+        <li><code class="inline">β₄</code> con <code class="inline">N</code>: número de oferentes.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Lectura de colores</h3>
+      <ul class="checklist">
+        <li><strong>Campos amarillos:</strong> entradas editables.</li>
+        <li><strong>Resultados rosados:</strong> salidas calculadas.</li>
+        <li><strong>Gráficos:</strong> muestran solo el primer cuadrante, de modo que las curvas parten desde los ejes.</li>
+        <li><strong>Exp:</strong> usar <strong>-1</strong>, <strong>0</strong> o <strong>1</strong>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="uso" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Instrucciones precisas de uso</h2>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><strong>Abrir el archivo.</strong> Descargue el HTML y ábralo con doble clic o arrástrelo a Chrome, Edge, Safari o Firefox. No requiere internet una vez descargado.</div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Trabajar con campos editables.</strong> Modifique solo las casillas amarillas. Los resultados y gráficos se actualizan automáticamente al escribir.</div></div>
+        <div class="step"><div class="step-num">3</div><div><strong>Primero use “Simulador”.</strong> Sirve para entender cómo un conjunto de parámetros y variables determina una única demanda, una única oferta y un único equilibrio.</div></div>
+        <div class="step"><div class="step-num">4</div><div><strong>Luego use “Comparador”.</strong> Ingrese un escenario base y después los valores post-shock. La plataforma mostrará el antes, el después y los cambios en <strong>ΔP</strong> y <strong>ΔQ</strong>.</div></div>
+        <div class="step"><div class="step-num">5</div><div><strong>Explique el mecanismo.</strong> La respuesta esperada debe seguir la cadena <strong>evento → variable → curva → equilibrio</strong>. No basta con reportar números o decir “sube/baja”.</div></div>
+        <div class="step"><div class="step-num">6</div><div><strong>Registrar resultados.</strong> Para tareas o discusión en clase, anote las ecuaciones y los valores de <strong>P*</strong> y <strong>Q*</strong>, o tome una captura de pantalla del escenario trabajado.</div></div>
+      </div>
+
+      <hr class="sep">
+
+      <div class="two-cols">
+        <div>
+          <div class="table-title">Qué se espera de un buen uso</div>
+          <ul class="checklist">
+            <li>Identificar la <strong>variable exógena</strong> que realmente cambió.</li>
+            <li>Distinguir <strong>desplazamiento</strong> de curva y <strong>movimiento a lo largo</strong> de la curva.</li>
+            <li>Expresar el resultado con lenguaje económico claro.</li>
+            <li>Comprobar si el resultado numérico coincide con la intuición económica.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="table-title">Precauciones prácticas</div>
+          <ul class="checklist">
+            <li>Si el navegador no acepta coma decimal, use punto decimal.</li>
+            <li>Si el equilibrio no existe o no es único, aparecerá una advertencia.</li>
+            <li>En <code class="inline">Exp</code> solo se recomienda usar <strong>-1</strong>, <strong>0</strong> o <strong>1</strong>.</li>
+            <li>Esta versión no requiere Excel ni instalación adicional.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Guía breve por rol</h2>
+      <div class="quick-box">
+        <h3>Para estudiantes</h3>
+        <ol class="checklist">
+          <li>Lea el caso.</li>
+          <li>Identifique el shock.</li>
+          <li>Asocie el shock a una variable del modelo.</li>
+          <li>Use el comparador para verificar su predicción.</li>
+          <li>Redacte la explicación causal en 3 a 5 líneas.</li>
+        </ol>
+      </div>
+      <div class="quick-box" style="margin-top:14px;">
+        <h3>Para ayudantes o docencia</h3>
+        <ol class="checklist">
+          <li>Use <strong>Simulador</strong> para demostración inicial.</li>
+          <li>Pase luego a <strong>Comparador</strong> para ejercicios de shock.</li>
+          <li>Pida primero una predicción verbal, y solo después permita verificar con la plataforma.</li>
+          <li>Use <strong>Ejemplo resuelto</strong> como estándar mínimo de calidad explicativa.</li>
+        </ol>
+      </div>
+      <div class="quick-box" style="margin-top:14px;">
+        <h3>Uso institucional de baja fricción</h3>
+        <ul class="checklist">
+          <li>Puede subirse tal cual a un LMS o aula virtual.</li>
+          <li>Puede alojarse como archivo estático en un sitio institucional.</li>
+          <li>Funciona localmente desde una carpeta o pendrive.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="simulador" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Simulador de equilibrio único</h2>
+      <p class="note">Use esta pestaña para analizar un mercado en un solo momento. Modifique parámetros o variables exógenas y observe cómo cambian las ecuaciones y el equilibrio.</p>
+      <div class="two-cols">
+        <div>
+          <div class="table-title">Parámetros de demanda</div>
+          <table>
+            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+            <tr><td>α₀</td><td><input id="sim_a0" type="number" step="any"></td><td class="desc">Demanda autónoma</td></tr>
+            <tr><td>α₁</td><td><input id="sim_a1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
+            <tr><td>α₂</td><td><input id="sim_a2" type="number" step="any"></td><td class="desc">Coeficiente ingreso</td></tr>
+            <tr><td>α₃</td><td><input id="sim_a3" type="number" step="any"></td><td class="desc">Coeficiente P sustituto</td></tr>
+            <tr><td>α₄</td><td><input id="sim_a4" type="number" step="any"></td><td class="desc">Coeficiente P complemento</td></tr>
+            <tr><td>α₅</td><td><input id="sim_a5" type="number" step="any"></td><td class="desc">Coeficiente expectativas</td></tr>
+          </table>
+          <div class="table-title" style="margin-top:14px;">Variables exógenas de demanda</div>
+          <table>
+            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+            <tr><td>Y</td><td><input id="sim_Y" type="number" step="any"></td><td class="desc">Ingreso</td></tr>
+            <tr><td>Ps</td><td><input id="sim_Ps" type="number" step="any"></td><td class="desc">Precio del sustituto</td></tr>
+            <tr><td>Pc</td><td><input id="sim_Pc" type="number" step="any"></td><td class="desc">Precio del complemento</td></tr>
+            <tr><td>Exp</td><td><input id="sim_Exp" type="number" step="1" min="-1" max="1"></td><td class="desc">Use -1, 0 o 1</td></tr>
+          </table>
+        </div>
+
+        <div>
+          <div class="table-title">Parámetros de oferta</div>
+          <table>
+            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+            <tr><td>β₀</td><td><input id="sim_b0" type="number" step="any"></td><td class="desc">Oferta autónoma</td></tr>
+            <tr><td>β₁</td><td><input id="sim_b1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
+            <tr><td>β₂</td><td><input id="sim_b2" type="number" step="any"></td><td class="desc">Coeficiente P insumo</td></tr>
+            <tr><td>β₃</td><td><input id="sim_b3" type="number" step="any"></td><td class="desc">Coeficiente tecnología</td></tr>
+            <tr><td>β₄</td><td><input id="sim_b4" type="number" step="any"></td><td class="desc">Coeficiente Nº oferentes</td></tr>
+          </table>
+          <div class="table-title" style="margin-top:14px;">Variables exógenas de oferta</div>
+          <table>
+            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+            <tr><td>Pi</td><td><input id="sim_Pi" type="number" step="any"></td><td class="desc">Precio del insumo</td></tr>
+            <tr><td>Tec</td><td><input id="sim_Tec" type="number" step="any"></td><td class="desc">Tecnología</td></tr>
+            <tr><td>N</td><td><input id="sim_N" type="number" step="any"></td><td class="desc">Número de oferentes</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="sim_reset">Restablecer valores por defecto</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Resultados y gráfico</h2>
+      <div id="simWarning" class="warning" style="display:none;"></div>
+      <div class="output"><strong>Demanda efectiva</strong><span id="simDemandEq"></span></div>
+      <div class="output"><strong>Oferta efectiva</strong><span id="simSupplyEq"></span></div>
+      <div class="kpis" style="margin-top:10px;">
+        <div class="kpi"><div class="label">Precio de equilibrio</div><div id="simP" class="value"></div></div>
+        <div class="kpi"><div class="label">Cantidad de equilibrio</div><div id="simQ" class="value"></div></div>
+      </div>
+      <!-- PANEL ELASTICIDADES: Simulador -->
+      <div style="margin-top:14px;">
+        <div class="table-title">Elasticidades en el equilibrio (punto)</div>
+        <table>
+          <tr><th>Elasticidad</th><th>Fórmula</th><th>Valor</th><th>Clasificación</th></tr>
+          <tr>
+            <td><strong>Epd</strong> <span class="desc">precio propia</span></td>
+            <td class="desc">α₁ · P* / Q*</td>
+            <td id="simEpd" class="elast-val"></td>
+            <td id="simEpdClass" class="elast-class"></td>
+          </tr>
+          <tr>
+            <td><strong>Eid</strong> <span class="desc">ingreso</span></td>
+            <td class="desc">α₂ · Y / Q*</td>
+            <td id="simEid" class="elast-val"></td>
+            <td id="simEidClass" class="elast-class"></td>
+          </tr>
+          <tr>
+            <td><strong>Ecd</strong> <span class="desc">sustituto</span></td>
+            <td class="desc">α₃ · Ps / Q*</td>
+            <td id="simEcdS" class="elast-val"></td>
+            <td id="simEcdSClass" class="elast-class"></td>
+          </tr>
+          <tr>
+            <td><strong>Ecd</strong> <span class="desc">complemento</span></td>
+            <td class="desc">α₄ · Pc / Q*</td>
+            <td id="simEcdC" class="elast-val"></td>
+            <td id="simEcdCClass" class="elast-class"></td>
+          </tr>
+          <tr>
+            <td><strong>Epo</strong> <span class="desc">precio oferta</span></td>
+            <td class="desc">β₁ · P* / Q*</td>
+            <td id="simEpo" class="elast-val"></td>
+            <td id="simEpoClass" class="elast-class"></td>
+          </tr>
+        </table>
+        <div id="simElastInterp" class="elast-interp"></div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <svg id="simChart" viewBox="0 0 760 420" aria-label="Gráfico demanda y oferta"></svg>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:#355cde"></i> Demanda</span>
+        <span><i class="swatch" style="background:#d94f3b"></i> Oferta</span>
+        <span><i class="swatch" style="background:#0f766e"></i> Equilibrio</span>
+      </div>
+      <div class="footer-note">Los gráficos están restringidos al primer cuadrante: las curvas comienzan visualmente desde los ejes, no desde valores negativos.</div>
+    </div>
+  </div>
+</section>
+
+<section id="comparador" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Comparador de shocks</h2>
+      <p class="note">Use esta pestaña para contrastar un escenario base con un escenario post-shock. Las celdas de la izquierda definen el estado inicial; las de la derecha recogen solo los valores que cambian tras el shock.</p>
+      <div class="two-cols">
+        <div>
+          <div class="table-title">Escenario base: demanda</div>
+          <table>
+            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+            <tr><td>α₀</td><td><input id="cmp_a0" type="number" step="any"></td><td class="desc">Intercepto de demanda</td></tr>
+            <tr><td>α₁</td><td><input id="cmp_a1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
+            <tr><td>α₂</td><td><input id="cmp_a2" type="number" step="any"></td><td class="desc">Coeficiente ingreso</td></tr>
+            <tr><td>α₃</td><td><input id="cmp_a3" type="number" step="any"></td><td class="desc">Coeficiente Ps</td></tr>
+            <tr><td>α₄</td><td><input id="cmp_a4" type="number" step="any"></td><td class="desc">Coeficiente Pc</td></tr>
+            <tr><td>α₅</td><td><input id="cmp_a5" type="number" step="any"></td><td class="desc">Coeficiente Exp</td></tr>
+          </table>
+          <div class="table-title" style="margin-top:14px;">Escenario base: exógenas de demanda</div>
+          <table>
+            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+            <tr><td>Y</td><td><input id="cmp_Y" type="number" step="any"></td><td class="desc">Ingreso</td></tr>
+            <tr><td>Ps</td><td><input id="cmp_Ps" type="number" step="any"></td><td class="desc">Precio del sustituto</td></tr>
+            <tr><td>Pc</td><td><input id="cmp_Pc" type="number" step="any"></td><td class="desc">Precio del complemento</td></tr>
+            <tr><td>Exp</td><td><input id="cmp_Exp" type="number" step="1" min="-1" max="1"></td><td class="desc">Use -1, 0 o 1</td></tr>
+          </table>
+
+          <div class="table-title" style="margin-top:14px;">Escenario base: oferta</div>
+          <table>
+            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+            <tr><td>β₀</td><td><input id="cmp_b0" type="number" step="any"></td><td class="desc">Intercepto de oferta</td></tr>
+            <tr><td>β₁</td><td><input id="cmp_b1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
+            <tr><td>β₂</td><td><input id="cmp_b2" type="number" step="any"></td><td class="desc">Coeficiente Pi</td></tr>
+            <tr><td>β₃</td><td><input id="cmp_b3" type="number" step="any"></td><td class="desc">Coeficiente Tec</td></tr>
+            <tr><td>β₄</td><td><input id="cmp_b4" type="number" step="any"></td><td class="desc">Coeficiente N</td></tr>
+          </table>
+          <div class="table-title" style="margin-top:14px;">Escenario base: exógenas de oferta</div>
+          <table>
+            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+            <tr><td>Pi</td><td><input id="cmp_Pi" type="number" step="any"></td><td class="desc">Precio del insumo</td></tr>
+            <tr><td>Tec</td><td><input id="cmp_Tec" type="number" step="any"></td><td class="desc">Tecnología</td></tr>
+            <tr><td>N</td><td><input id="cmp_N" type="number" step="any"></td><td class="desc">Número de oferentes</td></tr>
+          </table>
+        </div>
+
+        <div>
+          <div class="table-title">Valores post-shock</div>
+          <table>
+            <tr><th>Variable</th><th>Valor post</th><th>Cambió?</th></tr>
+            <tr><td>Y</td><td><input id="cmp_Y_post" type="number" step="any"></td><td id="flag_Y"></td></tr>
+            <tr><td>Ps</td><td><input id="cmp_Ps_post" type="number" step="any"></td><td id="flag_Ps"></td></tr>
+            <tr><td>Pc</td><td><input id="cmp_Pc_post" type="number" step="any"></td><td id="flag_Pc"></td></tr>
+            <tr><td>Exp</td><td><input id="cmp_Exp_post" type="number" step="1" min="-1" max="1"></td><td id="flag_Exp"></td></tr>
+            <tr><td>Pi</td><td><input id="cmp_Pi_post" type="number" step="any"></td><td id="flag_Pi"></td></tr>
+            <tr><td>Tec</td><td><input id="cmp_Tec_post" type="number" step="any"></td><td id="flag_Tec"></td></tr>
+            <tr><td>N</td><td><input id="cmp_N_post" type="number" step="any"></td><td id="flag_N"></td></tr>
+          </table>
+
+          <div class="table-title" style="margin-top:14px;">Resultados calculados</div>
+          <div id="cmpWarning" class="warning" style="display:none;"></div>
+          <div class="grid-3">
+            <div class="output"><strong>Demanda base</strong><span id="cmpDemandBase"></span></div>
+            <div class="output"><strong>Oferta base</strong><span id="cmpSupplyBase"></span></div>
+            <div class="output"><strong>Equilibrio base</strong><span id="cmpEqBase"></span></div>
+            <div class="output"><strong>Demanda post</strong><span id="cmpDemandPost"></span></div>
+            <div class="output"><strong>Oferta post</strong><span id="cmpSupplyPost"></span></div>
+            <div class="output"><strong>Equilibrio post</strong><span id="cmpEqPost"></span></div>
+          </div>
+
+          <div class="kpis" style="margin-top:12px;">
+            <div class="kpi"><div class="label">ΔP</div><div id="cmpDeltaP" class="value"></div></div>
+            <div class="kpi"><div class="label">ΔQ</div><div id="cmpDeltaQ" class="value"></div></div>
+          </div>
+
+          <!-- PANEL ELASTICIDADES: Comparador -->
+          <div style="margin-top:14px;">
+            <div class="table-title">Elasticidades: base vs. post-shock</div>
+            <table>
+              <tr><th>Elasticidad</th><th>Base</th><th>Post</th><th>Δ</th></tr>
+              <tr><td><strong>Epd</strong></td><td id="cmpEpd0"></td><td id="cmpEpd1"></td><td id="cmpEpdD"></td></tr>
+              <tr><td><strong>Eid</strong></td><td id="cmpEid0"></td><td id="cmpEid1"></td><td id="cmpEidD"></td></tr>
+              <tr><td><strong>Ecd sust.</strong></td><td id="cmpEcdS0"></td><td id="cmpEcdS1"></td><td id="cmpEcdSD"></td></tr>
+              <tr><td><strong>Ecd comp.</strong></td><td id="cmpEcdC0"></td><td id="cmpEcdC1"></td><td id="cmpEcdCD"></td></tr>
+              <tr><td><strong>Epo</strong></td><td id="cmpEpo0"></td><td id="cmpEpo1"></td><td id="cmpEpoD"></td></tr>
+            </table>
+          </div>
+
+          <div class="actions">
+            <button id="cmp_reset">Restablecer valores por defecto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Gráfico comparado</h2>
+      <svg id="cmpChart" viewBox="0 0 760 420" aria-label="Comparación de equilibrios"></svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:#355cde"></i> Demanda inicial</span>
+        <span><i class="swatch" style="background:#d94f3b"></i> Oferta inicial</span>
+        <span><i class="swatch" style="background:#7c3aed"></i> Demanda post</span>
+        <span><i class="swatch" style="background:#ea580c"></i> Oferta post</span>
+        <span><i class="swatch" style="background:#0f766e"></i> Equilibrios</span>
+      </div>
+      <div class="footer-note">La comparación sirve para verificar si la predicción verbal era correcta: qué curva cambió, en qué dirección y con qué efecto sobre el equilibrio.</div>
+    </div>
+  </div>
+</section>
+
+<section id="casos" class="section">
+  <div class="card">
+    <h2>Casos guiados</h2>
+    <p class="note">Estos casos están diseñados para aprovechar una fortaleza central del simulador: trabajar con <strong>variables exógenas explícitas</strong>, no solo con cambios mecánicos en interceptos. La secuencia sugerida es: leer el evento, traducirlo a la variable relevante, anticipar el desplazamiento de curva y recién después verificarlo en el simulador o en el comparador.</p>
+    <div class="warning"><strong>Sugerencia de uso:</strong> antes de tocar los parámetros, pide una predicción verbal breve del tipo <em>evento → variable → curva → equilibrio</em>.</div>
+    <div id="caseCards" class="cases-grid" style="margin-top:14px;"></div>
+    <div class="edit-tip">Para modificar o reemplazar estos casos, busca en el archivo <code class="inline">index.html</code> la sección <strong>TEXTO EDITABLE: casos guiados</strong>.</div>
+  </div>
+</section>
+
+<section id="ejemplo" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Ejemplo resuelto</h2>
+      <div class="badge">Estándar mínimo de explicación esperada</div>
+      <ol class="checklist" style="margin-top:14px;">
+        <li><strong>Equilibrio base:</strong> <code class="inline">Qd = 120 - P</code> y <code class="inline">Qs = -30 + 2P</code>. Se obtiene <strong>P* = 50</strong> y <strong>Q* = 70</strong>.</li>
+        <li><strong>Evento:</strong> una disrupción geopolítica reduce la capacidad efectiva de oferta.</li>
+        <li><strong>Variable / curva:</strong> cae la oferta; la curva de oferta se desplaza a la <strong>izquierda</strong>.</li>
+        <li><strong>Nueva oferta:</strong> <code class="inline">Qs' = -60 + 2P</code>. La demanda no cambia.</li>
+        <li><strong>Nuevo equilibrio:</strong> <strong>P* = 60</strong> y <strong>Q* = 60</strong>.</li>
+        <li><strong>Lectura económica:</strong> sube el precio y cae la cantidad, porque el ajuste viene desde la oferta.</li>
+      </ol>
+      <div class="footer-note">Obsérvese que aquí el cambio relevante es un desplazamiento de oferta; la demanda no se desplaza. Lo que cambia del lado de la demanda es la cantidad demandada a lo largo de la curva.</div>
+    </div>
+    <div class="card">
+      <h2>Representación gráfica</h2>
+      <svg id="exampleChart" viewBox="0 0 760 420" aria-label="Ejemplo resuelto"></svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:#355cde"></i> Demanda</span>
+        <span><i class="swatch" style="background:#d94f3b"></i> Oferta inicial</span>
+        <span><i class="swatch" style="background:#ea580c"></i> Oferta post</span>
+        <span><i class="swatch" style="background:#0f766e"></i> Equilibrios</span>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+// TEXTO EDITABLE: casos guiados
+const guidedCases = [
+  {
+    n: 1,
+    titulo: 'Mayor ingreso de hogares',
+    mercado: 'Ropa o electrodomésticos como bien normal',
+    evento: 'Mejora el mercado laboral y sube el ingreso disponible de los hogares.',
+    variable: 'Aumenta Y.',
+    curva: 'Si el bien es normal, la demanda se desplaza a la derecha.',
+    equilibrio: 'Si la oferta no cambia, tienden a subir P* y Q*.',
+    probar: 'En Simulador, aumenta Y y mantén todo lo demás constante.'
+  },
+  {
+    n: 2,
+    titulo: 'Alza del precio del insumo',
+    mercado: 'Pan, cemento o un bien que usa un insumo clave',
+    evento: 'Sube el costo del principal insumo utilizado por las empresas.',
+    variable: 'Aumenta Pi.',
+    curva: 'La oferta se desplaza a la izquierda.',
+    equilibrio: 'Si la demanda no cambia, tienden a subir P* y bajar Q*.',
+    probar: 'En Simulador, aumenta Pi y observa el nuevo equilibrio.'
+  },
+  {
+    n: 3,
+    titulo: 'Mejora tecnológica',
+    mercado: 'Producción agrícola o manufactura simple',
+    evento: 'Las empresas incorporan una tecnología que reduce costos por unidad.',
+    variable: 'Aumenta Tec.',
+    curva: 'La oferta se desplaza a la derecha.',
+    equilibrio: 'Si la demanda no cambia, tienden a bajar P* y subir Q*.',
+    probar: 'En Simulador, aumenta Tec y compara antes y después.'
+  },
+  {
+    n: 4,
+    titulo: 'Ingreso de nuevos oferentes',
+    mercado: 'Comida preparada, transporte local o servicios simples',
+    evento: 'Entran nuevas empresas al mercado.',
+    variable: 'Aumenta N.',
+    curva: 'La oferta se desplaza a la derecha.',
+    equilibrio: 'Si la demanda no cambia, tienden a bajar P* y subir Q*.',
+    probar: 'En Simulador, aumenta N.'
+  },
+  {
+    n: 5,
+    titulo: 'Cambio en el precio del sustituto',
+    mercado: 'Té frente a café, o mantequilla frente a margarina',
+    evento: 'Sube el precio de un bien sustituto.',
+    variable: 'Aumenta Ps.',
+    curva: 'La demanda del bien analizado se desplaza a la derecha.',
+    equilibrio: 'Si la oferta no cambia, tienden a subir P* y Q*.',
+    probar: 'En Simulador, aumenta Ps y verifica la predicción.'
+  },
+  {
+    n: 6,
+    titulo: 'Cambio en el precio del complemento',
+    mercado: 'Impresoras y cartuchos, autos y combustible',
+    evento: 'Sube el precio de un bien complementario.',
+    variable: 'Aumenta Pc.',
+    curva: 'Si el bien es complementario, la demanda del bien analizado se desplaza a la izquierda.',
+    equilibrio: 'Si la oferta no cambia, tienden a bajar P* y Q*.',
+    probar: 'En Simulador, aumenta Pc. Revisa que el signo del coeficiente de Pc sea consistente con un complemento.'
+  },
+  {
+    n: 7,
+    titulo: 'Expectativas de alza futura',
+    mercado: 'Bienes durables o bienes almacenables',
+    evento: 'Los consumidores esperan que el precio del bien suba pronto.',
+    variable: 'Aumenta Exp.',
+    curva: 'Si las expectativas elevan la compra presente, la demanda se desplaza a la derecha.',
+    equilibrio: 'Si la oferta no cambia, tienden a subir P* y Q*.',
+    probar: 'En Simulador, aumenta Exp. Revisa el signo del coeficiente de Exp para interpretar el resultado.'
+  },
+  {
+    n: 8,
+    titulo: 'Desaceleración económica',
+    mercado: 'Turismo, vestuario o restaurantes',
+    evento: 'La actividad económica se enfría y cae el ingreso disponible de los hogares.',
+    variable: 'Disminuye Y.',
+    curva: 'Si el bien es normal, la demanda se desplaza a la izquierda.',
+    equilibrio: 'Si la oferta no cambia, tienden a bajar P* y Q*.',
+    probar: 'En Simulador, reduce Y y verifica el cambio en el equilibrio.'
+  }
+];
+
+const defaults = {"sim": {"a0": 120, "a1": -2, "a2": 0.5, "a3": 0.3, "a4": -0.2, "a5": 0, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -30, "b1": 3, "b2": -0.4, "b3": 0.2, "b4": 0.5, "Pi": 50, "Tec": 100, "N": 20}, "cmp": {"a0": -10, "a1": -2, "a2": 1, "a3": 1, "a4": -1, "a5": 2, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -85, "b1": 3, "b2": -1, "b3": 1, "b4": 1, "Pi": 50, "Tec": 100, "N": 20, "Y_post": 100, "Ps_post": 50, "Pc_post": 30, "Exp_post": 0, "Pi_post": 50, "Tec_post": 100, "N_post": 20}};
+
+const $ = (id) => document.getElementById(id);
+const fmt = (n, d=2) => Number.isFinite(n) ? Number(n).toFixed(d).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') : '—';
+const val = (id) => parseFloat($(id).value);
+
+function activateTab(targetId) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.target === targetId));
+  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === targetId));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => activateTab(btn.dataset.target));
+});
+
+function computeMarket(p) {
+  const A = p.a0 + p.a2*p.Y + p.a3*p.Ps + p.a4*p.Pc + p.a5*p.Exp;
+  const B = -p.a1;
+  const C = p.b0 + p.b2*p.Pi + p.b3*p.Tec + p.b4*p.N;
+  const D = p.b1;
+  const denom = B + D;
+  let eqP = NaN, eqQ = NaN;
+  if (Number.isFinite(denom) && denom !== 0) {
+    eqP = (A - C) / denom;
+    eqQ = A - B*eqP;
+  }
+  return {A, B, C, D, eqP, eqQ, denom};
+}
+
+function xForQ(q, qTop, w, m) {
+  return m.l + (q/qTop)*(w-m.l-m.r);
+}
+function yForP(p, pTop, h, m) {
+  return h-m.b - (p/pTop)*(h-m.t-m.b);
+}
+
+function visibleCurvePoints(market, type, pTop, qTop, w, h, m) {
+  const points = [];
+  const steps = 120;
+  let pMin = 0;
+  let pMax = pTop;
+
+  if (type === 'demand') {
+    if (market.B <= 0) return points;
+    const pInterceptQ0 = market.A / market.B;
+    if (!Number.isFinite(pInterceptQ0) || pInterceptQ0 <= 0) return points;
+    pMax = Math.min(pTop, pInterceptQ0);
+  } else {
+    if (market.D <= 0) return points;
+    const pInterceptQ0 = -market.C / market.D;
+    pMin = Math.max(0, Number.isFinite(pInterceptQ0) ? pInterceptQ0 : 0);
+    pMax = pTop;
+    if (pMin >= pMax) return points;
+  }
+
+  for (let i = 0; i <= steps; i++) {
+    const P = pMin + (pMax - pMin) * (i / steps);
+    const Q = type === 'demand'
+      ? market.A - market.B * P
+      : market.C + market.D * P;
+
+    if (!Number.isFinite(Q) || !Number.isFinite(P)) continue;
+    if (Q < -1e-9 || P < -1e-9) continue;
+
+    const qClamped = Math.max(0, Math.min(qTop, Q));
+    const pClamped = Math.max(0, Math.min(pTop, P));
+    points.push(`${xForQ(qClamped, qTop, w, m)},${yForP(pClamped, pTop, h, m)}`);
+  }
+  return points;
+}
+
+function axisRanges(markets) {
+  const pCandidates = [10];
+  const qCandidates = [10];
+
+  markets.forEach(m => {
+    if (m.B > 0 && m.A > 0) pCandidates.push(m.A / m.B);
+    if (m.D > 0 && m.C < 0) pCandidates.push(-m.C / m.D);
+    if (Number.isFinite(m.eqP) && m.eqP >= 0) pCandidates.push(m.eqP);
+    if (Number.isFinite(m.eqQ) && m.eqQ >= 0) qCandidates.push(m.eqQ);
+    if (m.A >= 0) qCandidates.push(m.A);
+    if (m.C >= 0) qCandidates.push(m.C);
+  });
+
+  let pTop = Math.max(...pCandidates.filter(Number.isFinite));
+  pTop = Math.max(10, pTop * 1.15 + 1);
+
+  markets.forEach(m => {
+    const qAtTopDemand = m.A - m.B * pTop;
+    const qAtTopSupply = m.C + m.D * pTop;
+    [qAtTopDemand, qAtTopSupply].forEach(q => {
+      if (Number.isFinite(q) && q >= 0) qCandidates.push(q);
+    });
+  });
+
+  let qTop = Math.max(...qCandidates.filter(Number.isFinite));
+  qTop = Math.max(10, qTop * 1.15 + 1);
+
+  return {pTop, qTop};
+}
+
+function svgChart(el, series, eqPoints, title='') {
+  const w = 760, h = 420, m = {l:72, r:24, t:30, b:58};
+  const markets = series.map(s => s.market);
+  const {pTop, qTop} = axisRanges(markets);
+
+  let out = `<rect x="0" y="0" width="${w}" height="${h}" fill="white"/>`;
+  if (title) {
+    out += `<text x="${w/2}" y="18" text-anchor="middle" style="font-size:18px;font-weight:700;fill:#1f2a37">${title}</text>`;
+  }
+
+  for (let i = 0; i <= 5; i++) {
+    const py = m.t + i * (h - m.t - m.b) / 5;
+    const pVal = pTop - i * (pTop / 5);
+    out += `<line x1="${m.l}" y1="${py}" x2="${w-m.r}" y2="${py}" stroke="#e7edf5"/>`;
+    out += `<text x="${m.l-10}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(pVal)}</text>`;
+  }
+
+  for (let i = 0; i <= 5; i++) {
+    const px = m.l + i * (w - m.l - m.r) / 5;
+    const qVal = i * (qTop / 5);
+    out += `<line x1="${px}" y1="${m.t}" x2="${px}" y2="${h-m.b}" stroke="#e7edf5"/>`;
+    out += `<text x="${px}" y="${h-m.b+20}" text-anchor="middle" class="axis-label">${fmt(qVal)}</text>`;
+  }
+
+  out += `<line x1="${m.l}" y1="${h-m.b}" x2="${w-m.r}" y2="${h-m.b}" stroke="#64748b" stroke-width="2"/>`;
+  out += `<line x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${h-m.b}" stroke="#64748b" stroke-width="2"/>`;
+  out += `<text x="${w/2}" y="${h-16}" text-anchor="middle" class="axis-label">Cantidad (Q)</text>`;
+  out += `<text x="18" y="${h/2}" transform="rotate(-90 18 ${h/2})" text-anchor="middle" class="axis-label">Precio (P)</text>`;
+
+  series.forEach(s => {
+    const pts = visibleCurvePoints(s.market, s.type, pTop, qTop, w, h, m);
+    if (pts.length >= 2) {
+      out += `<polyline fill="none" stroke="${s.color}" stroke-width="3" points="${pts.join(' ')}"/>`;
+    }
+  });
+
+  eqPoints.forEach(p => {
+    if (Number.isFinite(p.q) && Number.isFinite(p.p) && p.q >= 0 && p.p >= 0) {
+      out += `<circle cx="${xForQ(p.q, qTop, w, m)}" cy="${yForP(p.p, pTop, h, m)}" r="5" fill="${p.color}"/>`;
+      out += `<text x="${xForQ(p.q, qTop, w, m)+8}" y="${yForP(p.p, pTop, h, m)-8}" style="font-size:12px;font-weight:700;fill:${p.color}">${p.label}</text>`;
+    }
+  });
+
+  el.innerHTML = out;
+}
+
+// ── Elasticidades ────────────────────────────────────────────────
+function computeElasticities(p, m) {
+  const { eqP, eqQ } = m;
+  if (!Number.isFinite(eqP) || !Number.isFinite(eqQ) || Math.abs(eqQ) < 1e-9) return null;
+  return {
+    Epd:  p.a1 * eqP / eqQ,
+    Eid:  p.a2 * p.Y  / eqQ,
+    EcdS: p.a3 * p.Ps / eqQ,
+    EcdC: p.a4 * p.Pc / eqQ,
+    Epo:  p.b1 * eqP / eqQ
+  };
+}
+
+const elastClass = {
+  Epd: v => {
+    const a = Math.abs(v);
+    if (a > 1 + 1e-9) return ['Elástica (|Epd| > 1)', '#166534'];
+    if (a < 1 - 1e-9) return ['Inelástica (|Epd| < 1)', '#92400e'];
+    return ['Unitaria (|Epd| = 1)', '#1e40af'];
+  },
+  Eid: v => {
+    if (v > 1 + 1e-9)  return ['Bien de lujo / superior', '#166534'];
+    if (v > 1e-9)       return ['Bien normal', '#1e40af'];
+    if (v < -1e-9)      return ['Bien inferior', '#92400e'];
+    return ['Neutro al ingreso', '#64748b'];
+  },
+  Ecd: v => {
+    if (v > 1e-9)  return ['Sustitutos', '#166534'];
+    if (v < -1e-9) return ['Complementos', '#1e40af'];
+    return ['Independientes', '#64748b'];
+  },
+  Epo: v => {
+    if (v > 1 + 1e-9) return ['Elástica (Epo > 1)', '#166534'];
+    if (v < 1 - 1e-9) return ['Inelástica (Epo < 1)', '#92400e'];
+    return ['Unitaria (Epo = 1)', '#1e40af'];
+  }
+};
+
+function renderElastRow(idVal, idClass, v, classifier) {
+  const ve = $(idVal), ce = $(idClass);
+  if (!ve) return;
+  if (v === null || !Number.isFinite(v)) {
+    ve.textContent = '—';
+    if (ce) { ce.textContent = '—'; ce.style.color = ''; }
+    return;
+  }
+  ve.textContent = fmt(v, 2);
+  if (ce) {
+    const [text, color] = classifier(v);
+    ce.textContent = text;
+    ce.style.color = color;
+  }
+}
+
+function buildInterpText(e) {
+  if (!e) return '';
+  const epdAbs = Math.abs(e.Epd);
+  const epdDesc = epdAbs > 1 ? 'elástica' : epdAbs < 1 ? 'inelástica' : 'de elasticidad unitaria';
+  const eidDesc = e.Eid > 1 ? 'de lujo o superior' : e.Eid > 0 ? 'normal' : e.Eid < 0 ? 'inferior' : 'neutro al ingreso';
+  const epoDesc = e.Epo > 1 ? 'elástica' : e.Epo < 1 ? 'inelástica' : 'de elasticidad unitaria';
+  return `<strong>Lectura rápida:</strong> La demanda es <strong>${epdDesc}</strong> al precio propio ` +
+    `(Epd = ${fmt(e.Epd,2)}): un alza de 1% en P cambia Qd en ${fmt(e.Epd,2)}%. ` +
+    `El bien es <strong>${eidDesc}</strong> según ingreso (Eid = ${fmt(e.Eid,2)}). ` +
+    `La oferta es <strong>${epoDesc}</strong> al precio (Epo = ${fmt(e.Epo,2)}).`;
+}
+
+function renderSimElasticities(e) {
+  renderElastRow('simEpd',  'simEpdClass',  e ? e.Epd  : null, elastClass.Epd);
+  renderElastRow('simEid',  'simEidClass',  e ? e.Eid  : null, elastClass.Eid);
+  renderElastRow('simEcdS', 'simEcdSClass', e ? e.EcdS : null, elastClass.Ecd);
+  renderElastRow('simEcdC', 'simEcdCClass', e ? e.EcdC : null, elastClass.Ecd);
+  renderElastRow('simEpo',  'simEpoClass',  e ? e.Epo  : null, elastClass.Epo);
+  const note = $('simElastInterp');
+  if (note) note.innerHTML = e ? buildInterpText(e) : '';
+}
+
+function renderCmpElasticities(e0, e1) {
+  const items = [['Epd','Epd'],['Eid','Eid'],['EcdS','EcdS'],['EcdC','EcdC'],['Epo','Epo']];
+  items.forEach(([key, suffix]) => {
+    const v0 = e0 ? e0[key] : null;
+    const v1 = e1 ? e1[key] : null;
+    const el0 = $('cmp' + suffix + '0');
+    const el1 = $('cmp' + suffix + '1');
+    const eld = $('cmp' + suffix + 'D');
+    if (el0) el0.textContent = (v0 !== null && Number.isFinite(v0)) ? fmt(v0, 2) : '—';
+    if (el1) el1.textContent = (v1 !== null && Number.isFinite(v1)) ? fmt(v1, 2) : '—';
+    if (eld) {
+      if (v0 !== null && v1 !== null && Number.isFinite(v0) && Number.isFinite(v1)) {
+        const d = v1 - v0;
+        eld.textContent = (d >= 0 ? '+' : '') + fmt(d, 2);
+        eld.className = d > 0.005 ? 'delta-pos' : d < -0.005 ? 'delta-neg' : 'delta-neu';
+      } else {
+        eld.textContent = '—'; eld.className = '';
+      }
+    }
+  });
+}
+
+function populateDefaults() {
+  Object.entries(defaults.sim).forEach(([k, v]) => {
+    if ($('sim_' + k)) $('sim_' + k).value = v;
+  });
+  Object.entries(defaults.cmp).forEach(([k, v]) => {
+    if ($('cmp_' + k)) $('cmp_' + k).value = v;
+  });
+}
+
+function updateSim() {
+  const p = {
+    a0:val('sim_a0'), a1:val('sim_a1'), a2:val('sim_a2'), a3:val('sim_a3'), a4:val('sim_a4'), a5:val('sim_a5'),
+    Y:val('sim_Y'), Ps:val('sim_Ps'), Pc:val('sim_Pc'), Exp:val('sim_Exp'),
+    b0:val('sim_b0'), b1:val('sim_b1'), b2:val('sim_b2'), b3:val('sim_b3'), b4:val('sim_b4'),
+    Pi:val('sim_Pi'), Tec:val('sim_Tec'), N:val('sim_N')
+  };
+  const m = computeMarket(p);
+
+  $('simDemandEq').textContent = `Qd = ${fmt(m.A)} - ${fmt(m.B)}·P`;
+  $('simSupplyEq').textContent = `Qs = ${fmt(m.C)} + ${fmt(m.D)}·P`;
+  $('simP').textContent = fmt(m.eqP);
+  $('simQ').textContent = fmt(m.eqQ);
+
+  $('baseDemandEq').textContent = $('simDemandEq').textContent;
+  $('baseSupplyEq').textContent = $('simSupplyEq').textContent;
+  $('baseP').textContent = fmt(m.eqP);
+  $('baseQ').textContent = fmt(m.eqQ);
+
+  const warn = $('simWarning');
+  if (!Number.isFinite(m.eqP) || !Number.isFinite(m.eqQ)) {
+    warn.style.display = 'block';
+    warn.textContent = 'No hay equilibrio único con los parámetros actuales. Revise pendientes y el denominador (B + D).';
+  } else if (m.eqP < 0 || m.eqQ < 0) {
+    warn.style.display = 'block';
+    warn.textContent = 'El equilibrio calculado cae fuera del primer cuadrante. Revise si la configuración elegida es económicamente razonable.';
+  } else {
+    warn.style.display = 'none';
+  }
+
+  svgChart($('simChart'), [
+    {type:'demand', market:m, color:'#355cde'},
+    {type:'supply', market:m, color:'#d94f3b'}
+  ], [
+    {p:m.eqP, q:m.eqQ, label:'E', color:'#0f766e'}
+  ], 'Demanda y oferta');
+
+  renderSimElasticities(computeElasticities(p, m));
+}
+
+function updateCmp() {
+  const base = {
+    a0:val('cmp_a0'), a1:val('cmp_a1'), a2:val('cmp_a2'), a3:val('cmp_a3'), a4:val('cmp_a4'), a5:val('cmp_a5'),
+    Y:val('cmp_Y'), Ps:val('cmp_Ps'), Pc:val('cmp_Pc'), Exp:val('cmp_Exp'),
+    b0:val('cmp_b0'), b1:val('cmp_b1'), b2:val('cmp_b2'), b3:val('cmp_b3'), b4:val('cmp_b4'),
+    Pi:val('cmp_Pi'), Tec:val('cmp_Tec'), N:val('cmp_N')
+  };
+  const post = {
+    ...base,
+    Y:val('cmp_Y_post'), Ps:val('cmp_Ps_post'), Pc:val('cmp_Pc_post'), Exp:val('cmp_Exp_post'),
+    Pi:val('cmp_Pi_post'), Tec:val('cmp_Tec_post'), N:val('cmp_N_post')
+  };
+
+  const mb = computeMarket(base);
+  const mp = computeMarket(post);
+
+  $('cmpDemandBase').textContent = `Qd = ${fmt(mb.A)} - ${fmt(mb.B)}·P`;
+  $('cmpSupplyBase').textContent = `Qs = ${fmt(mb.C)} + ${fmt(mb.D)}·P`;
+  $('cmpEqBase').textContent = `P* = ${fmt(mb.eqP)} ; Q* = ${fmt(mb.eqQ)}`;
+
+  $('cmpDemandPost').textContent = `Qd' = ${fmt(mp.A)} - ${fmt(mp.B)}·P`;
+  $('cmpSupplyPost').textContent = `Qs' = ${fmt(mp.C)} + ${fmt(mp.D)}·P`;
+  $('cmpEqPost').textContent = `P** = ${fmt(mp.eqP)} ; Q** = ${fmt(mp.eqQ)}`;
+
+  $('cmpDeltaP').textContent = fmt(mp.eqP - mb.eqP);
+  $('cmpDeltaQ').textContent = fmt(mp.eqQ - mb.eqQ);
+
+  [
+    ['Y', base.Y, post.Y], ['Ps', base.Ps, post.Ps], ['Pc', base.Pc, post.Pc], ['Exp', base.Exp, post.Exp],
+    ['Pi', base.Pi, post.Pi], ['Tec', base.Tec, post.Tec], ['N', base.N, post.N]
+  ].forEach(([name, oldv, newv]) => {
+    $('flag_' + name).textContent = oldv === newv ? '—' : '✓ cambió';
+  });
+
+  const warn = $('cmpWarning');
+  if (!Number.isFinite(mb.eqP) || !Number.isFinite(mp.eqP)) {
+    warn.style.display = 'block';
+    warn.textContent = 'No hay equilibrio único en al menos uno de los escenarios. Revise pendientes y parámetros.';
+  } else if (mb.eqP < 0 || mb.eqQ < 0 || mp.eqP < 0 || mp.eqQ < 0) {
+    warn.style.display = 'block';
+    warn.textContent = 'Al menos uno de los equilibrios cae fuera del primer cuadrante. Revise si el shock y los parámetros son económicamente coherentes.';
+  } else {
+    warn.style.display = 'none';
+  }
+
+  svgChart($('cmpChart'), [
+    {type:'demand', market:mb, color:'#355cde'},
+    {type:'supply', market:mb, color:'#d94f3b'},
+    {type:'demand', market:mp, color:'#7c3aed'},
+    {type:'supply', market:mp, color:'#ea580c'}
+  ], [
+    {p:mb.eqP, q:mb.eqQ, label:'E0', color:'#0f766e'},
+    {p:mp.eqP, q:mp.eqQ, label:'E1', color:'#0f766e'}
+  ], 'Comparación de equilibrios');
+
+  renderCmpElasticities(computeElasticities(base, mb), computeElasticities(post, mp));
+}
+
+function renderExampleChart() {
+  const base = {A:120, B:1, C:-30, D:2, eqP:50, eqQ:70};
+  const post = {A:120, B:1, C:-60, D:2, eqP:60, eqQ:60};
+  svgChart($('exampleChart'), [
+    {type:'demand', market:base, color:'#355cde'},
+    {type:'supply', market:base, color:'#d94f3b'},
+    {type:'supply', market:post, color:'#ea580c'}
+  ], [
+    {p:base.eqP, q:base.eqQ, label:'E0', color:'#0f766e'},
+    {p:post.eqP, q:post.eqQ, label:'E1', color:'#0f766e'}
+  ], 'Contracción de oferta: ejemplo resuelto');
+}
+
+function renderCases() {
+  const container = $('caseCards');
+  if (!container) return;
+  container.innerHTML = guidedCases.map(c => `
+    <article class="case-card">
+      <div class="case-top">
+        <div>
+          <h3 class="case-title">${c.titulo}</h3>
+          <div class="case-market">${c.mercado}</div>
+        </div>
+        <div class="case-num">${c.n}</div>
+      </div>
+      <ul class="case-list">
+        <li><strong>Evento:</strong> ${c.evento}</li>
+        <li><strong>Variable:</strong> ${c.variable}</li>
+        <li><strong>Curva:</strong> ${c.curva}</li>
+        <li><strong>Equilibrio esperado:</strong> ${c.equilibrio}</li>
+      </ul>
+      <div class="case-probar"><strong>Qué probar en el simulador</strong>${c.probar}</div>
+    </article>
+  `).join('');
+}
+
+populateDefaults();
+document.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { updateSim(); updateCmp(); }));
+$('sim_reset').addEventListener('click', () => {
+  Object.entries(defaults.sim).forEach(([k, v]) => { if ($('sim_' + k)) $('sim_' + k).value = v; });
+  updateSim();
+});
+$('cmp_reset').addEventListener('click', () => {
+  Object.entries(defaults.cmp).forEach(([k, v]) => { if ($('cmp_' + k)) $('cmp_' + k).value = v; });
+  updateCmp();
+});
+renderCases();
+updateSim();
+updateCmp();
+renderExampleChart();
+</script>
+</body>
+</html>
