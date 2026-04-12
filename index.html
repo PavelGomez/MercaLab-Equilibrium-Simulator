@@ -522,6 +522,8 @@ hr.sep {
         <div class="kpi"><div class="label">Precio de equilibrio</div><div id="simP" class="value"></div></div>
         <div class="kpi"><div class="label">Cantidad de equilibrio</div><div id="simQ" class="value"></div></div>
       </div>
+      <!-- ── Panel de reespecificación analítica ──────────────────── -->
+      <div id="simRespecPanel" style="margin-top:14px;"></div>
       <!-- PANEL ELASTICIDADES: Simulador -->
       <div style="margin-top:14px;">
         <div class="table-title">Elasticidades puntuales</div>
@@ -880,6 +882,8 @@ const caseLibrary = [
   }
 ];
 
+let activeCaseId = null;  // ID del caso activo en el simulador; null cuando no hay caso cargado
+
 const $ = (id) => document.getElementById(id);
 const fmt = (n, d=2) => Number.isFinite(n) ? Number(n).toFixed(d).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') : '—';
 const val = (id) => parseFloat($(id).value);
@@ -925,6 +929,7 @@ function showEquilWarning(warnEl, markets) {
 function applyCase(caseId) {
   const c = caseLibrary.find(c => c.id === caseId);
   if (!c) return;
+  activeCaseId = caseId;
 
   // Parámetros base → Simulador y escenario base del Comparador
   Object.entries(c.params).forEach(([k, v]) => {
@@ -1217,6 +1222,74 @@ function renderCmpElasticities(e0, e1) {
   });
 }
 
+// Panel de reespecificación analítica:
+// muestra cómo la función estructural colapsa en la curva efectiva del plano P-Q.
+function renderRespecPanel(p, m) {
+  const el = $('simRespecPanel');
+  if (!el) return;
+
+  // cf: envuelve coeficientes negativos en paréntesis para evitar ambigüedad de signo
+  const cf = (n) => n < 0 ? `(${fmt(n)})` : fmt(n);
+
+  // Línea sustituida de demanda: todos los valores reemplazados excepto P
+  const dSubst =
+    `${fmt(p.a0)} + ${cf(p.a1)}·P + ${cf(p.a2)}·${fmt(p.Y)} + ` +
+    `${cf(p.a3)}·${fmt(p.Ps)} + ${cf(p.a4)}·${fmt(p.Pc)} + ${cf(p.a5)}·${fmt(p.Exp)}`;
+
+  // Línea sustituida de oferta
+  const sSubst =
+    `${fmt(p.b0)} + ${cf(p.b1)}·P + ${cf(p.b2)}·${fmt(p.Pi)} + ` +
+    `${cf(p.b3)}·${fmt(p.Tec)} + ${cf(p.b4)}·${fmt(p.N)}`;
+
+  // Sección de shock: solo se genera si hay un caso activo con shock definido
+  let shockHtml = '';
+  if (activeCaseId) {
+    const c = caseLibrary.find(c => c.id === activeCaseId);
+    if (c && c.shock) {
+      const demandKeys = new Set(['Y','Ps','Pc','Exp']);
+      const lines = Object.entries(c.shock).map(([k, vPost]) => {
+        const isDemand = demandKeys.has(k);
+        const mPost    = computeMarket({...p, [k]: vPost});
+        const before   = isDemand ? m.A : m.C;
+        const after    = isDemand ? mPost.A : mPost.C;
+        const label    = isDemand ? 'A' : 'C';
+        const dir      = after > before ? 'derecha' : 'izquierda';
+        const curva    = isDemand ? 'demanda' : 'oferta';
+        return `<strong>${k}</strong>: ${fmt(p[k])} → ${fmt(vPost)} &ensp;·&ensp; ` +
+               `${label}: ${fmt(before)} → ${fmt(after)} &ensp;→&ensp; ` +
+               `curva de ${curva} se desplaza a la <strong>${dir}</strong>`;
+      });
+      shockHtml =
+        `<div style="margin-top:10px;padding:10px 12px;border-radius:12px;` +
+        `background:var(--soft-gold);border:1px solid #ead081;font-size:13px;line-height:1.8;">` +
+        `<span style="font-size:11px;font-weight:700;text-transform:uppercase;` +
+        `letter-spacing:.05em;color:var(--muted);">Shock del caso activo</span><br>` +
+        `${lines.join('<br>')}</div>`;
+    }
+  }
+
+  const mono = 'font-family:monospace;font-size:12px;line-height:1.9;';
+  const lbl  = 'font-size:11px;font-weight:700;text-transform:uppercase;' +
+               'letter-spacing:.05em;color:var(--muted);font-family:sans-serif;';
+  el.innerHTML =
+    `<div class="table-title">Reespecificación analítica</div>` +
+    `<div class="two-cols" style="gap:14px;margin-top:6px;">` +
+      `<div style="${mono}">` +
+        `<span style="${lbl}">Demanda</span><br>` +
+        `<span style="color:var(--muted);">Qd = α₀ + α₁·P + α₂·Y + α₃·Ps + α₄·Pc + α₅·Exp</span><br>` +
+        `&nbsp;&nbsp;&nbsp;= ${dSubst}<br>` +
+        `<strong>→ Qd = ${fmt(m.A)} − ${fmt(m.B)}·P</strong>` +
+      `</div>` +
+      `<div style="${mono}">` +
+        `<span style="${lbl}">Oferta</span><br>` +
+        `<span style="color:var(--muted);">Qs = β₀ + β₁·P + β₂·Pi + β₃·Tec + β₄·N</span><br>` +
+        `&nbsp;&nbsp;&nbsp;= ${sSubst}<br>` +
+        `<strong>→ Qs = ${fmt(m.C)} + ${fmt(m.D)}·P</strong>` +
+      `</div>` +
+    `</div>` +
+    shockHtml;
+}
+
 function populateDefaults() {
   Object.entries(defaults.sim).forEach(([k, v]) => {
     if ($('sim_' + k)) $('sim_' + k).value = v;
@@ -1234,6 +1307,7 @@ function updateSim() {
   $('simSupplyEq').textContent = `Qs = ${fmt(m.C)} + ${fmt(m.D)}·P`;
   $('simP').textContent = fmt(m.eqP);
   $('simQ').textContent = fmt(m.eqQ);
+  renderRespecPanel(p, m);
 
   $('baseDemandEq').textContent = $('simDemandEq').textContent;
   $('baseSupplyEq').textContent = $('simSupplyEq').textContent;
@@ -1360,6 +1434,7 @@ $('simEvalPReset').addEventListener('click', () => { $('simEvalP').value = ''; u
 $('sim_reset').addEventListener('click', () => {
   Object.entries(defaults.sim).forEach(([k, v]) => { if ($('sim_' + k)) $('sim_' + k).value = v; });
   $('simEvalP').value = '';
+  activeCaseId = null;
   if ($('caseActivePanel')) $('caseActivePanel').style.display = 'none';
   updateSim();
 });
