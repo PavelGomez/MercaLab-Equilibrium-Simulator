@@ -801,11 +801,73 @@ const guidedCases = [
   }
 ];
 
-const defaults = {"sim": {"a0": 120, "a1": -2, "a2": 0.5, "a3": 0.3, "a4": -0.2, "a5": 0, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -30, "b1": 3, "b2": -0.4, "b3": 0.2, "b4": 0.5, "Pi": 50, "Tec": 100, "N": 20}, "cmp": {"a0": -10, "a1": -2, "a2": 1, "a3": 1, "a4": -1, "a5": 2, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -85, "b1": 3, "b2": -1, "b3": 1, "b4": 1, "Pi": 50, "Tec": 100, "N": 20, "Y_post": 100, "Ps_post": 50, "Pc_post": 30, "Exp_post": 0, "Pi_post": 50, "Tec_post": 100, "N_post": 20}};
+const defaults = {
+  // ── Simulador (mercado único) ──────────────────────────────────
+  sim: {
+    // Parámetros α (demanda): a1 es negativo por convención (pendiente de demanda)
+    a0: 120, a1: -2, a2: 0.5, a3: 0.3, a4: -0.2, a5: 0,
+    // Variables exógenas de demanda
+    Y: 100, Ps: 50, Pc: 30, Exp: 0,
+    // Parámetros β (oferta): b1 positivo (pendiente de oferta)
+    b0: -30, b1: 3, b2: -0.4, b3: 0.2, b4: 0.5,
+    // Variables exógenas de oferta
+    Pi: 50, Tec: 100, N: 20
+  },
+  // ── Comparador (antes / después de shock) ─────────────────────
+  cmp: {
+    // Parámetros estructurales — solo cambian las exógenas en el shock
+    a0: -10, a1: -2, a2: 1, a3: 1, a4: -1, a5: 2,
+    // Variables exógenas de demanda (base)
+    Y: 100, Ps: 50, Pc: 30, Exp: 0,
+    b0: -85, b1: 3, b2: -1, b3: 1, b4: 1,
+    // Variables exógenas de oferta (base)
+    Pi: 50, Tec: 100, N: 20,
+    // Variables exógenas post-shock (únicamente exógenas; los parámetros no cambian)
+    Y_post: 100, Ps_post: 50, Pc_post: 30, Exp_post: 0,
+    Pi_post: 50, Tec_post: 100, N_post: 20
+  }
+};
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n, d=2) => Number.isFinite(n) ? Number(n).toFixed(d).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') : '—';
 const val = (id) => parseFloat($(id).value);
+
+// Lee todos los parámetros y variables exógenas del formulario para el prefijo dado ("sim" o "cmp")
+function readParams(prefix) {
+  const p = prefix + '_';
+  return {
+    // Parámetros estructurales α (demanda)
+    a0: val(p+'a0'), a1: val(p+'a1'), a2: val(p+'a2'),
+    a3: val(p+'a3'), a4: val(p+'a4'), a5: val(p+'a5'),
+    // Variables exógenas de demanda
+    Y: val(p+'Y'), Ps: val(p+'Ps'), Pc: val(p+'Pc'), Exp: val(p+'Exp'),
+    // Parámetros estructurales β (oferta)
+    b0: val(p+'b0'), b1: val(p+'b1'), b2: val(p+'b2'),
+    b3: val(p+'b3'), b4: val(p+'b4'),
+    // Variables exógenas de oferta
+    Pi: val(p+'Pi'), Tec: val(p+'Tec'), N: val(p+'N')
+  };
+}
+
+// Muestra u oculta la advertencia de validación de equilibrio para uno o más resultados de mercado
+function showEquilWarning(warnEl, markets) {
+  if (!warnEl) return;
+  const noEq    = markets.some(m => !Number.isFinite(m.eqP) || !Number.isFinite(m.eqQ));
+  const outOfQ1 = !noEq && markets.some(m => m.eqP < 0 || m.eqQ < 0);
+  if (noEq) {
+    warnEl.style.display = 'block';
+    warnEl.textContent = markets.length > 1
+      ? 'No hay equilibrio único en al menos uno de los escenarios. Revise pendientes y parámetros.'
+      : 'No hay equilibrio único con los parámetros actuales. Revise pendientes y el denominador (B + D).';
+  } else if (outOfQ1) {
+    warnEl.style.display = 'block';
+    warnEl.textContent = markets.length > 1
+      ? 'Al menos uno de los equilibrios cae fuera del primer cuadrante. Revise si el shock y los parámetros son económicamente coherentes.'
+      : 'El equilibrio calculado cae fuera del primer cuadrante. Revise si la configuración elegida es económicamente razonable.';
+  } else {
+    warnEl.style.display = 'none';
+  }
+}
 
 function activateTab(targetId) {
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.target === targetId));
@@ -817,6 +879,15 @@ document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => activateTab(btn.dataset.target));
 });
 
+// ── Núcleo económico ──────────────────────────────────────────────
+// Convención del objeto de parámetros (p):
+//   Parámetros α (demanda): a0 (intercepto), a1 (precio propio, negativo),
+//     a2·Y (ingreso), a3·Ps (sustituto), a4·Pc (complemento), a5·Exp (expectativas)
+//   Parámetros β (oferta): b0 (intercepto), b1 (precio propio, positivo),
+//     b2·Pi (insumo), b3·Tec (tecnología), b4·N (número de oferentes)
+//   Interceptos efectivos calculados: A (demanda), C (oferta)
+//   Pendientes efectivas (ambas positivas): B = −a1, D = b1
+//   Resultados calculados: eqP (P* de equilibrio), eqQ (Q* de equilibrio)
 function computeMarket(p) {
   const A = p.a0 + p.a2*p.Y + p.a3*p.Ps + p.a4*p.Pc + p.a5*p.Exp;
   const B = -p.a1;
@@ -1011,10 +1082,9 @@ function renderElastRow(idVal, idClass, v, classifier) {
   }
 }
 
-function buildInterpText(e) {
+function buildInterpText(e, atEquilibrium) {
   if (!e) return '';
-  const atEq = !Number.isFinite(parseFloat($('simEvalP') ? $('simEvalP').value : ''));
-  const pLabel = atEq ? `P* = ${fmt(e.P,2)} (equilibrio)` : `P = ${fmt(e.P,2)} (punto elegido)`;
+  const pLabel = atEquilibrium ? `P* = ${fmt(e.P,2)} (equilibrio)` : `P = ${fmt(e.P,2)} (punto elegido)`;
   const qdLabel = `Qd(${fmt(e.P,2)}) = ${fmt(e.Qd,2)}`;
   const qsLabel = `Qs(${fmt(e.P,2)}) = ${fmt(e.Qs,2)}`;
   const epdAbs = Math.abs(e.Epd);
@@ -1027,14 +1097,14 @@ function buildInterpText(e) {
     `Epo = ${fmt(e.Epo,2)}: oferta <strong>${epoDesc}</strong>.`;
 }
 
-function renderSimElasticities(e) {
+function renderSimElasticities(e, atEquilibrium) {
   renderElastRow('simEpd',  'simEpdClass',  e ? e.Epd  : null, elastClass.Epd);
   renderElastRow('simEid',  'simEidClass',  e ? e.Eid  : null, elastClass.Eid);
   renderElastRow('simEcdS', 'simEcdSClass', e ? e.EcdS : null, elastClass.Ecd);
   renderElastRow('simEcdC', 'simEcdCClass', e ? e.EcdC : null, elastClass.Ecd);
   renderElastRow('simEpo',  'simEpoClass',  e ? e.Epo  : null, elastClass.Epo);
   const note = $('simElastInterp');
-  if (note) note.innerHTML = e ? buildInterpText(e) : '';
+  if (note) note.innerHTML = e ? buildInterpText(e, atEquilibrium) : '';
 }
 
 function renderCmpElasticities(e0, e1) {
@@ -1069,12 +1139,7 @@ function populateDefaults() {
 }
 
 function updateSim() {
-  const p = {
-    a0:val('sim_a0'), a1:val('sim_a1'), a2:val('sim_a2'), a3:val('sim_a3'), a4:val('sim_a4'), a5:val('sim_a5'),
-    Y:val('sim_Y'), Ps:val('sim_Ps'), Pc:val('sim_Pc'), Exp:val('sim_Exp'),
-    b0:val('sim_b0'), b1:val('sim_b1'), b2:val('sim_b2'), b3:val('sim_b3'), b4:val('sim_b4'),
-    Pi:val('sim_Pi'), Tec:val('sim_Tec'), N:val('sim_N')
-  };
+  const p = readParams('sim');
   const m = computeMarket(p);
 
   $('simDemandEq').textContent = `Qd = ${fmt(m.A)} - ${fmt(m.B)}·P`;
@@ -1087,16 +1152,7 @@ function updateSim() {
   $('baseP').textContent = fmt(m.eqP);
   $('baseQ').textContent = fmt(m.eqQ);
 
-  const warn = $('simWarning');
-  if (!Number.isFinite(m.eqP) || !Number.isFinite(m.eqQ)) {
-    warn.style.display = 'block';
-    warn.textContent = 'No hay equilibrio único con los parámetros actuales. Revise pendientes y el denominador (B + D).';
-  } else if (m.eqP < 0 || m.eqQ < 0) {
-    warn.style.display = 'block';
-    warn.textContent = 'El equilibrio calculado cae fuera del primer cuadrante. Revise si la configuración elegida es económicamente razonable.';
-  } else {
-    warn.style.display = 'none';
-  }
+  showEquilWarning($('simWarning'), [m]);
 
   svgChart($('simChart'), [
     {type:'demand', market:m, color:'#355cde'},
@@ -1125,16 +1181,12 @@ function updateSim() {
     }
   }
 
-  renderSimElasticities(computeElasticities(p, m, evalP));
+  const atEquil = !Number.isFinite(evalPRaw);
+  renderSimElasticities(computeElasticities(p, m, evalP), atEquil);
 }
 
 function updateCmp() {
-  const base = {
-    a0:val('cmp_a0'), a1:val('cmp_a1'), a2:val('cmp_a2'), a3:val('cmp_a3'), a4:val('cmp_a4'), a5:val('cmp_a5'),
-    Y:val('cmp_Y'), Ps:val('cmp_Ps'), Pc:val('cmp_Pc'), Exp:val('cmp_Exp'),
-    b0:val('cmp_b0'), b1:val('cmp_b1'), b2:val('cmp_b2'), b3:val('cmp_b3'), b4:val('cmp_b4'),
-    Pi:val('cmp_Pi'), Tec:val('cmp_Tec'), N:val('cmp_N')
-  };
+  const base = readParams('cmp');
   const post = {
     ...base,
     Y:val('cmp_Y_post'), Ps:val('cmp_Ps_post'), Pc:val('cmp_Pc_post'), Exp:val('cmp_Exp_post'),
@@ -1162,16 +1214,7 @@ function updateCmp() {
     $('flag_' + name).textContent = oldv === newv ? '—' : '✓ cambió';
   });
 
-  const warn = $('cmpWarning');
-  if (!Number.isFinite(mb.eqP) || !Number.isFinite(mp.eqP)) {
-    warn.style.display = 'block';
-    warn.textContent = 'No hay equilibrio único en al menos uno de los escenarios. Revise pendientes y parámetros.';
-  } else if (mb.eqP < 0 || mb.eqQ < 0 || mp.eqP < 0 || mp.eqQ < 0) {
-    warn.style.display = 'block';
-    warn.textContent = 'Al menos uno de los equilibrios cae fuera del primer cuadrante. Revise si el shock y los parámetros son económicamente coherentes.';
-  } else {
-    warn.style.display = 'none';
-  }
+  showEquilWarning($('cmpWarning'), [mb, mp]);
 
   svgChart($('cmpChart'), [
     {type:'demand', market:mb, color:'#355cde'},
