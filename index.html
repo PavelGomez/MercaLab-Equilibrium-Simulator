@@ -454,6 +454,19 @@ hr.sep {
     <div class="card">
       <h2>Simulador de equilibrio único</h2>
       <p class="note">Use esta pestaña para analizar un mercado en un solo momento. Modifique parámetros o variables exógenas y observe cómo cambian las ecuaciones y el equilibrio.</p>
+      <!-- ── Casos configurables ──────────────────────────────────── -->
+      <div style="margin-bottom:14px;">
+        <span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;">Cargar caso:</span>
+        <div class="actions" style="margin-top:6px;">
+          <button onclick="applyCase('ingreso_alza')">Caso 1 — Alza del ingreso</button>
+          <button onclick="applyCase('insumo_alza')">Caso 2 — Alza del insumo</button>
+        </div>
+      </div>
+      <div id="caseActivePanel" class="callout" style="display:none;margin-bottom:14px;">
+        <strong id="caseActiveTitle" style="display:block;margin-bottom:6px;"></strong>
+        <span id="caseActiveContext" style="font-size:13px;"></span>
+        <div id="caseActiveInterp" style="margin-top:6px;font-size:13px;color:var(--muted);font-style:italic;"></div>
+      </div>
       <div class="two-cols">
         <div>
           <div class="table-title">Parámetros de demanda</div>
@@ -828,6 +841,45 @@ const defaults = {
   }
 };
 
+// ── Biblioteca de casos configurables ─────────────────────────────
+// Esquema por caso: id, title, market, context, interpretation,
+//   params (parámetros base completos), shock (exógenas que cambian post).
+// Para agregar un tercer caso: copiar un bloque y editar los valores relevantes.
+const caseLibrary = [
+  {
+    id: 'ingreso_alza',
+    title: 'Alza del ingreso disponible',
+    market: 'Ropa (bien normal)',
+    context: 'El mercado laboral mejora y el ingreso real de los hogares sube de 100 a 130. ' +
+             'Con α₂ = 0.5, la demanda se desplaza a la derecha.',
+    interpretation: 'Predicción: si la oferta no cambia, P* y Q* tienden a subir. ' +
+                    'El Comparador ya tiene cargado el shock (Y: 100 → 130).',
+    params: {
+      a0: 120, a1: -2, a2: 0.5, a3: 0.3, a4: -0.2, a5: 0,
+      Y: 100, Ps: 50, Pc: 30, Exp: 0,
+      b0: -30, b1: 3, b2: -0.4, b3: 0.2, b4: 0.5,
+      Pi: 50, Tec: 100, N: 20
+    },
+    shock: { Y: 130 }
+  },
+  {
+    id: 'insumo_alza',
+    title: 'Alza del precio del insumo',
+    market: 'Pan (insumo: harina)',
+    context: 'El precio de la harina sube de 50 a 80 por una disrupción en la cadena de suministro. ' +
+             'Con β₂ = -0.4, la oferta se contrae.',
+    interpretation: 'Predicción: si la demanda no cambia, P* tiende a subir y Q* a bajar. ' +
+                    'El Comparador ya tiene cargado el shock (Pi: 50 → 80).',
+    params: {
+      a0: 120, a1: -2, a2: 0.5, a3: 0.3, a4: -0.2, a5: 0,
+      Y: 100, Ps: 50, Pc: 30, Exp: 0,
+      b0: -30, b1: 3, b2: -0.4, b3: 0.2, b4: 0.5,
+      Pi: 50, Tec: 100, N: 20
+    },
+    shock: { Pi: 80 }
+  }
+];
+
 const $ = (id) => document.getElementById(id);
 const fmt = (n, d=2) => Number.isFinite(n) ? Number(n).toFixed(d).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') : '—';
 const val = (id) => parseFloat($(id).value);
@@ -867,6 +919,42 @@ function showEquilWarning(warnEl, markets) {
   } else {
     warnEl.style.display = 'none';
   }
+}
+
+// Carga un caso desde caseLibrary en el formulario y muestra su contexto narrativo
+function applyCase(caseId) {
+  const c = caseLibrary.find(c => c.id === caseId);
+  if (!c) return;
+
+  // Parámetros base → Simulador y escenario base del Comparador
+  Object.entries(c.params).forEach(([k, v]) => {
+    if ($('sim_' + k)) $('sim_' + k).value = v;
+    if ($('cmp_' + k)) $('cmp_' + k).value = v;
+  });
+
+  // Inicializa campos post-shock con los valores base de las exógenas
+  ['Y','Ps','Pc','Exp','Pi','Tec','N'].forEach(k => {
+    if ($('cmp_' + k + '_post') && c.params[k] !== undefined)
+      $('cmp_' + k + '_post').value = c.params[k];
+  });
+
+  // Aplica el shock definido (solo las exógenas que cambian)
+  if (c.shock) {
+    Object.entries(c.shock).forEach(([k, v]) => {
+      if ($('cmp_' + k + '_post')) $('cmp_' + k + '_post').value = v;
+    });
+  }
+
+  // Muestra el panel de contexto narrativo
+  const panel = $('caseActivePanel');
+  if (panel) panel.style.display = 'block';
+  if ($('caseActiveTitle')) $('caseActiveTitle').textContent = c.title + ' — ' + c.market;
+  if ($('caseActiveContext')) $('caseActiveContext').textContent = c.context;
+  if ($('caseActiveInterp')) $('caseActiveInterp').textContent = c.interpretation;
+
+  if ($('simEvalP')) $('simEvalP').value = '';
+  updateSim();
+  updateCmp();
 }
 
 function activateTab(targetId) {
@@ -1272,6 +1360,7 @@ $('simEvalPReset').addEventListener('click', () => { $('simEvalP').value = ''; u
 $('sim_reset').addEventListener('click', () => {
   Object.entries(defaults.sim).forEach(([k, v]) => { if ($('sim_' + k)) $('sim_' + k).value = v; });
   $('simEvalP').value = '';
+  if ($('caseActivePanel')) $('caseActivePanel').style.display = 'none';
   updateSim();
 });
 $('cmp_reset').addEventListener('click', () => {
