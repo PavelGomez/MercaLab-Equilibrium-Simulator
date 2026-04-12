@@ -571,6 +571,7 @@ hr.sep {
         </table>
         <div style="font-size:12px;color:var(--muted);margin-top:6px;">Qd(P) = A − B·P  |  Qs(P) = C + D·P  |  Las elasticidades de demanda (Epd, Eid, Ecd) y de oferta (Epo) son puntuales: dependen del precio P y de la cantidad resultante en ese punto de la función.</div>
         <div id="simElastInterp" class="elast-interp"></div>
+        <div id="simElastApplied" style="margin-top:8px;"></div>
       </div>
 
       <div style="margin-top:16px;">
@@ -1192,6 +1193,69 @@ function buildInterpText(e, atEquilibrium) {
     `Epo = ${fmt(e.Epo,2)}: oferta <strong>${epoDesc}</strong>.`;
 }
 
+// Lectura aplicada de elasticidad:
+// traduce los valores de computeElasticities en implicaciones económicas concretas.
+// NO repite valores numéricos ni etiquetas de clasificación ya mostrados en la tabla.
+function renderElasticityApplied(e) {
+  const el = $('simElastApplied');
+  if (!el) return;
+  if (!e) { el.innerHTML = ''; return; }
+
+  const epdAbs = Math.abs(e.Epd);
+
+  // A. Sensibilidad al precio
+  const sensText = epdAbs > 2   ? 'La demanda es muy sensible al precio en este punto.'
+                 : epdAbs > 1   ? 'La demanda es moderadamente sensible al precio en este punto.'
+                 : epdAbs > 0.5 ? 'La demanda responde poco al precio en este punto.'
+                 :                'La demanda es muy poco sensible al precio en este punto.';
+
+  // B. Efecto sobre ingreso total (P × Qd)
+  const trText = epdAbs > 1 + 1e-9 ? 'Una subida de precio en este tramo tiende a reducir el ingreso total.'
+               : epdAbs < 1 - 1e-9 ? 'Una subida de precio en este tramo tiende a aumentar el ingreso total.'
+               :                     'El ingreso total es aproximadamente insensible a pequeños cambios de precio en este punto.';
+
+  // C. Tipo de bien desde Eid
+  const eidText = e.Eid > 2 ? 'El bien se comporta como bien de lujo: la demanda crece más que proporcionalmente al ingreso.'
+                : e.Eid > 0 ? 'El bien se comporta como bien normal: más ingreso eleva la demanda.'
+                : e.Eid < 0 ? 'El bien se comporta como bien inferior: más ingreso reduce la demanda.'
+                :              'El ingreso apenas mueve la demanda en este punto.';
+
+  // D. Bienes relacionados desde EcdS y EcdC
+  const ecdSAbs = Math.abs(e.EcdS), ecdCAbs = Math.abs(e.EcdC);
+  const relParts = [];
+  if (ecdSAbs > 0.1)
+    relParts.push(e.EcdS > 0
+      ? 'El sustituto actúa como tal: su precio jalona demanda hacia este bien.'
+      : 'La relación con el bien sustituto es débil o atípica aquí.');
+  if (ecdCAbs > 0.1)
+    relParts.push(e.EcdC < 0
+      ? 'El complemento actúa como tal: su encarecimiento reduciría la demanda de este bien.'
+      : 'La relación con el bien complemento es atípica aquí.');
+  const relText = relParts.length
+    ? relParts.join(' ')
+    : 'La relación con los bienes relacionados es débil en este punto.';
+
+  // E. Implicación aplicada breve
+  const implText = epdAbs > 1
+    ? 'Alzas de precio en este tramo reducen ingreso total y volumen simultáneamente.'
+    : epdAbs < 1
+      ? 'Un impuesto o alza de precio puede trasladarse al consumidor con menor impacto en cantidades.'
+      : 'En este punto, precio e ingreso total están en equilibrio: pequeños cambios de precio tienen efecto neutro sobre el ingreso.';
+
+  const row = (label, text) =>
+    `<div style="padding:5px 0;font-size:13px;line-height:1.6;border-bottom:1px solid var(--line);">` +
+    `<span style="font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;` +
+    `letter-spacing:.05em;">${label}</span><br>${text}</div>`;
+
+  el.innerHTML =
+    `<div class="table-title" style="margin-bottom:6px;">Lectura aplicada</div>` +
+    row('Sensibilidad al precio', sensText) +
+    row('Ingreso total', trText) +
+    row('Tipo de bien', eidText) +
+    row('Bienes relacionados', relText) +
+    row('Implicación', implText);
+}
+
 function renderSimElasticities(e, atEquilibrium) {
   renderElastRow('simEpd',  'simEpdClass',  e ? e.Epd  : null, elastClass.Epd);
   renderElastRow('simEid',  'simEidClass',  e ? e.Eid  : null, elastClass.Eid);
@@ -1389,6 +1453,7 @@ function updateSim() {
       evalWarn.style.display = 'block';
       evalWarn.textContent = `P = ${fmt(evalP,2)} produce Qd = ${fmt(Qd_eval,2)} o Qs = ${fmt(Qs_eval,2)}: al menos una cantidad no es positiva. Las elasticidades no son válidas en este punto. Ingresa un precio en el rango donde ambas curvas tienen cantidad positiva.`;
       renderSimElasticities(null);
+      renderElasticityApplied(null);
       return;
     } else {
       evalWarn.style.display = 'none';
@@ -1396,7 +1461,9 @@ function updateSim() {
   }
 
   const atEquil = !Number.isFinite(evalPRaw);
-  renderSimElasticities(computeElasticities(p, m, evalP), atEquil);
+  const e = computeElasticities(p, m, evalP);
+  renderSimElasticities(e, atEquil);
+  renderElasticityApplied(e);
 }
 
 function updateCmp() {
