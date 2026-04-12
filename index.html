@@ -454,6 +454,26 @@ hr.sep {
     <div class="card">
       <h2>Simulador de equilibrio único</h2>
       <p class="note">Use esta pestaña para analizar un mercado en un solo momento. Modifique parámetros o variables exógenas y observe cómo cambian las ecuaciones y el equilibrio.</p>
+      <!-- ── Modo docente ─────────────────────────────────────────── -->
+      <div style="margin-bottom:14px;padding:8px 12px;border-radius:10px;background:var(--soft);border:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);">Modo:</span>
+        <button id="teachingModePractice" onclick="applyTeachingMode('practice')" style="font-size:12px;font-weight:700;">Práctica</button>
+        <button id="teachingModeEval"     onclick="applyTeachingMode('evaluation')" style="font-size:12px;font-weight:400;">Evaluación</button>
+        <span id="teachingModeLabel" style="font-size:12px;color:var(--muted);margin-left:4px;">Modo práctica activo</span>
+      </div>
+      <!-- ── Casos configurables ──────────────────────────────────── -->
+      <div style="margin-bottom:14px;">
+        <span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;">Cargar caso:</span>
+        <div class="actions" style="margin-top:6px;">
+          <button onclick="applyCase('ingreso_alza')">Caso 1 — Alza del ingreso</button>
+          <button onclick="applyCase('insumo_alza')">Caso 2 — Alza del insumo</button>
+        </div>
+      </div>
+      <div id="caseActivePanel" class="callout" style="display:none;margin-bottom:14px;">
+        <strong id="caseActiveTitle" style="display:block;margin-bottom:6px;"></strong>
+        <span id="caseActiveContext" style="font-size:13px;"></span>
+        <div id="caseActiveInterp" style="margin-top:6px;font-size:13px;color:var(--muted);font-style:italic;"></div>
+      </div>
       <div class="two-cols">
         <div>
           <div class="table-title">Parámetros de demanda</div>
@@ -509,6 +529,10 @@ hr.sep {
         <div class="kpi"><div class="label">Precio de equilibrio</div><div id="simP" class="value"></div></div>
         <div class="kpi"><div class="label">Cantidad de equilibrio</div><div id="simQ" class="value"></div></div>
       </div>
+      <!-- ── Panel de mecanismo del caso ──────────────────────────── -->
+      <div id="simMechanismPanel" style="display:none;margin-top:14px;"></div>
+      <!-- ── Panel de reespecificación analítica ──────────────────── -->
+      <div id="simRespecPanel" style="margin-top:14px;"></div>
       <!-- PANEL ELASTICIDADES: Simulador -->
       <div style="margin-top:14px;">
         <div class="table-title">Elasticidades puntuales</div>
@@ -554,6 +578,7 @@ hr.sep {
         </table>
         <div style="font-size:12px;color:var(--muted);margin-top:6px;">Qd(P) = A − B·P  |  Qs(P) = C + D·P  |  Las elasticidades de demanda (Epd, Eid, Ecd) y de oferta (Epo) son puntuales: dependen del precio P y de la cantidad resultante en ese punto de la función.</div>
         <div id="simElastInterp" class="elast-interp"></div>
+        <div id="simElastApplied" style="margin-top:8px;"></div>
       </div>
 
       <div style="margin-top:16px;">
@@ -801,11 +826,187 @@ const guidedCases = [
   }
 ];
 
-const defaults = {"sim": {"a0": 120, "a1": -2, "a2": 0.5, "a3": 0.3, "a4": -0.2, "a5": 0, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -30, "b1": 3, "b2": -0.4, "b3": 0.2, "b4": 0.5, "Pi": 50, "Tec": 100, "N": 20}, "cmp": {"a0": -10, "a1": -2, "a2": 1, "a3": 1, "a4": -1, "a5": 2, "Y": 100, "Ps": 50, "Pc": 30, "Exp": 0, "b0": -85, "b1": 3, "b2": -1, "b3": 1, "b4": 1, "Pi": 50, "Tec": 100, "N": 20, "Y_post": 100, "Ps_post": 50, "Pc_post": 30, "Exp_post": 0, "Pi_post": 50, "Tec_post": 100, "N_post": 20}};
+const defaults = {
+  // ── Simulador (mercado único) ──────────────────────────────────
+  sim: {
+    // Parámetros α (demanda): a1 es negativo por convención (pendiente de demanda)
+    a0: 120, a1: -2, a2: 0.5, a3: 0.3, a4: -0.2, a5: 0,
+    // Variables exógenas de demanda
+    Y: 100, Ps: 50, Pc: 30, Exp: 0,
+    // Parámetros β (oferta): b1 positivo (pendiente de oferta)
+    b0: -30, b1: 3, b2: -0.4, b3: 0.2, b4: 0.5,
+    // Variables exógenas de oferta
+    Pi: 50, Tec: 100, N: 20
+  },
+  // ── Comparador (antes / después de shock) ─────────────────────
+  cmp: {
+    // Parámetros estructurales — solo cambian las exógenas en el shock
+    a0: -10, a1: -2, a2: 1, a3: 1, a4: -1, a5: 2,
+    // Variables exógenas de demanda (base)
+    Y: 100, Ps: 50, Pc: 30, Exp: 0,
+    b0: -85, b1: 3, b2: -1, b3: 1, b4: 1,
+    // Variables exógenas de oferta (base)
+    Pi: 50, Tec: 100, N: 20,
+    // Variables exógenas post-shock (únicamente exógenas; los parámetros no cambian)
+    Y_post: 100, Ps_post: 50, Pc_post: 30, Exp_post: 0,
+    Pi_post: 50, Tec_post: 100, N_post: 20
+  }
+};
+
+// ── Biblioteca de casos configurables ─────────────────────────────
+// Esquema por caso: id, title, market, context, interpretation,
+//   params (parámetros base completos), shock (exógenas que cambian post).
+// Para agregar un tercer caso: copiar un bloque y editar los valores relevantes.
+const caseLibrary = [
+  {
+    id: 'ingreso_alza',
+    title: 'Alza del ingreso disponible',
+    market: 'Ropa (bien normal)',
+    context: 'El mercado laboral mejora y el ingreso real de los hogares sube de 100 a 130. ' +
+             'Con α₂ = 0.5, la demanda se desplaza a la derecha.',
+    interpretation: 'Predicción: si la oferta no cambia, P* y Q* tienden a subir. ' +
+                    'El Comparador ya tiene cargado el shock (Y: 100 → 130).',
+    params: {
+      a0: 120, a1: -2, a2: 0.5, a3: 0.3, a4: -0.2, a5: 0,
+      Y: 100, Ps: 50, Pc: 30, Exp: 0,
+      b0: -30, b1: 3, b2: -0.4, b3: 0.2, b4: 0.5,
+      Pi: 50, Tec: 100, N: 20
+    },
+    shock: { Y: 130 }
+  },
+  {
+    id: 'insumo_alza',
+    title: 'Alza del precio del insumo',
+    market: 'Pan (insumo: harina)',
+    context: 'El precio de la harina sube de 50 a 80 por una disrupción en la cadena de suministro. ' +
+             'Con β₂ = -0.4, la oferta se contrae.',
+    interpretation: 'Predicción: si la demanda no cambia, P* tiende a subir y Q* a bajar. ' +
+                    'El Comparador ya tiene cargado el shock (Pi: 50 → 80).',
+    params: {
+      a0: 120, a1: -2, a2: 0.5, a3: 0.3, a4: -0.2, a5: 0,
+      Y: 100, Ps: 50, Pc: 30, Exp: 0,
+      b0: -30, b1: 3, b2: -0.4, b3: 0.2, b4: 0.5,
+      Pi: 50, Tec: 100, N: 20
+    },
+    shock: { Pi: 80 }
+  }
+];
+
+let activeCaseId = null;   // ID del caso activo en el simulador; null cuando no hay caso cargado
+let teachingMode = 'practice'; // 'practice' | 'evaluation' — controla visibilidad de paneles de ayuda
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n, d=2) => Number.isFinite(n) ? Number(n).toFixed(d).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') : '—';
 const val = (id) => parseFloat($(id).value);
+
+// Lee todos los parámetros y variables exógenas del formulario para el prefijo dado ("sim" o "cmp")
+function readParams(prefix) {
+  const p = prefix + '_';
+  return {
+    // Parámetros estructurales α (demanda)
+    a0: val(p+'a0'), a1: val(p+'a1'), a2: val(p+'a2'),
+    a3: val(p+'a3'), a4: val(p+'a4'), a5: val(p+'a5'),
+    // Variables exógenas de demanda
+    Y: val(p+'Y'), Ps: val(p+'Ps'), Pc: val(p+'Pc'), Exp: val(p+'Exp'),
+    // Parámetros estructurales β (oferta)
+    b0: val(p+'b0'), b1: val(p+'b1'), b2: val(p+'b2'),
+    b3: val(p+'b3'), b4: val(p+'b4'),
+    // Variables exógenas de oferta
+    Pi: val(p+'Pi'), Tec: val(p+'Tec'), N: val(p+'N')
+  };
+}
+
+// Muestra u oculta la advertencia de validación de equilibrio para uno o más resultados de mercado
+function showEquilWarning(warnEl, markets) {
+  if (!warnEl) return;
+  const noEq    = markets.some(m => !Number.isFinite(m.eqP) || !Number.isFinite(m.eqQ));
+  const outOfQ1 = !noEq && markets.some(m => m.eqP < 0 || m.eqQ < 0);
+  if (noEq) {
+    warnEl.style.display = 'block';
+    warnEl.textContent = markets.length > 1
+      ? 'No hay equilibrio único en al menos uno de los escenarios. Revise pendientes y parámetros.'
+      : 'No hay equilibrio único con los parámetros actuales. Revise pendientes y el denominador (B + D).';
+  } else if (outOfQ1) {
+    warnEl.style.display = 'block';
+    warnEl.textContent = markets.length > 1
+      ? 'Al menos uno de los equilibrios cae fuera del primer cuadrante. Revise si el shock y los parámetros son económicamente coherentes.'
+      : 'El equilibrio calculado cae fuera del primer cuadrante. Revise si la configuración elegida es económicamente razonable.';
+  } else {
+    warnEl.style.display = 'none';
+  }
+}
+
+// Modo docente: alterna visibilidad de paneles de ayuda analítica.
+// No altera cálculos ni gráfico; solo controla la exposición de rutas analíticas.
+function applyTeachingMode(mode) {
+  teachingMode = mode;
+  const evalMode = mode === 'evaluation';
+
+  // Paneles cuyo display no es reescrito por sus render functions en cada ciclo:
+  // se controlan directamente aquí.
+  ['simRespecPanel', 'simElastApplied', 'simElastInterp'].forEach(id => {
+    const el = $(id);
+    if (el) el.style.display = evalMode ? 'none' : '';
+  });
+
+  // Interpretación del caso: ocultar en evaluación, conservar título y contexto
+  const interp = $('caseActiveInterp');
+  if (interp) interp.style.display = evalMode ? 'none' : '';
+
+  // Etiqueta y peso de botones
+  const label = $('teachingModeLabel');
+  if (label) {
+    label.textContent = evalMode ? 'Modo evaluación activo' : 'Modo práctica activo';
+    label.style.color  = evalMode ? '#b91c1c' : 'var(--muted)';
+  }
+  [['teachingModePractice', false], ['teachingModeEval', true]].forEach(([id, isEval]) => {
+    const btn = $(id);
+    if (btn) btn.style.fontWeight = (evalMode === isEval) ? '700' : '400';
+  });
+
+  // renderMechanismPanel comprueba teachingMode internamente; re-renderizar para aplicarlo
+  updateSim();
+}
+
+// Carga un caso desde caseLibrary en el formulario y muestra su contexto narrativo
+function applyCase(caseId) {
+  const c = caseLibrary.find(c => c.id === caseId);
+  if (!c) return;
+  activeCaseId = caseId;
+
+  // Parámetros base → Simulador y escenario base del Comparador
+  Object.entries(c.params).forEach(([k, v]) => {
+    if ($('sim_' + k)) $('sim_' + k).value = v;
+    if ($('cmp_' + k)) $('cmp_' + k).value = v;
+  });
+
+  // Inicializa campos post-shock con los valores base de las exógenas
+  ['Y','Ps','Pc','Exp','Pi','Tec','N'].forEach(k => {
+    if ($('cmp_' + k + '_post') && c.params[k] !== undefined)
+      $('cmp_' + k + '_post').value = c.params[k];
+  });
+
+  // Aplica el shock definido (solo las exógenas que cambian)
+  if (c.shock) {
+    Object.entries(c.shock).forEach(([k, v]) => {
+      if ($('cmp_' + k + '_post')) $('cmp_' + k + '_post').value = v;
+    });
+  }
+
+  // Muestra el panel de contexto narrativo
+  const panel = $('caseActivePanel');
+  if (panel) panel.style.display = 'block';
+  if ($('caseActiveTitle')) $('caseActiveTitle').textContent = c.title + ' — ' + c.market;
+  if ($('caseActiveContext')) $('caseActiveContext').textContent = c.context;
+  if ($('caseActiveInterp')) {
+    $('caseActiveInterp').textContent = c.interpretation;
+    $('caseActiveInterp').style.display = teachingMode === 'evaluation' ? 'none' : '';
+  }
+
+  if ($('simEvalP')) $('simEvalP').value = '';
+  updateSim();
+  updateCmp();
+}
 
 function activateTab(targetId) {
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.target === targetId));
@@ -817,6 +1018,15 @@ document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => activateTab(btn.dataset.target));
 });
 
+// ── Núcleo económico ──────────────────────────────────────────────
+// Convención del objeto de parámetros (p):
+//   Parámetros α (demanda): a0 (intercepto), a1 (precio propio, negativo),
+//     a2·Y (ingreso), a3·Ps (sustituto), a4·Pc (complemento), a5·Exp (expectativas)
+//   Parámetros β (oferta): b0 (intercepto), b1 (precio propio, positivo),
+//     b2·Pi (insumo), b3·Tec (tecnología), b4·N (número de oferentes)
+//   Interceptos efectivos calculados: A (demanda), C (oferta)
+//   Pendientes efectivas (ambas positivas): B = −a1, D = b1
+//   Resultados calculados: eqP (P* de equilibrio), eqQ (Q* de equilibrio)
 function computeMarket(p) {
   const A = p.a0 + p.a2*p.Y + p.a3*p.Ps + p.a4*p.Pc + p.a5*p.Exp;
   const B = -p.a1;
@@ -1011,10 +1221,9 @@ function renderElastRow(idVal, idClass, v, classifier) {
   }
 }
 
-function buildInterpText(e) {
+function buildInterpText(e, atEquilibrium) {
   if (!e) return '';
-  const atEq = !Number.isFinite(parseFloat($('simEvalP') ? $('simEvalP').value : ''));
-  const pLabel = atEq ? `P* = ${fmt(e.P,2)} (equilibrio)` : `P = ${fmt(e.P,2)} (punto elegido)`;
+  const pLabel = atEquilibrium ? `P* = ${fmt(e.P,2)} (equilibrio)` : `P = ${fmt(e.P,2)} (punto elegido)`;
   const qdLabel = `Qd(${fmt(e.P,2)}) = ${fmt(e.Qd,2)}`;
   const qsLabel = `Qs(${fmt(e.P,2)}) = ${fmt(e.Qs,2)}`;
   const epdAbs = Math.abs(e.Epd);
@@ -1027,14 +1236,77 @@ function buildInterpText(e) {
     `Epo = ${fmt(e.Epo,2)}: oferta <strong>${epoDesc}</strong>.`;
 }
 
-function renderSimElasticities(e) {
+// Lectura aplicada de elasticidad:
+// traduce los valores de computeElasticities en implicaciones económicas concretas.
+// NO repite valores numéricos ni etiquetas de clasificación ya mostrados en la tabla.
+function renderElasticityApplied(e) {
+  const el = $('simElastApplied');
+  if (!el) return;
+  if (!e) { el.innerHTML = ''; return; }
+
+  const epdAbs = Math.abs(e.Epd);
+
+  // A. Sensibilidad al precio
+  const sensText = epdAbs > 2   ? 'La demanda es muy sensible al precio en este punto.'
+                 : epdAbs > 1   ? 'La demanda es moderadamente sensible al precio en este punto.'
+                 : epdAbs > 0.5 ? 'La demanda responde poco al precio en este punto.'
+                 :                'La demanda es muy poco sensible al precio en este punto.';
+
+  // B. Efecto sobre ingreso total (P × Qd)
+  const trText = epdAbs > 1 + 1e-9 ? 'Una subida de precio en este tramo tiende a reducir el ingreso total.'
+               : epdAbs < 1 - 1e-9 ? 'Una subida de precio en este tramo tiende a aumentar el ingreso total.'
+               :                     'El ingreso total es aproximadamente insensible a pequeños cambios de precio en este punto.';
+
+  // C. Tipo de bien desde Eid
+  const eidText = e.Eid > 2 ? 'El bien se comporta como bien de lujo: la demanda crece más que proporcionalmente al ingreso.'
+                : e.Eid > 0 ? 'El bien se comporta como bien normal: más ingreso eleva la demanda.'
+                : e.Eid < 0 ? 'El bien se comporta como bien inferior: más ingreso reduce la demanda.'
+                :              'El ingreso apenas mueve la demanda en este punto.';
+
+  // D. Bienes relacionados desde EcdS y EcdC
+  const ecdSAbs = Math.abs(e.EcdS), ecdCAbs = Math.abs(e.EcdC);
+  const relParts = [];
+  if (ecdSAbs > 0.1)
+    relParts.push(e.EcdS > 0
+      ? 'El sustituto actúa como tal: su precio jalona demanda hacia este bien.'
+      : 'La relación con el bien sustituto es débil o atípica aquí.');
+  if (ecdCAbs > 0.1)
+    relParts.push(e.EcdC < 0
+      ? 'El complemento actúa como tal: su encarecimiento reduciría la demanda de este bien.'
+      : 'La relación con el bien complemento es atípica aquí.');
+  const relText = relParts.length
+    ? relParts.join(' ')
+    : 'La relación con los bienes relacionados es débil en este punto.';
+
+  // E. Implicación aplicada breve
+  const implText = epdAbs > 1
+    ? 'Alzas de precio en este tramo reducen ingreso total y volumen simultáneamente.'
+    : epdAbs < 1
+      ? 'Un impuesto o alza de precio puede trasladarse al consumidor con menor impacto en cantidades.'
+      : 'En este punto, precio e ingreso total están en equilibrio: pequeños cambios de precio tienen efecto neutro sobre el ingreso.';
+
+  const row = (label, text) =>
+    `<div style="padding:5px 0;font-size:13px;line-height:1.6;border-bottom:1px solid var(--line);">` +
+    `<span style="font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;` +
+    `letter-spacing:.05em;">${label}</span><br>${text}</div>`;
+
+  el.innerHTML =
+    `<div class="table-title" style="margin-bottom:6px;">Lectura aplicada</div>` +
+    row('Sensibilidad al precio', sensText) +
+    row('Ingreso total', trText) +
+    row('Tipo de bien', eidText) +
+    row('Bienes relacionados', relText) +
+    row('Implicación', implText);
+}
+
+function renderSimElasticities(e, atEquilibrium) {
   renderElastRow('simEpd',  'simEpdClass',  e ? e.Epd  : null, elastClass.Epd);
   renderElastRow('simEid',  'simEidClass',  e ? e.Eid  : null, elastClass.Eid);
   renderElastRow('simEcdS', 'simEcdSClass', e ? e.EcdS : null, elastClass.Ecd);
   renderElastRow('simEcdC', 'simEcdCClass', e ? e.EcdC : null, elastClass.Ecd);
   renderElastRow('simEpo',  'simEpoClass',  e ? e.Epo  : null, elastClass.Epo);
   const note = $('simElastInterp');
-  if (note) note.innerHTML = e ? buildInterpText(e) : '';
+  if (note) note.innerHTML = e ? buildInterpText(e, atEquilibrium) : '';
 }
 
 function renderCmpElasticities(e0, e1) {
@@ -1059,6 +1331,123 @@ function renderCmpElasticities(e0, e1) {
   });
 }
 
+// Panel de mecanismo del caso activo:
+// muestra la secuencia causal (shock → curva → equilibrio) solo cuando hay un caso cargado.
+function renderMechanismPanel(p, m) {
+  const el = $('simMechanismPanel');
+  if (!el) return;
+
+  if (!activeCaseId || teachingMode === 'evaluation') { el.style.display = 'none'; el.innerHTML = ''; return; }
+
+  const c = caseLibrary.find(c => c.id === activeCaseId);
+  if (!c || !c.shock) { el.style.display = 'none'; el.innerHTML = ''; return; }
+
+  const demandKeys = new Set(['Y','Ps','Pc','Exp']);
+  const [k, vPost] = Object.entries(c.shock)[0];
+  const isDemand   = demandKeys.has(k);
+  const mPost      = computeMarket({...p, [k]: vPost});
+  const intBefore  = isDemand ? m.A : m.C;
+  const intAfter   = isDemand ? mPost.A : mPost.C;
+  const goesRight  = intAfter > intBefore;
+  const curvaLabel = isDemand ? 'Demanda' : 'Oferta';
+  const dirLabel   = goesRight ? 'derecha ↗' : 'izquierda ↙';
+
+  const deltaP = mPost.eqP - m.eqP;
+  const deltaQ = mPost.eqQ - m.eqQ;
+  const sign   = (n) => n >= 0 ? '+' : '';
+  const pUp    = deltaP > 0;
+  const qUp    = deltaQ > 0;
+  const reading = `${curvaLabel} ${goesRight ? 'crece' : 'cae'}: P* ${pUp ? 'sube' : 'baja'} y Q* ${qUp ? 'sube' : 'baja'}.`;
+
+  const row = (lbl, val) =>
+    `<div style="display:flex;gap:12px;padding:5px 0;font-size:13px;border-bottom:1px solid var(--line);">` +
+    `<span style="min-width:90px;font-weight:700;color:var(--muted);flex-shrink:0;">${lbl}</span>` +
+    `<span>${val}</span></div>`;
+
+  el.style.display = 'block';
+  el.innerHTML =
+    `<div class="table-title">Mecanismo del caso</div>` +
+    row('Shock',
+        `<strong>${k}</strong>: ${fmt(p[k])} → ${fmt(vPost)}`) +
+    row('Curva',
+        `${curvaLabel} — se desplaza a la <strong>${dirLabel}</strong>`) +
+    row('Equilibrio',
+        `<span style="font-family:monospace;">` +
+        `P*: ${fmt(m.eqP)} → ${fmt(mPost.eqP)} &ensp; Q*: ${fmt(m.eqQ)} → ${fmt(mPost.eqQ)}</span><br>` +
+        `<span style="font-family:monospace;color:var(--muted);">` +
+        `ΔP = ${sign(deltaP)}${fmt(deltaP)} &ensp; ΔQ = ${sign(deltaQ)}${fmt(deltaQ)}</span>`) +
+    row('Lectura',
+        `<span style="color:var(--muted);font-style:italic;">${reading}</span>`);
+}
+
+// Panel de reespecificación analítica:
+// muestra cómo la función estructural colapsa en la curva efectiva del plano P-Q.
+function renderRespecPanel(p, m) {
+  const el = $('simRespecPanel');
+  if (!el) return;
+
+  // cf: envuelve coeficientes negativos en paréntesis para evitar ambigüedad de signo
+  const cf = (n) => n < 0 ? `(${fmt(n)})` : fmt(n);
+
+  // Línea sustituida de demanda: todos los valores reemplazados excepto P
+  const dSubst =
+    `${fmt(p.a0)} + ${cf(p.a1)}·P + ${cf(p.a2)}·${fmt(p.Y)} + ` +
+    `${cf(p.a3)}·${fmt(p.Ps)} + ${cf(p.a4)}·${fmt(p.Pc)} + ${cf(p.a5)}·${fmt(p.Exp)}`;
+
+  // Línea sustituida de oferta
+  const sSubst =
+    `${fmt(p.b0)} + ${cf(p.b1)}·P + ${cf(p.b2)}·${fmt(p.Pi)} + ` +
+    `${cf(p.b3)}·${fmt(p.Tec)} + ${cf(p.b4)}·${fmt(p.N)}`;
+
+  // Sección de shock: solo se genera si hay un caso activo con shock definido
+  let shockHtml = '';
+  if (activeCaseId) {
+    const c = caseLibrary.find(c => c.id === activeCaseId);
+    if (c && c.shock) {
+      const demandKeys = new Set(['Y','Ps','Pc','Exp']);
+      const lines = Object.entries(c.shock).map(([k, vPost]) => {
+        const isDemand = demandKeys.has(k);
+        const mPost    = computeMarket({...p, [k]: vPost});
+        const before   = isDemand ? m.A : m.C;
+        const after    = isDemand ? mPost.A : mPost.C;
+        const label    = isDemand ? 'A' : 'C';
+        const dir      = after > before ? 'derecha' : 'izquierda';
+        const curva    = isDemand ? 'demanda' : 'oferta';
+        return `<strong>${k}</strong>: ${fmt(p[k])} → ${fmt(vPost)} &ensp;·&ensp; ` +
+               `${label}: ${fmt(before)} → ${fmt(after)} &ensp;→&ensp; ` +
+               `curva de ${curva} se desplaza a la <strong>${dir}</strong>`;
+      });
+      shockHtml =
+        `<div style="margin-top:10px;padding:10px 12px;border-radius:12px;` +
+        `background:var(--soft-gold);border:1px solid #ead081;font-size:13px;line-height:1.8;">` +
+        `<span style="font-size:11px;font-weight:700;text-transform:uppercase;` +
+        `letter-spacing:.05em;color:var(--muted);">Shock del caso activo</span><br>` +
+        `${lines.join('<br>')}</div>`;
+    }
+  }
+
+  const mono = 'font-family:monospace;font-size:12px;line-height:1.9;';
+  const lbl  = 'font-size:11px;font-weight:700;text-transform:uppercase;' +
+               'letter-spacing:.05em;color:var(--muted);font-family:sans-serif;';
+  el.innerHTML =
+    `<div class="table-title">Reespecificación analítica</div>` +
+    `<div class="two-cols" style="gap:14px;margin-top:6px;">` +
+      `<div style="${mono}">` +
+        `<span style="${lbl}">Demanda</span><br>` +
+        `<span style="color:var(--muted);">Qd = α₀ + α₁·P + α₂·Y + α₃·Ps + α₄·Pc + α₅·Exp</span><br>` +
+        `&nbsp;&nbsp;&nbsp;= ${dSubst}<br>` +
+        `<strong>→ Qd = ${fmt(m.A)} − ${fmt(m.B)}·P</strong>` +
+      `</div>` +
+      `<div style="${mono}">` +
+        `<span style="${lbl}">Oferta</span><br>` +
+        `<span style="color:var(--muted);">Qs = β₀ + β₁·P + β₂·Pi + β₃·Tec + β₄·N</span><br>` +
+        `&nbsp;&nbsp;&nbsp;= ${sSubst}<br>` +
+        `<strong>→ Qs = ${fmt(m.C)} + ${fmt(m.D)}·P</strong>` +
+      `</div>` +
+    `</div>` +
+    shockHtml;
+}
+
 function populateDefaults() {
   Object.entries(defaults.sim).forEach(([k, v]) => {
     if ($('sim_' + k)) $('sim_' + k).value = v;
@@ -1069,34 +1458,22 @@ function populateDefaults() {
 }
 
 function updateSim() {
-  const p = {
-    a0:val('sim_a0'), a1:val('sim_a1'), a2:val('sim_a2'), a3:val('sim_a3'), a4:val('sim_a4'), a5:val('sim_a5'),
-    Y:val('sim_Y'), Ps:val('sim_Ps'), Pc:val('sim_Pc'), Exp:val('sim_Exp'),
-    b0:val('sim_b0'), b1:val('sim_b1'), b2:val('sim_b2'), b3:val('sim_b3'), b4:val('sim_b4'),
-    Pi:val('sim_Pi'), Tec:val('sim_Tec'), N:val('sim_N')
-  };
+  const p = readParams('sim');
   const m = computeMarket(p);
 
   $('simDemandEq').textContent = `Qd = ${fmt(m.A)} - ${fmt(m.B)}·P`;
   $('simSupplyEq').textContent = `Qs = ${fmt(m.C)} + ${fmt(m.D)}·P`;
   $('simP').textContent = fmt(m.eqP);
   $('simQ').textContent = fmt(m.eqQ);
+  renderMechanismPanel(p, m);
+  renderRespecPanel(p, m);
 
   $('baseDemandEq').textContent = $('simDemandEq').textContent;
   $('baseSupplyEq').textContent = $('simSupplyEq').textContent;
   $('baseP').textContent = fmt(m.eqP);
   $('baseQ').textContent = fmt(m.eqQ);
 
-  const warn = $('simWarning');
-  if (!Number.isFinite(m.eqP) || !Number.isFinite(m.eqQ)) {
-    warn.style.display = 'block';
-    warn.textContent = 'No hay equilibrio único con los parámetros actuales. Revise pendientes y el denominador (B + D).';
-  } else if (m.eqP < 0 || m.eqQ < 0) {
-    warn.style.display = 'block';
-    warn.textContent = 'El equilibrio calculado cae fuera del primer cuadrante. Revise si la configuración elegida es económicamente razonable.';
-  } else {
-    warn.style.display = 'none';
-  }
+  showEquilWarning($('simWarning'), [m]);
 
   svgChart($('simChart'), [
     {type:'demand', market:m, color:'#355cde'},
@@ -1119,22 +1496,21 @@ function updateSim() {
       evalWarn.style.display = 'block';
       evalWarn.textContent = `P = ${fmt(evalP,2)} produce Qd = ${fmt(Qd_eval,2)} o Qs = ${fmt(Qs_eval,2)}: al menos una cantidad no es positiva. Las elasticidades no son válidas en este punto. Ingresa un precio en el rango donde ambas curvas tienen cantidad positiva.`;
       renderSimElasticities(null);
+      renderElasticityApplied(null);
       return;
     } else {
       evalWarn.style.display = 'none';
     }
   }
 
-  renderSimElasticities(computeElasticities(p, m, evalP));
+  const atEquil = !Number.isFinite(evalPRaw);
+  const e = computeElasticities(p, m, evalP);
+  renderSimElasticities(e, atEquil);
+  renderElasticityApplied(e);
 }
 
 function updateCmp() {
-  const base = {
-    a0:val('cmp_a0'), a1:val('cmp_a1'), a2:val('cmp_a2'), a3:val('cmp_a3'), a4:val('cmp_a4'), a5:val('cmp_a5'),
-    Y:val('cmp_Y'), Ps:val('cmp_Ps'), Pc:val('cmp_Pc'), Exp:val('cmp_Exp'),
-    b0:val('cmp_b0'), b1:val('cmp_b1'), b2:val('cmp_b2'), b3:val('cmp_b3'), b4:val('cmp_b4'),
-    Pi:val('cmp_Pi'), Tec:val('cmp_Tec'), N:val('cmp_N')
-  };
+  const base = readParams('cmp');
   const post = {
     ...base,
     Y:val('cmp_Y_post'), Ps:val('cmp_Ps_post'), Pc:val('cmp_Pc_post'), Exp:val('cmp_Exp_post'),
@@ -1162,16 +1538,7 @@ function updateCmp() {
     $('flag_' + name).textContent = oldv === newv ? '—' : '✓ cambió';
   });
 
-  const warn = $('cmpWarning');
-  if (!Number.isFinite(mb.eqP) || !Number.isFinite(mp.eqP)) {
-    warn.style.display = 'block';
-    warn.textContent = 'No hay equilibrio único en al menos uno de los escenarios. Revise pendientes y parámetros.';
-  } else if (mb.eqP < 0 || mb.eqQ < 0 || mp.eqP < 0 || mp.eqQ < 0) {
-    warn.style.display = 'block';
-    warn.textContent = 'Al menos uno de los equilibrios cae fuera del primer cuadrante. Revise si el shock y los parámetros son económicamente coherentes.';
-  } else {
-    warn.style.display = 'none';
-  }
+  showEquilWarning($('cmpWarning'), [mb, mp]);
 
   svgChart($('cmpChart'), [
     {type:'demand', market:mb, color:'#355cde'},
@@ -1229,6 +1596,8 @@ $('simEvalPReset').addEventListener('click', () => { $('simEvalP').value = ''; u
 $('sim_reset').addEventListener('click', () => {
   Object.entries(defaults.sim).forEach(([k, v]) => { if ($('sim_' + k)) $('sim_' + k).value = v; });
   $('simEvalP').value = '';
+  activeCaseId = null;
+  if ($('caseActivePanel')) $('caseActivePanel').style.display = 'none';
   updateSim();
 });
 $('cmp_reset').addEventListener('click', () => {
