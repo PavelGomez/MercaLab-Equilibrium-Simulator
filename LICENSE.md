@@ -26,7 +26,7 @@ Los modelos económicos subyacentes (oferta y demanda con funciones lineales, eq
 
 ## Marca comercial
 
-«MercaLab Equilibrium Simulator» es marca denominativa solicitada ante el Instituto Nacional de Propiedad Industrial (INAPI) de Chile en Clase 41 (educación y formación). La licencia CC BY-NC-SA 4.0 cubre el contenido y el código; el uso del nombre de marca requiere autorización del titular.
+«MercaLab Equilibrium Simulator» es nombre de proyecto del autor. La licencia CC BY-NC-SA 4.0 cubre el contenido y el código; el uso del nombre requiere autorización del titular.
 
 ## Sin garantías
 

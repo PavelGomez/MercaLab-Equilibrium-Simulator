@@ -31,4 +31,4 @@ https://pavelgomez.github.io/MercaLab-Equilibrium-Simulator/
 
 CC BY-NC-SA 4.0. Ver [LICENSE.md](LICENSE.md).
 
-«MercaLab Equilibrium Simulator» es marca solicitada ante INAPI Chile (Clase 41).
+«MercaLab Equilibrium Simulator» es nombre de proyecto del autor. Todos los derechos reservados sobre el nombre.
