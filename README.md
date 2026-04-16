@@ -1,70 +1,34 @@
-# Simulador de mercados 2026
+# MercaLab Equilibrium Simulator
 
-Herramienta pedagógica para modelar mercados con funciones lineales de demanda y oferta. Calcula el equilibrio (P\*, Q\*), compara escenarios antes y después de un shock, y estima las elasticidades precio, ingreso y cruzada de la demanda (Epd, Eid, Ecd) y de la oferta (Epo) en cualquier punto válido de la función. Funciona en cualquier navegador, sin instalación ni conexión a internet.
+Laboratorio de modelación de mercados con funciones lineales de oferta y demanda.
 
-**Curso:** Introducción a la Economía — Universidad Finis Terrae
+**Curso:** Introducción a la Economía
 **Profesor:** Pável Gómez Valera
+**Institución:** Universidad Finis Terrae
 **Año:** 2026
 
----
+## Qué hace
 
-## Contenido
+- Modela demanda y oferta con 11 parámetros editables
+- Calcula equilibrio (P*, Q*) en tiempo real
+- Compara escenarios antes/después de un shock (ΔP, ΔQ)
+- Estima elasticidades puntuales (Epd, Eid, Ecd, Epo)
+- Incluye casos guiados y modo evaluación
+- Funciona offline, sin instalación, en cualquier navegador
 
-El simulador tiene seis secciones:
+## Sitio
 
-| Sección | Descripción |
-|---|---|
-| **Inicio** | Presentación del modelo y configuración base por defecto |
-| **Cómo usar** | Instrucciones paso a paso para estudiantes, ayudantes y docentes |
-| **Simulador** | Modela un mercado en un momento dado; calcula equilibrio y elasticidades |
-| **Comparador** | Análisis antes/después de un shock; muestra ΔP, ΔQ y variación de elasticidades |
-| **Casos guiados** | 8 escenarios económicos reales para aplicar la cadena causal del modelo |
-| **Ejemplo resuelto** | Estándar mínimo de explicación esperada en el curso |
+https://pavelgomez.github.io/MercaLab-Equilibrium-Simulator/
 
----
+## Ecosistema pedagógico
 
-## Modelo
-
-La demanda efectiva tiene la forma:
-
-```
-Qd = A − B·P
-```
-
-donde `A = α₀ + α₂·Y + α₃·Ps + α₄·Pc + α₅·Exp` y `B = −α₁`.
-
-La oferta efectiva:
-
-```
-Qs = C + D·P
-```
-
-donde `C = β₀ + β₂·Pi + β₃·Tec + β₄·N` y `D = β₁`.
-
-El equilibrio se obtiene igualando `Qd = Qs`.
-
----
-
-## Elasticidades
-
-El simulador calcula cinco elasticidades **puntuales**, evaluadas en cualquier precio P válido (por defecto P\*):
-
-| Elasticidad | Fórmula | Interpretación |
+| Herramienta | Curso | Contenido |
 |---|---|---|
-| **Epd** | α₁ · P / Qd(P) | Precio propia de la demanda |
-| **Eid** | α₂ · Y / Qd(P) | Ingreso (clasifica bien normal, inferior, de lujo) |
-| **Ecd (sust.)** | α₃ · Ps / Qd(P) | Cruzada con el precio del sustituto |
-| **Ecd (comp.)** | α₄ · Pc / Qd(P) | Cruzada con el precio del complemento |
-| **Epo** | β₁ · P / Qs(P) | Precio propia de la oferta |
+| **MacroLab Shock Simulator** | Macroeconomía II | IS-LM, OA-DA, IS-LM-BP, shocks macro Chile |
+| **MercaLab Equilibrium Simulator** | Intro. a la Economía | Oferta, demanda, equilibrio, elasticidades |
 
-Cada elasticidad se clasifica automáticamente (elástica, inelástica, unitaria; bien normal, inferior, de lujo; sustitutos, complementos) y se acompaña de una lectura interpretativa.
+## Licencia
 
-El **Comparador** muestra además cómo cambian las elasticidades entre el escenario base y el post-shock (columna Δ).
+CC BY-NC-SA 4.0. Ver [LICENSE.md](LICENSE.md).
 
----
-
-## Uso
-
-Descarga el archivo `index.html` y ábrelo con doble clic en cualquier navegador (Chrome, Edge, Safari, Firefox). No requiere instalación, servidor ni conexión a internet.
-
-También disponible en línea: [pavelgomez.github.io/simulador-mercados-2026](https://pavelgomez.github.io/simulador-mercados-2026/)
+«MercaLab Equilibrium Simulator» es marca solicitada ante INAPI Chile (Clase 41).

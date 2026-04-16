@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Introducción a la Economía — Simulador de mercados (versión web 2026)</title>
+<title>MercaLab Equilibrium Simulator</title>
+  <meta name="description" content="MercaLab Equilibrium Simulator — Herramienta pedagógica para modelar mercados con funciones lineales de oferta y demanda. Curso Introducción a la Economía, Universidad Finis Terrae.">
+  <meta property="og:title" content="MercaLab Equilibrium Simulator">
+  <meta property="og:description" content="Laboratorio de modelación de mercados con funciones lineales de oferta y demanda.">
+  <meta property="og:url" content="https://pavelgomez.github.io/MercaLab-Equilibrium-Simulator/">
 <style>
 :root {
   --bg:#f4f7fb;
@@ -30,9 +34,7 @@ body {
   color:var(--ink);
 }
 header {
-  position:sticky; top:0; z-index:50;
   background:rgba(255,255,255,.96);
-  backdrop-filter: blur(8px);
   border-bottom:1px solid var(--line);
 }
 .header-wrap {
@@ -67,7 +69,13 @@ h1 {
   font-size:15px; font-weight:700; margin-top:4px;
 }
 nav {
-  display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;
+  position:sticky; top:0; z-index:50;
+  display:flex; gap:8px; flex-wrap:wrap;
+  background:rgba(255,255,255,.96);
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid var(--line);
+  padding:10px 24px;
+  margin:0;
 }
 nav button {
   border:1px solid var(--line);
@@ -277,8 +285,8 @@ hr.sep {
   <div class="header-wrap">
     <div class="header-top">
       <div>
-        <div class="eyebrow">Plataforma institucional 2026</div>
-        <h1>Introducción a la Economía — Simulador de mercados</h1>
+        <div class="eyebrow">MercaLab · Plataforma pedagógica 2026</div>
+        <h1>MercaLab Equilibrium Simulator</h1>
         <div class="subtitle">Herramienta pedagógica para modelar mercados con funciones lineales de demanda y oferta. Calcula el equilibrio (P*, Q*), compara escenarios antes y después de un shock, y estima las elasticidades precio, ingreso y cruzada de la demanda (Epd, Eid, Ecd) y de la oferta (Epo) en cualquier punto válido de la función. Funciona en cualquier navegador, sin instalación ni conexión a internet.</div>
       </div>
       <div class="meta">
@@ -287,16 +295,16 @@ hr.sep {
         <div class="meta-card"><div class="label">Año</div><div class="value">2026</div></div>
       </div>
     </div>
-    <nav>
-      <button class="tab active" data-target="inicio">Inicio</button>
-      <button class="tab" data-target="uso">Cómo usar</button>
-      <button class="tab" data-target="simulador">Simulador</button>
-      <button class="tab" data-target="comparador">Comparador</button>
-      <button class="tab" data-target="casos">Casos guiados</button>
-      <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
-    </nav>
   </div>
 </header>
+<nav>
+  <button class="tab active" data-target="inicio">Inicio</button>
+  <button class="tab" data-target="uso">Cómo usar</button>
+  <button class="tab" data-target="simulador">Simulador</button>
+  <button class="tab" data-target="comparador">Comparador</button>
+  <button class="tab" data-target="casos">Casos guiados</button>
+  <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
+</nav>
 
 <main>
 <section id="inicio" class="section active">
@@ -1609,5 +1617,9 @@ updateSim();
 updateCmp();
 renderExampleChart();
 </script>
+<footer style="text-align:center;padding:16px;font-size:.85rem;color:#666;border-top:1px solid #eee;margin-top:32px">
+  © 2026 Pável Gómez · Universidad Finis Terrae · CC BY-NC-SA 4.0<br>
+  MercaLab Equilibrium Simulator™ — Marca solicitada ante INAPI (Clase 41)
+</footer>
 </body>
 </html>
