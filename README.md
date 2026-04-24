@@ -1,6 +1,8 @@
 # MercaLab Equilibrium Simulator
 
-Laboratorio de modelación de mercados con funciones lineales de oferta y demanda.
+Simulador gratuito de oferta y demanda para cursos de Introducción a la Economía. Permite analizar equilibrio de mercado, elasticidades y efectos de shocks en variables exógenas como ingreso, precio de insumos, tecnología, expectativas, sustitutos y complementos.
+
+Sitio web: https://pavelgomez.github.io/MercaLab-Equilibrium-Simulator/
 
 **Curso:** Introducción a la Economía
 **Profesor:** Pável Gómez Valera
