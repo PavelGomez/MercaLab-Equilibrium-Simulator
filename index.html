@@ -309,6 +309,49 @@ hr.sep {
   content: "Al violarse: ";
   font-weight: 600;
 }
+.ml-politica {
+  --ml-accent: currentColor;
+  margin: 2.5rem 0;
+}
+.ml-politica__header h2 { margin: 0 0 .5rem; }
+.ml-politica__intro { line-height: 1.55; margin: 0 0 1.75rem; opacity: .85; }
+.ml-politica__casos { display: grid; gap: 1.75rem; }
+.ml-politica__caso {
+  border-left: 3px solid var(--ml-accent);
+  padding-left: 1rem;
+}
+.ml-politica__caso h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+.ml-politica__contexto { margin: 0 0 .85rem; line-height: 1.5; opacity: .85; }
+.ml-politica__resultado {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  padding: .75rem 1rem;
+  margin: 0 0 .75rem;
+  font-size: .92rem;
+}
+.ml-politica__resultado dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: .25rem .75rem; }
+.ml-politica__resultado dt { font-weight: 600; }
+.ml-politica__resultado dd { margin: 0; font-variant-numeric: tabular-nums; }
+.ml-politica__nota { font-size: .85rem; opacity: .75; margin: .35rem 0 0; font-style: italic; }
+.ml-politica__supuesto { margin: 0 0 .35rem; font-size: .92rem; }
+.ml-politica__supuesto a { color: inherit; }
+.ml-politica__evidencia { margin-top: .5rem; }
+.ml-politica__evidencia summary { cursor: pointer; font-weight: 600; font-size: .92rem; }
+.ml-politica__evidencia-body {
+  margin-top: .75rem;
+  padding: .85rem 1rem;
+  border-left: 2px solid var(--ml-accent);
+  opacity: .92;
+  font-size: .92rem;
+}
+.ml-politica__evidencia-body p { margin: 0 0 .65rem; line-height: 1.5; }
+.ml-politica__evidencia-body p:last-child { margin-bottom: 0; }
+.ml-politica__evidencia-body .ml-refs {
+  font-size: .85rem; opacity: .8; margin-top: .65rem;
+  padding-top: .65rem; border-top: 1px solid rgba(0,0,0,.1);
+}
+.ml-politica__evidencia-body .ml-refs ol { margin: 0; padding-left: 1.25rem; }
+.ml-politica__evidencia-body .ml-refs li { margin-bottom: .25rem; }
 </style>
 <script type="application/ld+json">
 {
@@ -354,6 +397,7 @@ hr.sep {
   <button class="tab" data-target="comparador">Comparador</button>
   <button class="tab" data-target="casos">Casos guiados</button>
   <button class="tab" data-target="supuestos">Supuestos</button>
+  <button class="tab" data-target="politica">Política</button>
   <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
 </nav>
 
@@ -779,6 +823,14 @@ hr.sep {
   <div class="ml-supuestos__list" role="list"></div>
 </section>
 
+<section id="politica" class="section ml-politica">
+  <header class="ml-politica__header">
+    <h2 data-i18n="politica.titulo"></h2>
+    <p data-i18n="politica.intro" class="ml-politica__intro"></p>
+  </header>
+  <div class="ml-politica__casos" role="list"></div>
+</section>
+
 <section id="ejemplo" class="section">
   <div class="grid">
     <div class="card">
@@ -886,6 +938,231 @@ document.addEventListener('DOMContentLoaded', function () {
       +   '<p class="ml-supuestos__item-implication">' + item.implicacion + '</p>'
       + '</div>';
   }).join('');
+});
+</script>
+
+<script>
+/* ================================================================
+   Sprint 2: Política pública — extiende namespace de Sprint 1.
+   ================================================================ */
+window.MercaLabI18n = window.MercaLabI18n || { es: {}, en: {} };
+
+window.MercaLabI18n.es.politica = {
+  titulo: "Casos de política pública",
+  intro: "Cada caso parte del modelo competitivo lineal y observa qué predice ante una intervención de política. Los dos primeros (impuesto y subsidio) son shocks paramétricos que el modelo resuelve con un nuevo equilibrio. Los dos siguientes (salario mínimo, control de precios) son restricciones al equilibrio: el modelo no produce un equilibrio nuevo, sino un desequilibrio. Esa diferencia es ya parte de la lectura.",
+  supuestoLabels: {
+    "precio-aceptacion": "Precio-aceptación",
+    "informacion-perfecta": "Información perfecta",
+    "bien-homogeneo": "Bien homogéneo",
+    "sin-externalidades": "Sin externalidades",
+    "derechos-de-propiedad": "Derechos de propiedad bien definidos",
+    "costos-de-transaccion-nulos": "Costos de transacción nulos"
+  },
+  casos: [
+    {
+      id: "tabaco",
+      tipo: "impuesto-especifico",
+      nombre: "Impuesto específico al tabaco",
+      contexto: "Chile aplica un impuesto específico por gramo de tabaco. El modelo competitivo predice que la incidencia del impuesto entre consumidor y productor depende de las elasticidades relativas: con demanda más inelástica que la oferta —el caso típico del tabaco— el consumidor termina cargando la mayor parte.",
+      supuestoEnTension: "sin-externalidades",
+      base: { alpha0: 80, alpha1: 1, beta0: -20, beta1: 4 },
+      parametros: { impuesto: 5 }
+    },
+    {
+      id: "salario-minimo",
+      tipo: "precio-piso",
+      nombre: "Salario mínimo en mercado laboral competitivo",
+      contexto: "En el modelo competitivo de mercado laboral, P es el salario y Q es el empleo. Si el salario mínimo se fija por encima del equilibrio, el modelo predice empleo restringido por el lado corto y exceso de oferta de trabajo (desempleo). Esa predicción descansa sobre supuestos cuya plausibilidad empírica está discutida.",
+      supuestoEnTension: "precio-aceptacion",
+      base: { alpha0: 100, alpha1: 2, beta0: -10, beta1: 3 },
+      parametros: { precioPiso: 28 },
+      evidencia: {
+        titulo: "Predicción del modelo vs. evidencia empírica",
+        cuerpo: [
+          "El modelo competitivo predice que un salario mínimo por encima del equilibrio reduce el empleo. Es un teorema condicional: depende de los supuestos de precio-aceptación e información perfecta en el mercado laboral. Cuando esos supuestos se relajan, la predicción puede invertirse o atenuarse.",
+          "Card y Krueger (1994) compararon empleo en restaurantes de comida rápida en Nueva Jersey (donde el salario mínimo subió de USD 4,25 a 5,05 en 1992) con Pensilvania (sin alza). Encontraron que el empleo en Nueva Jersey no cayó —aumentó levemente—, contradiciendo la predicción del modelo competitivo simple. La interpretación dominante: si el empleador tiene poder de monopsonio, un salario mínimo modesto puede aumentar el empleo, no reducirlo.",
+          "Cengiz, Dube, Lindner y Zipperer (2019) revisitaron la pregunta con un método de bunching aplicado a 138 alzas estatales en Estados Unidos entre 1979 y 2016. Hallazgo central: las alzas reducen empleos por debajo del nuevo mínimo y aumentan empleos por encima, con un efecto neto sobre empleo total cercano a cero. Esto sugiere que el modelo competitivo simple sobrestima la pérdida de empleo asociada a alzas modestas.",
+          "Neumark y Wascher (2008) representan la posición contraria: con metodologías alternativas y muestras más amplias, encuentran efectos negativos sobre empleo, en particular entre trabajadores poco calificados. La discusión empírica sigue abierta y la magnitud estimada depende del método y la muestra.",
+          "Para Chile, Marinakis (ed., 2014, OIT/CEPAL) documenta que las alzas del salario mínimo en períodos de crecimiento económico no se asocian con caídas significativas de empleo formal, aunque sí con presión sobre la informalidad. Las elasticidades empleo–salario mínimo estimadas son bajas, consistentes con la literatura internacional reciente.",
+          "Lección pedagógica: la predicción del modelo competitivo simple es contingente, no robusta. Dejar caer precio-aceptación (admitir monopsonio) o información perfecta (admitir fricciones de búsqueda) puede invertir o atenuar el signo del efecto sobre el empleo."
+        ],
+        referencias: [
+          "Card, D. &amp; Krueger, A. (1994). Minimum wages and employment: a case study of the fast-food industry in New Jersey and Pennsylvania. <em>American Economic Review</em> 84(4), 772–793.",
+          "Cengiz, D., Dube, A., Lindner, A. &amp; Zipperer, B. (2019). The effect of minimum wages on low-wage jobs. <em>Quarterly Journal of Economics</em> 134(3), 1405–1454.",
+          "Neumark, D. &amp; Wascher, W. (2008). <em>Minimum Wages</em>. MIT Press.",
+          "Marinakis, A. (ed.) (2014). <em>Incumplimiento con el salario mínimo en América Latina</em>. OIT/CEPAL."
+        ]
+      }
+    },
+    {
+      id: "subsidio-diesel",
+      tipo: "subsidio-especifico",
+      nombre: "Subsidio al diésel",
+      contexto: "Chile ha utilizado mecanismos de estabilización del precio de combustibles (MEPCO, subsidios transitorios). En el modelo, un subsidio específico por unidad opera como el simétrico de un impuesto: desplaza la oferta efectiva hacia abajo. La incidencia del subsidio (cuánto captura el consumidor y cuánto el productor) también depende de las elasticidades relativas.",
+      supuestoEnTension: "sin-externalidades",
+      base: { alpha0: 50, alpha1: 1, beta0: -10, beta1: 2 },
+      parametros: { subsidio: 6 }
+    },
+    {
+      id: "control-precios-pan",
+      tipo: "precio-techo",
+      nombre: "Control de precio máximo al pan (caso histórico, Chile 1972)",
+      contexto: "Bajo el gobierno de la Unidad Popular se aplicaron controles administrativos de precios sobre productos de consumo masivo (pan, harina, azúcar). El modelo competitivo predice que un precio máximo por debajo del equilibrio genera escasez: cantidad demandada mayor que cantidad ofrecida, con la cantidad transada limitada por el lado corto (la oferta).",
+      supuestoEnTension: "costos-de-transaccion-nulos",
+      base: { alpha0: 100, alpha1: 2, beta0: -20, beta1: 3 },
+      parametros: { precioTecho: 18 }
+    }
+  ]
+};
+
+function _mlResolveEq(p) {
+  var pStar = (p.alpha0 - p.beta0) / (p.alpha1 + p.beta1);
+  var qStar = p.alpha0 - p.alpha1 * pStar;
+  return { p: pStar, q: qStar };
+}
+function _mlQd(p, P) { return p.alpha0 - p.alpha1 * P; }
+function _mlQs(p, P) { return p.beta0 + p.beta1 * P; }
+function _mlFmt(n) {
+  var rounded = Math.round(n * 100) / 100;
+  return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2);
+}
+
+function _mlRenderImpuesto(caso) {
+  var t = caso.parametros.impuesto;
+  var base = _mlResolveEq(caso.base);
+  var post = _mlResolveEq(Object.assign({}, caso.base, { beta0: caso.base.beta0 - t * caso.base.beta1 }));
+  var Pp = post.p - t;
+  var dPc = post.p - base.p;
+  var dPp = Pp - base.p;
+  var incC = (dPc / t) * 100;
+  var incP = (-dPp / t) * 100;
+  var R = post.q * t;
+  return ''
+    + '<div class="ml-politica__resultado"><dl>'
+    +   '<dt>Equilibrio sin impuesto</dt><dd>P* = ' + _mlFmt(base.p) + ' &middot; Q* = ' + _mlFmt(base.q) + '</dd>'
+    +   '<dt>Impuesto</dt><dd>t = ' + t + ' por unidad</dd>'
+    +   '<dt>Equilibrio con impuesto</dt><dd>P<sub>c</sub> = ' + _mlFmt(post.p) + ' &middot; P<sub>p</sub> = ' + _mlFmt(Pp) + ' &middot; Q = ' + _mlFmt(post.q) + '</dd>'
+    +   '<dt>Variación</dt><dd>ΔP<sub>c</sub> = +' + _mlFmt(dPc) + ' &middot; ΔP<sub>p</sub> = ' + _mlFmt(dPp) + ' &middot; ΔQ = ' + _mlFmt(post.q - base.q) + '</dd>'
+    +   '<dt>Incidencia</dt><dd>Consumidor ' + _mlFmt(incC) + '% &middot; Productor ' + _mlFmt(incP) + '%</dd>'
+    +   '<dt>Recaudación</dt><dd>R = Q · t = ' + _mlFmt(R) + '</dd>'
+    + '</dl></div>';
+}
+
+function _mlRenderSubsidio(caso) {
+  var s = caso.parametros.subsidio;
+  var base = _mlResolveEq(caso.base);
+  var post = _mlResolveEq(Object.assign({}, caso.base, { beta0: caso.base.beta0 + s * caso.base.beta1 }));
+  var Pp = post.p + s;
+  var dPc = post.p - base.p;
+  var dPp = Pp - base.p;
+  var costoFiscal = post.q * s;
+  return ''
+    + '<div class="ml-politica__resultado"><dl>'
+    +   '<dt>Equilibrio sin subsidio</dt><dd>P* = ' + _mlFmt(base.p) + ' &middot; Q* = ' + _mlFmt(base.q) + '</dd>'
+    +   '<dt>Subsidio</dt><dd>s = ' + s + ' por unidad</dd>'
+    +   '<dt>Equilibrio con subsidio</dt><dd>P<sub>c</sub> = ' + _mlFmt(post.p) + ' &middot; P<sub>p</sub> = ' + _mlFmt(Pp) + ' &middot; Q = ' + _mlFmt(post.q) + '</dd>'
+    +   '<dt>Variación</dt><dd>ΔP<sub>c</sub> = ' + _mlFmt(dPc) + ' &middot; ΔP<sub>p</sub> = +' + _mlFmt(dPp) + ' &middot; ΔQ = +' + _mlFmt(post.q - base.q) + '</dd>'
+    +   '<dt>Costo fiscal</dt><dd>C = Q · s = ' + _mlFmt(costoFiscal) + '</dd>'
+    + '</dl></div>';
+}
+
+function _mlRenderPrecioPiso(caso) {
+  var w = caso.parametros.precioPiso;
+  var base = _mlResolveEq(caso.base);
+  var Ld = _mlQd(caso.base, w);
+  var Ls = _mlQs(caso.base, w);
+  var desempleo = Ls - Ld;
+  var bind = w > base.p;
+  return ''
+    + '<div class="ml-politica__resultado"><dl>'
+    +   '<dt>Equilibrio libre</dt><dd>w* = ' + _mlFmt(base.p) + ' &middot; L* = ' + _mlFmt(base.q) + '</dd>'
+    +   '<dt>Salario mínimo</dt><dd>w<sub>min</sub> = ' + w + (bind ? ' (vinculante: > w*)' : ' (no vinculante: ≤ w*)') + '</dd>'
+    +   (bind
+          ? '<dt>A w<sub>min</sub></dt><dd>L<sup>d</sup> = ' + _mlFmt(Ld) + ' &middot; L<sup>s</sup> = ' + _mlFmt(Ls) + '</dd>'
+          + '<dt>Empleo (lado corto)</dt><dd>L = L<sup>d</sup> = ' + _mlFmt(Ld) + '</dd>'
+          + '<dt>Desempleo</dt><dd>U = L<sup>s</sup> − L<sup>d</sup> = ' + _mlFmt(desempleo) + '</dd>'
+          : '')
+    + '</dl></div>'
+    + '<p class="ml-politica__nota">El modelo no produce un equilibrio nuevo: produce un desequilibrio. La predicción de desempleo es condicional al cumplimiento de los supuestos del modelo competitivo. Ver evidencia empírica más abajo.</p>';
+}
+
+function _mlRenderPrecioTecho(caso) {
+  var P = caso.parametros.precioTecho;
+  var base = _mlResolveEq(caso.base);
+  var Qd = _mlQd(caso.base, P);
+  var Qs = _mlQs(caso.base, P);
+  var escasez = Qd - Qs;
+  var bind = P < base.p;
+  return ''
+    + '<div class="ml-politica__resultado"><dl>'
+    +   '<dt>Equilibrio libre</dt><dd>P* = ' + _mlFmt(base.p) + ' &middot; Q* = ' + _mlFmt(base.q) + '</dd>'
+    +   '<dt>Precio máximo</dt><dd>P<sub>max</sub> = ' + P + (bind ? ' (vinculante: < P*)' : ' (no vinculante: ≥ P*)') + '</dd>'
+    +   (bind
+          ? '<dt>A P<sub>max</sub></dt><dd>Q<sup>d</sup> = ' + _mlFmt(Qd) + ' &middot; Q<sup>s</sup> = ' + _mlFmt(Qs) + '</dd>'
+          + '<dt>Cantidad transada (lado corto)</dt><dd>Q = Q<sup>s</sup> = ' + _mlFmt(Qs) + '</dd>'
+          + '<dt>Escasez</dt><dd>Q<sup>d</sup> − Q<sup>s</sup> = ' + _mlFmt(escasez) + '</dd>'
+          : '')
+    + '</dl></div>'
+    + '<p class="ml-politica__nota">La cantidad ofrecida cae respecto del equilibrio libre y el exceso de demanda no se elimina vía precio. En la práctica, esto suele canalizarse a colas, racionamiento administrativo o mercado paralelo (costos de transacción endógenos al control).</p>';
+}
+
+var _mlRenderers = {
+  "impuesto-especifico": _mlRenderImpuesto,
+  "subsidio-especifico": _mlRenderSubsidio,
+  "precio-piso": _mlRenderPrecioPiso,
+  "precio-techo": _mlRenderPrecioTecho
+};
+
+function _mlRenderEvidencia(ev) {
+  if (!ev) return '';
+  var parrafos = (ev.cuerpo || []).map(function (p) { return '<p>' + p + '</p>'; }).join('');
+  var refs = '';
+  if (ev.referencias && ev.referencias.length) {
+    refs = '<div class="ml-refs"><strong>Referencias</strong><ol>'
+         + ev.referencias.map(function (r) { return '<li>' + r + '</li>'; }).join('')
+         + '</ol></div>';
+  }
+  return ''
+    + '<details class="ml-politica__evidencia">'
+    +   '<summary>' + ev.titulo + '</summary>'
+    +   '<div class="ml-politica__evidencia-body">' + parrafos + refs + '</div>'
+    + '</details>';
+}
+
+function _mlRenderCaso(caso, labels) {
+  var renderer = _mlRenderers[caso.tipo];
+  var bloqueResultado = renderer ? renderer(caso) : '';
+  var supLabel = (labels && labels[caso.supuestoEnTension]) || caso.supuestoEnTension;
+  var supLink = caso.supuestoEnTension
+    ? '<p class="ml-politica__supuesto">Supuesto en tensión: '
+      + '<a href="#supuesto-' + caso.supuestoEnTension + '">' + supLabel + '</a></p>'
+    : '';
+  return ''
+    + '<article class="ml-politica__caso" id="caso-' + caso.id + '" role="listitem">'
+    +   '<h3>' + caso.nombre + '</h3>'
+    +   '<p class="ml-politica__contexto">' + caso.contexto + '</p>'
+    +   bloqueResultado
+    +   supLink
+    +   _mlRenderEvidencia(caso.evidencia)
+    + '</article>';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var lang = window.MercaLabLang || 'es';
+  var dict = window.MercaLabI18n[lang];
+  if (!dict) return;
+
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var path = el.getAttribute('data-i18n').split('.');
+    var val = dict;
+    for (var i = 0; i < path.length; i++) val = val && val[path[i]];
+    if (typeof val === 'string') el.textContent = val;
+  });
+
+  var lista = document.querySelector('.ml-politica__casos');
+  var pol = dict.politica;
+  if (!lista || !pol || !pol.casos) return;
+  lista.innerHTML = pol.casos.map(function (c) { return _mlRenderCaso(c, pol.supuestoLabels); }).join('');
 });
 </script>
 
