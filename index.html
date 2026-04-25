@@ -352,6 +352,119 @@ hr.sep {
 }
 .ml-politica__evidencia-body .ml-refs ol { margin: 0; padding-left: 1.25rem; }
 .ml-politica__evidencia-body .ml-refs li { margin-bottom: .25rem; }
+.ml-cadenas {
+  --ml-accent: currentColor;
+  margin: 2.5rem 0;
+}
+.ml-cadenas__header h2 { margin: 0 0 .5rem; }
+.ml-cadenas__intro { line-height: 1.55; margin: 0 0 1.5rem; opacity: .85; }
+.ml-cadenas__selector {
+  display: flex; flex-wrap: wrap; gap: .5rem;
+  margin-bottom: 1.5rem; padding-bottom: .85rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.ml-cadenas__btn {
+  font: inherit; line-height: 1.3;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: transparent;
+  border-radius: 4px;
+  padding: .55rem .9rem;
+  cursor: pointer;
+  color: inherit;
+  font-size: .92rem;
+  text-align: left;
+}
+.ml-cadenas__btn:hover { background: rgba(0, 0, 0, 0.04); }
+.ml-cadenas__btn[aria-selected="true"] {
+  background: #1e2a44;
+  color: #fff;
+  border-color: #1e2a44;
+}
+.ml-cadenas__contexto { margin: 0 0 1rem; line-height: 1.55; opacity: .9; }
+.ml-cadenas__mecanismo-title {
+  margin: 1.25rem 0 .5rem;
+  font-size: .95rem; font-weight: 700;
+  letter-spacing: .01em; text-transform: uppercase; opacity: .75;
+}
+.ml-cadenas__mecanismo { margin: 0 0 1.25rem; padding-left: 1.25rem; }
+.ml-cadenas__mecanismo li { margin-bottom: .35rem; line-height: 1.5; }
+.ml-cadenas__chain {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+@media (min-width: 720px) {
+  .ml-cadenas__chain {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+  }
+}
+.ml-cadenas__panel {
+  background: rgba(0, 0, 0, 0.03);
+  border-left: 3px solid var(--ml-accent);
+  padding: 1rem 1.15rem;
+  border-radius: 4px;
+}
+.ml-cadenas__panel-tag {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: .65;
+  margin-bottom: .25rem;
+}
+.ml-cadenas__panel-title {
+  margin: 0 0 .65rem;
+  font-size: .98rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.ml-cadenas__panel-stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: .25rem .75rem;
+  font-size: .92rem;
+}
+.ml-cadenas__panel-stats dt { font-weight: 600; }
+.ml-cadenas__panel-stats dd { margin: 0; font-variant-numeric: tabular-nums; }
+.ml-cadenas__arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: .35rem .65rem;
+  text-align: center;
+}
+.ml-cadenas__arrow-symbol {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.ml-cadenas__arrow-symbol::before { content: "↓"; }
+@media (min-width: 720px) {
+  .ml-cadenas__arrow-symbol::before { content: "→"; }
+}
+.ml-cadenas__arrow-label {
+  margin-top: .35rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  font-size: .8rem;
+  opacity: .85;
+}
+.ml-cadenas__arrow--broken .ml-cadenas__arrow-symbol { color: #b94b4b; }
+.ml-cadenas__arrow--broken .ml-cadenas__arrow-label { color: #b94b4b; }
+.ml-cadenas__leccion {
+  margin: 1rem 0 .5rem;
+  padding: .85rem 1rem;
+  background: rgba(0, 0, 0, 0.025);
+  border-left: 2px solid var(--ml-accent);
+  line-height: 1.55;
+  font-size: .95rem;
+}
+.ml-cadenas__supuesto { margin: .5rem 0 0; font-size: .92rem; }
+.ml-cadenas__supuesto a { color: inherit; }
 </style>
 <script type="application/ld+json">
 {
@@ -398,6 +511,7 @@ hr.sep {
   <button class="tab" data-target="casos">Casos guiados</button>
   <button class="tab" data-target="supuestos">Supuestos</button>
   <button class="tab" data-target="politica">Política</button>
+  <button class="tab" data-target="cadenas">Cadenas</button>
   <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
 </nav>
 
@@ -831,6 +945,15 @@ hr.sep {
   <div class="ml-politica__casos" role="list"></div>
 </section>
 
+<section id="cadenas" class="section ml-cadenas">
+  <header class="ml-cadenas__header">
+    <h2 data-i18n="cadenas.titulo"></h2>
+    <p data-i18n="cadenas.intro" class="ml-cadenas__intro"></p>
+  </header>
+  <nav class="ml-cadenas__selector" role="tablist" aria-label="Selector de caso"></nav>
+  <div class="ml-cadenas__contenido" role="tabpanel"></div>
+</section>
+
 <section id="ejemplo" class="section">
   <div class="grid">
     <div class="card">
@@ -1163,6 +1286,197 @@ document.addEventListener('DOMContentLoaded', function () {
   var pol = dict.politica;
   if (!lista || !pol || !pol.casos) return;
   lista.innerHTML = pol.casos.map(function (c) { return _mlRenderCaso(c, pol.supuestoLabels); }).join('');
+});
+</script>
+
+<script>
+/* ================================================================
+   Sprint 3: Cadenas — extiende namespace de Sprints 1 y 2.
+   ================================================================ */
+window.MercaLabI18n = window.MercaLabI18n || { es: {}, en: {} };
+
+window.MercaLabI18n.es.cadenas = {
+  titulo: "Cadenas: tubo, válvula, propagación",
+  intro: "Esta pestaña aplica el modelo competitivo a dos mercados acoplados (insumo → bien final). El precio de equilibrio del mercado upstream funciona como precio del insumo del downstream: Pi₂ = P*₁. Sobre esa estructura distinguimos dos tipos de shock pertinentes al período 2018–2026: tubo (disrupción del corredor físico) y válvula (cierre discrecional con corredor abierto). El contraste hace visible un punto que el modelo single-market no expone por sí solo: la cadena puede romperse aunque el tubo siga abierto.",
+  arrowIntact: "Pi₂ = P*₁",
+  arrowBroken: "Pi₂ ≠ P*₁ · cadena rota",
+  mecanismoTitle: "Mecanismo",
+  panelTagUpstream: "Upstream · M1",
+  panelTagDownstream: "Downstream · M2",
+  labelBase: "Equilibrio base",
+  labelPost: "Post-shock",
+  labelDelta: "Variación",
+  labelPi2: "Pi₂ (insumo de M2)",
+  supuestoPrefix: "Supuesto en tensión: ",
+  casos: [
+    {
+      id: "tubo-ucrania",
+      tipo: "tubo",
+      nombre: "Tubo · Guerra de Ucrania (2022–) · Gas → Fertilizantes",
+      contexto: "Tras la invasión rusa de Ucrania, las sanciones, la salida operativa de gasoductos (Nord Stream) y la redirección forzada de flujos energéticos contraen severamente el suministro de gas natural en Europa. Los fertilizantes nitrogenados, intensivos en gas, ven subir su costo de insumo y propagan el shock hacia la cadena agrícola.",
+      mecanismo: [
+        "<strong>N₁ ↓</strong> &middot; oferentes upstream excluidos por sanciones y por cierre operativo de ductos.",
+        "<strong>Pi₁ ↑</strong> &middot; costos de logística y reemplazo (GNL alternativo) suben.",
+        "<strong>Pi₂ = P*₁</strong> &middot; el corredor se contrae pero la cadena se mantiene conectada: M2 sigue abasteciéndose desde M1 a su nuevo precio."
+      ],
+      M1: {
+        nombre: "Gas natural (Europa)",
+        base: { alpha0: 200, alpha1: 2, beta0: -40, beta1: 2 },
+        post: { alpha0: 200, alpha1: 2, beta0: -100, beta1: 2 }
+      },
+      M2: {
+        nombre: "Fertilizantes nitrogenados",
+        base: { alpha0: 180, alpha1: 1, beta0: -20, beta1: 3 },
+        gamma: 2
+      },
+      chainBroken: false,
+      leccion: "El shock al tubo se transmite íntegramente hacia abajo: P*₁ sube, Pi₂ sube en igual cuantía, la oferta downstream se contrae y P*₂ sube mientras Q*₂ cae. La cadena funciona como canal de transmisión de la disrupción física. La exposición estructural —dependencia de M2 respecto de M1— se realiza en vulnerabilidad efectiva.",
+      supuestoEnTension: "derechos-de-propiedad"
+    },
+    {
+      id: "valvula-crudo-ruso",
+      tipo: "valvula",
+      nombre: "Válvula · Tope al precio del crudo ruso (Dic 2022) · Crudo → Combustibles UE",
+      contexto: "El G7 y la UE imponen un tope al precio del crudo ruso transportado por mar: solo se permite usar servicios occidentales (seguros marítimos, financiamiento, fletes) si la transacción se realiza por debajo del tope. El corredor físico —Estrechos Turcos, rutas marítimas, terminales— se mantiene operativo. Lo que se cierra es la elegibilidad de los compradores que dependen de esos servicios.",
+      mecanismo: [
+        "<strong>N₁ sin cambio</strong> &middot; el corredor (Estrechos, rutas, infraestructura) sigue funcionando.",
+        "<strong>α₀_M1 ↓</strong> &middot; la demanda elegible cae cuando G7 condiciona acceso a servicios financieros y de seguros.",
+        "<strong>Pi₂ ≠ P*₁</strong> &middot; la cadena se rompe: la UE deja de importar crudo ruso y abastece sus refinerías con sustituto no ruso a precio mundial más alto."
+      ],
+      M1: {
+        nombre: "Crudo ruso",
+        base: { alpha0: 200, alpha1: 2, beta0: -40, beta1: 2 },
+        post: { alpha0: 140, alpha1: 2, beta0: -40, beta1: 2 }
+      },
+      M2: {
+        nombre: "Combustibles refinados (UE)",
+        base: { alpha0: 180, alpha1: 1, beta0: -20, beta1: 3 },
+        gamma: 2
+      },
+      chainBroken: true,
+      Pi2OverridePost: 80,
+      leccion: "Resultado contraintuitivo y diagnóstico para el marco tubo-válvula: P*₁ cae (Rusia vende con descuento a compradores no elegibles, China e India), mientras Pi₂ sube (la UE paga el precio mundial del sustituto). El tubo está abierto, pero la cadena hacia la UE está rota. La válvula puede bind sin que el corredor cierre — exactamente lo que el caso anclaje del marco busca exhibir.",
+      supuestoEnTension: "precio-aceptacion"
+    }
+  ]
+};
+
+function _mlSolveChain(caso) {
+  var m1Base = _mlResolveEq(caso.M1.base);
+  var m1Post = _mlResolveEq(caso.M1.post);
+  var pi2Base = m1Base.p;
+  var pi2Post = caso.chainBroken ? caso.Pi2OverridePost : m1Post.p;
+  var deltaPi2 = pi2Post - pi2Base;
+  var m2Base = _mlResolveEq(caso.M2.base);
+  var m2PostParams = Object.assign({}, caso.M2.base, {
+    beta0: caso.M2.base.beta0 - caso.M2.gamma * deltaPi2
+  });
+  var m2Post = _mlResolveEq(m2PostParams);
+  return {
+    m1Base: m1Base, m1Post: m1Post,
+    m2Base: m2Base, m2Post: m2Post,
+    pi2Base: pi2Base, pi2Post: pi2Post, deltaPi2: deltaPi2
+  };
+}
+
+function _mlSign(n) { return n > 0 ? '+' : (n < 0 ? '' : ''); }
+
+function _mlRenderPanel(tag, nombre, baseEq, postEq, dict, extraRow) {
+  var dP = postEq.p - baseEq.p;
+  var dQ = postEq.q - baseEq.q;
+  return ''
+    + '<div class="ml-cadenas__panel">'
+    +   '<span class="ml-cadenas__panel-tag">' + tag + '</span>'
+    +   '<div class="ml-cadenas__panel-title">' + nombre + '</div>'
+    +   '<dl class="ml-cadenas__panel-stats">'
+    +     '<dt>' + dict.labelBase + '</dt><dd>P* = ' + _mlFmt(baseEq.p) + ' &middot; Q* = ' + _mlFmt(baseEq.q) + '</dd>'
+    +     '<dt>' + dict.labelPost + '</dt><dd>P* = ' + _mlFmt(postEq.p) + ' &middot; Q* = ' + _mlFmt(postEq.q) + '</dd>'
+    +     '<dt>' + dict.labelDelta + '</dt><dd>ΔP* = ' + _mlSign(dP) + _mlFmt(dP) + ' &middot; ΔQ* = ' + _mlSign(dQ) + _mlFmt(dQ) + '</dd>'
+    +     (extraRow || '')
+    +   '</dl>'
+    + '</div>';
+}
+
+function _mlRenderArrow(caso, dict) {
+  var label = caso.chainBroken ? dict.arrowBroken : dict.arrowIntact;
+  var cls = 'ml-cadenas__arrow' + (caso.chainBroken ? ' ml-cadenas__arrow--broken' : '');
+  return ''
+    + '<div class="' + cls + '" aria-hidden="true">'
+    +   '<span class="ml-cadenas__arrow-symbol"></span>'
+    +   '<span class="ml-cadenas__arrow-label">' + label + '</span>'
+    + '</div>';
+}
+
+function _mlRenderCadena(caso, dict) {
+  var sol = _mlSolveChain(caso);
+  var dPi = sol.deltaPi2;
+  var pi2Row = '<dt>' + dict.labelPi2 + '</dt>'
+             + '<dd>' + _mlFmt(sol.pi2Base) + ' → ' + _mlFmt(sol.pi2Post)
+             + ' (Δ = ' + _mlSign(dPi) + _mlFmt(dPi) + ')</dd>';
+  var mecanismoHtml = caso.mecanismo.map(function (m) {
+    return '<li>' + m + '</li>';
+  }).join('');
+  var politicaDict = (window.MercaLabI18n[window.MercaLabLang || 'es'] || {}).politica || {};
+  var labels = politicaDict.supuestoLabels || {};
+  var supLabel = labels[caso.supuestoEnTension] || caso.supuestoEnTension;
+  var supLink = caso.supuestoEnTension
+    ? '<p class="ml-cadenas__supuesto">' + dict.supuestoPrefix
+      + '<a href="#supuesto-' + caso.supuestoEnTension + '">' + supLabel + '</a></p>'
+    : '';
+  return ''
+    + '<p class="ml-cadenas__contexto">' + caso.contexto + '</p>'
+    + '<div class="ml-cadenas__mecanismo-title">' + dict.mecanismoTitle + '</div>'
+    + '<ul class="ml-cadenas__mecanismo">' + mecanismoHtml + '</ul>'
+    + '<div class="ml-cadenas__chain">'
+    +   _mlRenderPanel(dict.panelTagUpstream, caso.M1.nombre, sol.m1Base, sol.m1Post, dict)
+    +   _mlRenderArrow(caso, dict)
+    +   _mlRenderPanel(dict.panelTagDownstream, caso.M2.nombre, sol.m2Base, sol.m2Post, dict, pi2Row)
+    + '</div>'
+    + '<p class="ml-cadenas__leccion">' + caso.leccion + '</p>'
+    + supLink;
+}
+
+function _mlSetupCadenas(dict) {
+  var nav = document.querySelector('.ml-cadenas__selector');
+  var contenido = document.querySelector('.ml-cadenas__contenido');
+  var cad = dict.cadenas;
+  if (!nav || !contenido || !cad || !cad.casos || !cad.casos.length) return;
+
+  nav.innerHTML = cad.casos.map(function (c, i) {
+    var sel = i === 0 ? 'true' : 'false';
+    return '<button class="ml-cadenas__btn" role="tab" aria-selected="' + sel + '" data-caso="' + c.id + '">'
+         + c.nombre + '</button>';
+  }).join('');
+
+  function renderById(id) {
+    var caso = cad.casos.filter(function (c) { return c.id === id; })[0];
+    if (caso) contenido.innerHTML = _mlRenderCadena(caso, cad);
+  }
+  renderById(cad.casos[0].id);
+
+  nav.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('.ml-cadenas__btn');
+    if (!btn) return;
+    nav.querySelectorAll('.ml-cadenas__btn').forEach(function (b) {
+      b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+    });
+    renderById(btn.getAttribute('data-caso'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var lang = window.MercaLabLang || 'es';
+  var dict = window.MercaLabI18n[lang];
+  if (!dict) return;
+
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var path = el.getAttribute('data-i18n').split('.');
+    var val = dict;
+    for (var i = 0; i < path.length; i++) val = val && val[path[i]];
+    if (typeof val === 'string') el.textContent = val;
+  });
+
+  _mlSetupCadenas(dict);
 });
 </script>
 
