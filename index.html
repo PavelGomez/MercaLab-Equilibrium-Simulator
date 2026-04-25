@@ -289,6 +289,28 @@ hr.sep {
   .hero, .grid, .two-cols, .grid-3, .grid-4 { grid-template-columns:1fr; }
   header { position:static; }
 }
+.ml-supuestos {
+  --ml-accent: currentColor;
+  max-width: 760px;
+  margin: 2.5rem auto;
+  padding: 0 1rem;
+}
+.ml-supuestos__header h2 { margin: 0 0 .5rem; }
+.ml-supuestos__intro { line-height: 1.55; margin: 0 0 1.75rem; opacity: .85; }
+.ml-supuestos__list { display: grid; gap: 1.25rem; }
+.ml-supuestos__item {
+  border-left: 3px solid var(--ml-accent);
+  padding-left: 1rem;
+}
+.ml-supuestos__item-name { font-weight: 600; margin-bottom: .35rem; }
+.ml-supuestos__item-name a { color: inherit; text-decoration: none; }
+.ml-supuestos__item-name a:hover { text-decoration: underline; }
+.ml-supuestos__item-statement { margin: 0 0 .35rem; line-height: 1.5; }
+.ml-supuestos__item-implication { margin: 0; line-height: 1.5; opacity: .8; }
+.ml-supuestos__item-implication::before {
+  content: "Al violarse: ";
+  font-weight: 600;
+}
 </style>
 <script type="application/ld+json">
 {
@@ -333,6 +355,7 @@ hr.sep {
   <button class="tab" data-target="simulador">Simulador</button>
   <button class="tab" data-target="comparador">Comparador</button>
   <button class="tab" data-target="casos">Casos guiados</button>
+  <button class="tab" data-target="supuestos">Supuestos</button>
   <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
 </nav>
 
@@ -750,6 +773,14 @@ hr.sep {
   </div>
 </section>
 
+<section id="supuestos" class="section ml-supuestos">
+  <header class="ml-supuestos__header">
+    <h2 data-i18n="supuestos.titulo"></h2>
+    <p data-i18n="supuestos.intro" class="ml-supuestos__intro"></p>
+  </header>
+  <div class="ml-supuestos__list" role="list"></div>
+</section>
+
 <section id="ejemplo" class="section">
   <div class="grid">
     <div class="card">
@@ -778,6 +809,87 @@ hr.sep {
   </div>
 </section>
 </main>
+
+<script>
+/* ================================================================
+   i18n namespace compartido por sprints de MercaLab.
+   Para cambiar idioma, setear window.MercaLabLang = 'en' antes del DOMContentLoaded.
+   ================================================================ */
+window.MercaLabI18n = window.MercaLabI18n || { es: {}, en: {} };
+
+window.MercaLabI18n.es.supuestos = {
+  titulo: "Supuestos del modelo y qué implica violarlos",
+  intro: "El modelo de oferta y demanda lineal con el que trabaja el simulador no es una descripción de cómo se comporta cualquier mercado real, sino un punto de referencia analítico. Cada supuesto, cuando se viola, abre la puerta a otro modelo o a un instrumento de política. Lo que sigue lista los seis supuestos centrales y, para cada uno, qué cambia en la lectura del equilibrio cuando deja de cumplirse.",
+  items: [
+    {
+      id: "precio-aceptacion",
+      nombre: "1. Precio-aceptación",
+      enunciado: "Compradores y vendedores son lo bastante numerosos y pequeños como para que ninguno, individualmente, influya sobre el precio de mercado.",
+      implicacion: "aparece poder de mercado. La curva de demanda relevante para la firma deja de ser horizontal; la firma fija precio. El equilibrio competitivo del simulador deja de ser referente descriptivo y queda solo como referente normativo: el caso que un regulador querría replicar."
+    },
+    {
+      id: "informacion-perfecta",
+      nombre: "2. Información perfecta",
+      enunciado: "Compradores y vendedores conocen sin error precios, calidades y alternativas relevantes.",
+      implicacion: "aparecen selección adversa, riesgo moral y costos de búsqueda. Pueden coexistir múltiples precios para un mismo bien y la cantidad transada cae respecto del óptimo informado. El modelo lineal tiende a sobrestimar la liquidez del mercado."
+    },
+    {
+      id: "bien-homogeneo",
+      nombre: "3. Bien homogéneo",
+      enunciado: "El bien es indistinguible entre oferentes; los compradores son indiferentes a la identidad del vendedor.",
+      implicacion: "la diferenciación de producto rompe la noción de una única curva de demanda de mercado y genera competencia monopolística u oligopolio diferenciado. La elasticidad-precio percibida por la firma cae; cada firma adquiere algún margen sobre su costo marginal."
+    },
+    {
+      id: "sin-externalidades",
+      nombre: "4. Sin externalidades",
+      enunciado: "Los costos y beneficios privados coinciden con los costos y beneficios sociales.",
+      implicacion: "la cantidad de equilibrio privado es mayor que la socialmente eficiente cuando hay externalidad negativa, y menor cuando es positiva. La curva relevante para evaluar política es la curva social, no la privada; el equilibrio que muestra el simulador deja de ser óptimo."
+    },
+    {
+      id: "derechos-de-propiedad",
+      nombre: "5. Derechos de propiedad bien definidos",
+      enunciado: "Quién es dueño de qué, y bajo qué condiciones puede transferirse, es claro y exigible.",
+      implicacion: "sin propiedad clara y exigible, la oferta no se forma o se forma bajo expectativa de expropiación; aparece sobre-uso de recursos de acceso abierto (tragedia de los comunes) y los contratos no son enforzables. El modelo asume implícitamente un Estado que provee este andamiaje."
+    },
+    {
+      id: "costos-de-transaccion-nulos",
+      nombre: "6. Costos de transacción nulos",
+      enunciado: "Encontrar contraparte, negociar y hacer cumplir el intercambio no consume recursos.",
+      implicacion: "se forman mercados delgados o derechamente inexistentes para bienes que sería eficiente intercambiar; los intermediarios capturan rentas; el equilibrio efectivo se aleja del nivel que predice el modelo. La existencia misma de la firma (Coase, 1937) vive en este supuesto."
+    }
+  ]
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+  var lang = window.MercaLabLang || 'es';
+  var dict = window.MercaLabI18n[lang];
+  if (!dict) return;
+
+  // Bind nodes with [data-i18n]
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var path = el.getAttribute('data-i18n').split('.');
+    var val = dict;
+    for (var i = 0; i < path.length; i++) val = val && val[path[i]];
+    if (typeof val === 'string') el.textContent = val;
+  });
+
+  // Render supuestos list
+  var list = document.querySelector('.ml-supuestos__list');
+  var sup = dict.supuestos;
+  if (!list || !sup || !sup.items) return;
+  list.innerHTML = sup.items.map(function (item) {
+    var anchor = 'supuesto-' + item.id;
+    return ''
+      + '<div class="ml-supuestos__item" id="' + anchor + '" role="listitem">'
+      +   '<div class="ml-supuestos__item-name">'
+      +     '<a href="#' + anchor + '">' + item.nombre + '</a>'
+      +   '</div>'
+      +   '<p class="ml-supuestos__item-statement">' + item.enunciado + '</p>'
+      +   '<p class="ml-supuestos__item-implication">' + item.implicacion + '</p>'
+      + '</div>';
+  }).join('');
+});
+</script>
 
 <script>
 // TEXTO EDITABLE: casos guiados
