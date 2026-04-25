@@ -1296,8 +1296,8 @@ document.addEventListener('DOMContentLoaded', function () {
 window.MercaLabI18n = window.MercaLabI18n || { es: {}, en: {} };
 
 window.MercaLabI18n.es.cadenas = {
-  titulo: "Cadenas: tubo, válvula, propagación",
-  intro: "Esta pestaña aplica el modelo competitivo a dos mercados acoplados (insumo → bien final). El precio de equilibrio del mercado upstream funciona como precio del insumo del downstream: Pi₂ = P*₁. Sobre esa estructura distinguimos dos tipos de shock pertinentes al período 2018–2026: tubo (disrupción del corredor físico) y válvula (cierre discrecional con corredor abierto). El contraste hace visible un punto que el modelo single-market no expone por sí solo: la cadena puede romperse aunque el tubo siga abierto.",
+  titulo: "Cadenas: tubería, válvula, propagación",
+  intro: "Esta pestaña aplica el modelo competitivo a dos mercados acoplados (insumo → bien final). El precio de equilibrio del mercado upstream funciona como precio del insumo del downstream: Pi₂ = P*₁. Sobre esa estructura distinguimos dos tipos de shock pertinentes al período 2018–2026: tubería (disrupción del corredor físico) y válvula (cierre discrecional con corredor abierto). El contraste hace visible un punto que el modelo single-market no expone por sí solo: la cadena puede romperse aunque la tubería siga abierta.",
   arrowIntact: "Pi₂ = P*₁",
   arrowBroken: "Pi₂ ≠ P*₁ · cadena rota",
   mecanismoTitle: "Mecanismo",
@@ -1310,9 +1310,9 @@ window.MercaLabI18n.es.cadenas = {
   supuestoPrefix: "Supuesto en tensión: ",
   casos: [
     {
-      id: "tubo-ucrania",
-      tipo: "tubo",
-      nombre: "Tubo · Guerra de Ucrania (2022–) · Gas → Fertilizantes",
+      id: "tuberia-ucrania",
+      tipo: "tuberia",
+      nombre: "Tubería · Guerra de Ucrania (2022–) · Gas → Fertilizantes",
       contexto: "Tras la invasión rusa de Ucrania, las sanciones, la salida operativa de gasoductos (Nord Stream) y la redirección forzada de flujos energéticos contraen severamente el suministro de gas natural en Europa. Los fertilizantes nitrogenados, intensivos en gas, ven subir su costo de insumo y propagan el shock hacia la cadena agrícola.",
       mecanismo: [
         "<strong>N₁ ↓</strong> &middot; oferentes upstream excluidos por sanciones y por cierre operativo de ductos.",
@@ -1330,7 +1330,7 @@ window.MercaLabI18n.es.cadenas = {
         gamma: 2
       },
       chainBroken: false,
-      leccion: "El shock al tubo se transmite íntegramente hacia abajo: P*₁ sube, Pi₂ sube en igual cuantía, la oferta downstream se contrae y P*₂ sube mientras Q*₂ cae. La cadena funciona como canal de transmisión de la disrupción física. La exposición estructural —dependencia de M2 respecto de M1— se realiza en vulnerabilidad efectiva.",
+      leccion: "El shock a la tubería se transmite íntegramente hacia abajo: P*₁ sube, Pi₂ sube en igual cuantía, la oferta downstream se contrae y P*₂ sube mientras Q*₂ cae. La cadena funciona como canal de transmisión de la disrupción física. La exposición estructural —dependencia de M2 respecto de M1— se realiza en vulnerabilidad efectiva.",
       supuestoEnTension: "derechos-de-propiedad"
     },
     {
@@ -1355,7 +1355,7 @@ window.MercaLabI18n.es.cadenas = {
       },
       chainBroken: true,
       Pi2OverridePost: 80,
-      leccion: "Resultado contraintuitivo y diagnóstico para el marco tubo-válvula: P*₁ cae (Rusia vende con descuento a compradores no elegibles, China e India), mientras Pi₂ sube (la UE paga el precio mundial del sustituto). El tubo está abierto, pero la cadena hacia la UE está rota. La válvula puede bind sin que el corredor cierre — exactamente lo que el caso anclaje del marco busca exhibir.",
+      leccion: "Resultado contraintuitivo y diagnóstico para el marco tubería-válvula: P*₁ cae (Rusia vende con descuento a compradores no elegibles, China e India), mientras Pi₂ sube (la UE paga el precio mundial del sustituto). La tubería está abierta, pero la cadena hacia la UE está rota. La válvula puede bind sin que el corredor cierre — exactamente lo que el caso anclaje del marco busca exhibir.",
       supuestoEnTension: "precio-aceptacion"
     }
   ]
