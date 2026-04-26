@@ -1030,7 +1030,7 @@ Qs = β₀ + β₁·P − β₂·Pi + β₃·Tec + β₄·N</pre>
         <tr><td>α₁</td><td>2</td><td>Pendiente moderada; demanda algo inelástica en el equilibrio base.</td></tr>
         <tr><td>β₀</td><td>−20</td><td>Intercepto negativo: el mercado solo opera por encima de un precio mínimo de reserva.</td></tr>
         <tr><td>β₁</td><td>3</td><td>Oferta más elástica que la demanda en el equilibrio base.</td></tr>
-        <tr><td>Y, Ps, Pc, Pi, Tec, N, Exp</td><td>exógenas</td><td>Calibradas en valores neutros; el usuario las modifica en Simulador y Comparador.</td></tr>
+        <tr><td>Y, Ps, Pc, Pi, Tec, N, Exp</td><td>exógenas</td><td>Calibradas en valores neutros; el usuario las modifica en <a href="javascript:void(0)" onclick="activateTab('simulador')" style="color:inherit;">Simulador</a> y <a href="javascript:void(0)" onclick="activateTab('comparador')" style="color:inherit;">Comparador</a>.</td></tr>
       </tbody>
     </table>
     <p style="margin:0 0 1.5rem;line-height:1.55;">
@@ -1041,7 +1041,7 @@ Qs = β₀ + β₁·P − β₂·Pi + β₃·Tec + β₄·N</pre>
     </p>
 
     <p class="mini-title">Ejemplo trazado: shock de Pi en mercado acoplado</p>
-    <p style="margin:0 0 .75rem;line-height:1.55;">Para ilustrar cómo se traduce un shock en el resultado del simulador (en particular en la pestaña <strong>Cadenas</strong>), aquí va la traza algebraica completa de un alza del precio del insumo en un par de mercados acoplados.</p>
+    <p style="margin:0 0 .75rem;line-height:1.55;">Para ilustrar cómo se traduce un shock en el resultado del simulador (en particular en la pestaña <strong><a href="javascript:void(0)" onclick="activateTab('cadenas')" style="color:inherit;">Cadenas</a></strong>), aquí va la traza algebraica completa de un alza del precio del insumo en un par de mercados acoplados.</p>
     <pre style="background:#f1f4f8;padding:10px 14px;border-radius:8px;font-size:13px;overflow-x:auto;line-height:1.6;margin:0 0 .75rem;">Supuesto:    dos mercados acoplados; el precio del insumo Pi en el mercado
              aguas abajo se determina aguas arriba. β₂ = 1, ΔPi = +5.
 
@@ -1383,7 +1383,7 @@ function _mlRenderCaso(caso, labels) {
     var items = sups.map(function (s) {
       var lbl = (labels && labels[s.id]) || s.id;
       var nota = s.nota ? ' <em>(' + s.nota + ')</em>' : '';
-      return '<li><a href="#supuesto-' + s.id + '">' + lbl + '</a>' + nota + '</li>';
+      return '<li><a href="javascript:void(0)" onclick="goToAnchor(\'supuestos\',\'supuesto-' + s.id + '\')">' + lbl + '</a>' + nota + '</li>';
     }).join('');
     supLink = '<p class="ml-politica__supuesto">Supuestos en tensión:</p>'
             + '<ul class="ml-politica__supuestos-lista">' + items + '</ul>';
@@ -1563,7 +1563,7 @@ function _mlRenderCadena(caso, dict) {
     var supItems = sups.map(function (s) {
       var lbl = labels[s.id] || s.id;
       var nota = s.nota ? ' <em>(' + s.nota + ')</em>' : '';
-      return '<li><a href="#supuesto-' + s.id + '">' + lbl + '</a>' + nota + '</li>';
+      return '<li><a href="javascript:void(0)" onclick="goToAnchor(\'supuestos\',\'supuesto-' + s.id + '\')">' + lbl + '</a>' + nota + '</li>';
     }).join('');
     supLink = '<p class="ml-cadenas__supuesto">' + dict.supuestoPrefix.replace(/:\s*$/, ':') + '</p>'
             + '<ul class="ml-cadenas__supuestos-lista">' + supItems + '</ul>';
@@ -1896,6 +1896,14 @@ function activateTab(targetId) {
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.target === targetId));
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === targetId));
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToAnchor(tabId, anchorId) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.target === tabId));
+  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === tabId));
+  const el = document.getElementById(anchorId);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  else window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 document.querySelectorAll('.tab').forEach(btn => {
@@ -2497,9 +2505,9 @@ renderExampleChart();
   <p>
     MercaLab no entrega predicciones incondicionales. Entrega predicciones
     condicionales: dado este modelo y estos supuestos, esto debería ocurrir.
-    La pestaña <a href="#supuestos">Supuestos</a> indica cuándo cambiar el marco;
-    <a href="#politica">Política</a>, cómo intervenciones distintas operan dentro
-    y fuera del equilibrio; <a href="#cadenas">Cadenas</a>, cómo un shock se
+    La pestaña <a href="#supuestos" onclick="activateTab('supuestos'); return false;">Supuestos</a> indica cuándo cambiar el marco;
+    <a href="#politica" onclick="activateTab('politica'); return false;">Política</a>, cómo intervenciones distintas operan dentro
+    y fuera del equilibrio; <a href="#cadenas" onclick="activateTab('cadenas'); return false;">Cadenas</a>, cómo un shock se
     propaga (o se rompe) entre mercados acoplados.
   </p>
 </section>
