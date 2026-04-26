@@ -309,6 +309,15 @@ hr.sep {
   content: "Al violarse: ";
   font-weight: 600;
 }
+.ml-supuestos__advertencia {
+  margin-top: 2rem;
+  padding: 1rem 1.15rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-left: 3px solid currentColor;
+  border-radius: 4px;
+}
+.ml-supuestos__advertencia h3 { margin: 0 0 .5rem; font-size: 1rem; }
+.ml-supuestos__advertencia p { margin: 0; line-height: 1.55; }
 .ml-politica {
   --ml-accent: currentColor;
   margin: 2.5rem 0;
@@ -335,6 +344,14 @@ hr.sep {
 .ml-politica__nota { font-size: .85rem; opacity: .75; margin: .35rem 0 0; font-style: italic; }
 .ml-politica__supuesto { margin: 0 0 .35rem; font-size: .92rem; }
 .ml-politica__supuesto a { color: inherit; }
+.ml-politica__supuestos-lista {
+  margin: .25rem 0 .35rem 0;
+  padding-left: 1.25rem;
+  font-size: .92rem;
+}
+.ml-politica__supuestos-lista li { margin-bottom: .2rem; line-height: 1.5; }
+.ml-politica__supuestos-lista a { color: inherit; }
+.ml-politica__supuestos-lista em { opacity: .75; }
 .ml-politica__evidencia { margin-top: .5rem; }
 .ml-politica__evidencia summary { cursor: pointer; font-weight: 600; font-size: .92rem; }
 .ml-politica__evidencia-body {
@@ -358,6 +375,15 @@ hr.sep {
 }
 .ml-cadenas__header h2 { margin: 0 0 .5rem; }
 .ml-cadenas__intro { line-height: 1.55; margin: 0 0 1.5rem; opacity: .85; }
+.ml-cadenas__aviso {
+  margin: 0 0 1.5rem;
+  padding: .75rem 1rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-left: 2px solid currentColor;
+  font-size: .9rem;
+  line-height: 1.5;
+  opacity: .8;
+}
 .ml-cadenas__selector {
   display: flex; flex-wrap: wrap; gap: .5rem;
   margin-bottom: 1.5rem; padding-bottom: .85rem;
@@ -465,6 +491,14 @@ hr.sep {
 }
 .ml-cadenas__supuesto { margin: .5rem 0 0; font-size: .92rem; }
 .ml-cadenas__supuesto a { color: inherit; }
+.ml-cadenas__supuestos-lista {
+  margin: .25rem 0 .35rem 0;
+  padding-left: 1.25rem;
+  font-size: .92rem;
+}
+.ml-cadenas__supuestos-lista li { margin-bottom: .2rem; line-height: 1.5; }
+.ml-cadenas__supuestos-lista a { color: inherit; }
+.ml-cadenas__supuestos-lista em { opacity: .75; }
 </style>
 <script type="application/ld+json">
 {
@@ -491,9 +525,9 @@ hr.sep {
   <div class="header-wrap">
     <div class="header-top">
       <div>
-        <div class="eyebrow">MercaLab · Plataforma pedagógica 2026</div>
+        <div class="eyebrow">MercaLab · Laboratorio de razonamiento económico aplicado 2026</div>
         <h1>MercaLab Equilibrium Simulator</h1>
-        <div class="subtitle">Simulador gratuito de oferta y demanda para cursos de Introducción a la Economía. Permite analizar equilibrio de mercado, desplazamientos de demanda y oferta, elasticidades puntuales y efectos de shocks observables sobre variables exógenas como ingreso, precio de insumos, tecnología, expectativas, precios de bienes sustitutos y complementarios. Funciona en cualquier navegador, sin instalación; una vez descargado, puede usarse sin conexión a internet.</div>
+        <div class="subtitle">Laboratorio de razonamiento económico aplicado para cursos de Introducción a la Economía. Traduce eventos en variables exógenas, curvas y equilibrios; muestra cuándo el modelo competitivo basta, cuándo opera como primera aproximación y cuándo conviene cambiar de marco. Cubre simulación de equilibrio parcial, comparación de escenarios, supuestos y condiciones de validez, casos de política pública con evidencia, y propagación de shocks entre mercados acoplados. Funciona en cualquier navegador, sin instalación; una vez descargado, puede usarse sin conexión a internet.</div>
       </div>
       <div class="meta">
         <div class="meta-card"><div class="label">Curso</div><div class="value">Introducción a la Economía</div></div>
@@ -949,6 +983,7 @@ hr.sep {
   <header class="ml-cadenas__header">
     <h2 data-i18n="cadenas.titulo"></h2>
     <p data-i18n="cadenas.intro" class="ml-cadenas__intro"></p>
+    <p data-i18n="cadenas.aviso" class="ml-cadenas__aviso"></p>
   </header>
   <nav class="ml-cadenas__selector" role="tablist" aria-label="Selector de caso"></nav>
   <div class="ml-cadenas__contenido" role="tabpanel"></div>
@@ -1022,7 +1057,7 @@ window.MercaLabI18n.es.supuestos = {
       id: "derechos-de-propiedad",
       nombre: "5. Derechos de propiedad bien definidos",
       enunciado: "Quién es dueño de qué, y bajo qué condiciones puede transferirse, es claro y exigible.",
-      implicacion: "sin propiedad clara y exigible, la oferta no se forma o se forma bajo expectativa de expropiación; aparece sobre-uso de recursos de acceso abierto (tragedia de los comunes) y los contratos no son enforzables. El modelo asume implícitamente un Estado que provee este andamiaje."
+      implicacion: "sin propiedad clara y exigible, la oferta no se forma o se forma bajo expectativa de expropiación; aparece sobre-uso de recursos de acceso abierto (tragedia de los comunes) y los contratos no son enforzables. Aquí viven también los <strong>bienes públicos</strong> (no rivales y no excluibles, donde el mercado privado subprovee) y los <strong>recursos comunes</strong> (rivales pero no excluibles). El modelo asume implícitamente un Estado que provee este andamiaje."
     },
     {
       id: "costos-de-transaccion-nulos",
@@ -1030,7 +1065,11 @@ window.MercaLabI18n.es.supuestos = {
       enunciado: "Encontrar contraparte, negociar y hacer cumplir el intercambio no consume recursos.",
       implicacion: "se forman mercados delgados o derechamente inexistentes para bienes que sería eficiente intercambiar; los intermediarios capturan rentas; el equilibrio efectivo se aleja del nivel que predice el modelo. La existencia misma de la firma (Coase, 1937) vive en este supuesto."
     }
-  ]
+  ],
+  advertenciaFinal: {
+    titulo: "Advertencia final",
+    cuerpo: "Aun cuando los seis supuestos se cumplan y el modelo arroje un equilibrio competitivo eficiente, todavía pueden quedar preguntas que el modelo no responde: distribución (¿quién gana, quién pierde, en qué magnitud?), legitimidad y aceptabilidad social del resultado, velocidad de ajuste y rigideces de corto plazo, sostenibilidad ambiental, y factibilidad institucional. Eficiencia no es lo mismo que justicia, sostenibilidad o viabilidad política. El equilibrio del simulador es un punto de referencia analítico, no un veredicto normativo."
+  }
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -1061,6 +1100,16 @@ document.addEventListener('DOMContentLoaded', function () {
       +   '<p class="ml-supuestos__item-implication">' + item.implicacion + '</p>'
       + '</div>';
   }).join('');
+
+  // Renderiza la advertencia final, si existe
+  var contenedor = document.querySelector('.ml-supuestos');
+  if (contenedor && sup.advertenciaFinal) {
+    var adv = document.createElement('div');
+    adv.className = 'ml-supuestos__advertencia';
+    adv.innerHTML = '<h3>' + sup.advertenciaFinal.titulo + '</h3>'
+                  + '<p>' + sup.advertenciaFinal.cuerpo + '</p>';
+    contenedor.appendChild(adv);
+  }
 });
 </script>
 
@@ -1087,7 +1136,9 @@ window.MercaLabI18n.es.politica = {
       tipo: "impuesto-especifico",
       nombre: "Impuesto específico al tabaco",
       contexto: "Chile aplica un impuesto específico por gramo de tabaco. El modelo competitivo predice que la incidencia del impuesto entre consumidor y productor depende de las elasticidades relativas: con demanda más inelástica que la oferta —el caso típico del tabaco— el consumidor termina cargando la mayor parte.",
-      supuestoEnTension: "sin-externalidades",
+      supuestosEnTension: [
+        { id: "sin-externalidades", nota: "doble lectura: incidencia tributaria pura y/o corrección pigouviana" }
+      ],
       base: { alpha0: 80, alpha1: 1, beta0: -20, beta1: 4 },
       parametros: { impuesto: 5 }
     },
@@ -1096,7 +1147,10 @@ window.MercaLabI18n.es.politica = {
       tipo: "precio-piso",
       nombre: "Salario mínimo en mercado laboral competitivo",
       contexto: "En el modelo competitivo de mercado laboral, P es el salario y Q es el empleo. Si el salario mínimo se fija por encima del equilibrio, el modelo predice empleo restringido por el lado corto y exceso de oferta de trabajo (desempleo). Esa predicción descansa sobre supuestos cuya plausibilidad empírica está discutida.",
-      supuestoEnTension: "precio-aceptacion",
+      supuestosEnTension: [
+        { id: "precio-aceptacion", nota: "monopsonio del empleador" },
+        { id: "informacion-perfecta", nota: "fricciones de búsqueda; cumplimiento institucional" }
+      ],
       base: { alpha0: 100, alpha1: 2, beta0: -10, beta1: 3 },
       parametros: { precioPiso: 28 },
       evidencia: {
@@ -1122,7 +1176,9 @@ window.MercaLabI18n.es.politica = {
       tipo: "subsidio-especifico",
       nombre: "Subsidio al diésel",
       contexto: "Chile ha utilizado mecanismos de estabilización del precio de combustibles (MEPCO, subsidios transitorios). En el modelo, un subsidio específico por unidad opera como el simétrico de un impuesto: desplaza la oferta efectiva hacia abajo. La incidencia del subsidio (cuánto captura el consumidor y cuánto el productor) también depende de las elasticidades relativas.",
-      supuestoEnTension: "sin-externalidades",
+      supuestosEnTension: [
+        { id: "sin-externalidades", nota: "subsidio en tensión con externalidades ambientales locales" }
+      ],
       base: { alpha0: 50, alpha1: 1, beta0: -10, beta1: 2 },
       parametros: { subsidio: 6 }
     },
@@ -1131,7 +1187,9 @@ window.MercaLabI18n.es.politica = {
       tipo: "precio-techo",
       nombre: "Control de precio máximo al pan (caso histórico, Chile 1972)",
       contexto: "Bajo el gobierno de la Unidad Popular se aplicaron controles administrativos de precios sobre productos de consumo masivo (pan, harina, azúcar). El modelo competitivo predice que un precio máximo por debajo del equilibrio genera escasez: cantidad demandada mayor que cantidad ofrecida, con la cantidad transada limitada por el lado corto (la oferta).",
-      supuestoEnTension: "costos-de-transaccion-nulos",
+      supuestosEnTension: [
+        { id: "costos-de-transaccion-nulos", nota: "racionamiento, colas, fiscalización, deterioro de calidad, mercado paralelo" }
+      ],
       base: { alpha0: 100, alpha1: 2, beta0: -20, beta1: 3 },
       parametros: { precioTecho: 18 }
     }
@@ -1255,11 +1313,21 @@ function _mlRenderEvidencia(ev) {
 function _mlRenderCaso(caso, labels) {
   var renderer = _mlRenderers[caso.tipo];
   var bloqueResultado = renderer ? renderer(caso) : '';
-  var supLabel = (labels && labels[caso.supuestoEnTension]) || caso.supuestoEnTension;
-  var supLink = caso.supuestoEnTension
-    ? '<p class="ml-politica__supuesto">Supuesto en tensión: '
-      + '<a href="#supuesto-' + caso.supuestoEnTension + '">' + supLabel + '</a></p>'
-    : '';
+
+  // Normalizar: acepta supuestoEnTension (string, legacy) o supuestosEnTension (array)
+  var sups = caso.supuestosEnTension
+    || (caso.supuestoEnTension ? [{ id: caso.supuestoEnTension }] : []);
+  var supLink = '';
+  if (sups.length) {
+    var items = sups.map(function (s) {
+      var lbl = (labels && labels[s.id]) || s.id;
+      var nota = s.nota ? ' <em>(' + s.nota + ')</em>' : '';
+      return '<li><a href="#supuesto-' + s.id + '">' + lbl + '</a>' + nota + '</li>';
+    }).join('');
+    supLink = '<p class="ml-politica__supuesto">Supuestos en tensión:</p>'
+            + '<ul class="ml-politica__supuestos-lista">' + items + '</ul>';
+  }
+
   return ''
     + '<article class="ml-politica__caso" id="caso-' + caso.id + '" role="listitem">'
     +   '<h3>' + caso.nombre + '</h3>'
@@ -1298,6 +1366,7 @@ window.MercaLabI18n = window.MercaLabI18n || { es: {}, en: {} };
 window.MercaLabI18n.es.cadenas = {
   titulo: "Cadenas: tubería, válvula, propagación",
   intro: "Esta pestaña aplica el modelo competitivo a dos mercados acoplados (insumo → bien final). El precio de equilibrio del mercado upstream funciona como precio del insumo del downstream: Pi₂ = P*₁. Sobre esa estructura distinguimos dos tipos de shock pertinentes al período 2018–2026: tubería (disrupción del corredor físico) y válvula (cierre discrecional con corredor abierto). El contraste hace visible un punto que el modelo single-market no expone por sí solo: la cadena puede romperse aunque la tubería siga abierta.",
+  aviso: "Esta pestaña no modela una cadena de suministro completa: representa una versión mínima de dos mercados acoplados (insumo → bien final) para mostrar la lógica de propagación. En cadenas reales también importan inventarios, contratos, capacidad logística, sustitución de proveedores, poder de mercado, regulación, seguros, pagos y tiempos de ajuste. Estos quedan fuera del modelo aquí presentado.",
   arrowIntact: "Pi₂ = P*₁",
   arrowBroken: "Pi₂ ≠ P*₁ · cadena rota",
   mecanismoTitle: "Mecanismo",
@@ -1331,7 +1400,11 @@ window.MercaLabI18n.es.cadenas = {
       },
       chainBroken: false,
       leccion: "El shock a la tubería se transmite íntegramente hacia abajo: P*₁ sube, Pi₂ sube en igual cuantía, la oferta downstream se contrae y P*₂ sube mientras Q*₂ cae. La cadena funciona como canal de transmisión de la disrupción física. La exposición estructural —dependencia de M2 respecto de M1— se realiza en vulnerabilidad efectiva.",
-      supuestoEnTension: "derechos-de-propiedad"
+      supuestosEnTension: [
+        { id: "derechos-de-propiedad", nota: "acceso estable a infraestructura crítica" },
+        { id: "costos-de-transaccion-nulos", nota: "fletes, seguros, sustitución de proveedor son costosos" },
+        { id: "informacion-perfecta", nota: "expectativas y cobertura ante disrupción son imperfectas" }
+      ]
     },
     {
       id: "valvula-crudo-ruso",
@@ -1356,7 +1429,10 @@ window.MercaLabI18n.es.cadenas = {
       chainBroken: true,
       Pi2OverridePost: 80,
       leccion: "Resultado contraintuitivo y diagnóstico para el marco tubería-válvula: P*₁ cae (Rusia vende con descuento a compradores no elegibles, China e India), mientras Pi₂ sube (la UE paga el precio mundial del sustituto). La tubería está abierta, pero la cadena hacia la UE está rota. La válvula puede bind sin que el corredor cierre — exactamente lo que el caso anclaje del marco busca exhibir.",
-      supuestoEnTension: "precio-aceptacion"
+      supuestosEnTension: [
+        { id: "precio-aceptacion", nota: "G7+UE actúan como gran comprador coordinado vía servicios" },
+        { id: "bien-homogeneo", nota: "el crudo se vuelve heterogéneo por su origen elegible / no elegible" }
+      ]
     }
   ]
 };
@@ -1416,13 +1492,21 @@ function _mlRenderCadena(caso, dict) {
   var mecanismoHtml = caso.mecanismo.map(function (m) {
     return '<li>' + m + '</li>';
   }).join('');
+  // Enlaces a supuestos (acepta array nuevo o string legacy)
   var politicaDict = (window.MercaLabI18n[window.MercaLabLang || 'es'] || {}).politica || {};
   var labels = politicaDict.supuestoLabels || {};
-  var supLabel = labels[caso.supuestoEnTension] || caso.supuestoEnTension;
-  var supLink = caso.supuestoEnTension
-    ? '<p class="ml-cadenas__supuesto">' + dict.supuestoPrefix
-      + '<a href="#supuesto-' + caso.supuestoEnTension + '">' + supLabel + '</a></p>'
-    : '';
+  var sups = caso.supuestosEnTension
+    || (caso.supuestoEnTension ? [{ id: caso.supuestoEnTension }] : []);
+  var supLink = '';
+  if (sups.length) {
+    var supItems = sups.map(function (s) {
+      var lbl = labels[s.id] || s.id;
+      var nota = s.nota ? ' <em>(' + s.nota + ')</em>' : '';
+      return '<li><a href="#supuesto-' + s.id + '">' + lbl + '</a>' + nota + '</li>';
+    }).join('');
+    supLink = '<p class="ml-cadenas__supuesto">' + dict.supuestoPrefix.replace(/:\s*$/, ':') + '</p>'
+            + '<ul class="ml-cadenas__supuestos-lista">' + supItems + '</ul>';
+  }
   return ''
     + '<p class="ml-cadenas__contexto">' + caso.contexto + '</p>'
     + '<div class="ml-cadenas__mecanismo-title">' + dict.mecanismoTitle + '</div>'
@@ -2348,6 +2432,28 @@ updateSim();
 updateCmp();
 renderExampleChart();
 </script>
+<section class="ml-cierre">
+  <p>
+    MercaLab no entrega predicciones incondicionales. Entrega predicciones
+    condicionales: dado este modelo y estos supuestos, esto debería ocurrir.
+    La pestaña <a href="#supuestos">Supuestos</a> indica cuándo cambiar el marco;
+    <a href="#politica">Política</a>, cómo intervenciones distintas operan dentro
+    y fuera del equilibrio; <a href="#cadenas">Cadenas</a>, cómo un shock se
+    propaga (o se rompe) entre mercados acoplados.
+  </p>
+</section>
+<style>
+  .ml-cierre {
+    margin: 2.5rem 0 1.5rem;
+    padding: 1rem 1.15rem;
+    border-left: 3px solid currentColor;
+    background: rgba(0, 0, 0, 0.025);
+    font-size: .95rem;
+    line-height: 1.55;
+  }
+  .ml-cierre p { margin: 0; }
+  .ml-cierre a { color: inherit; }
+</style>
 <footer style="text-align:center;padding:16px;font-size:.85rem;color:#666;border-top:1px solid #eee;margin-top:32px">
   © 2026 Pável Gómez · Universidad Finis Terrae ·
   <a href="LICENSE_MercaLab.pdf" style="color:#666" target="_blank">CC BY-NC-SA 4.0</a><br>
