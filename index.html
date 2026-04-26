@@ -551,7 +551,6 @@ hr.sep {
   <button class="tab" data-target="supuestos">Supuestos</button>
   <button class="tab" data-target="politica">Política</button>
   <button class="tab" data-target="cadenas">Cadenas</button>
-  <button class="tab" data-target="ejemplo">Ejemplo resuelto</button>
 </nav>
 
 <main>
@@ -559,7 +558,7 @@ hr.sep {
   <div class="hero">
     <div class="card">
       <h2>Qué es esta plataforma</h2>
-      <p>Esta versión web permite trabajar el modelo de demanda y oferta con funciones lineales, calcular automáticamente el equilibrio y comparar escenarios antes y después de un shock. Está diseñada para apoyar el aprendizaje analítico del curso: no basta con decir “sube la demanda” o “baja la oferta”; se espera una explicación ordenada del mecanismo económico.</p>
+      <p>MercaLab es un laboratorio de razonamiento económico aplicado para Introducción a la Economía. Resuelve el modelo competitivo lineal de demanda y oferta y permite (i) simular escenarios y comparar antes/después de un shock, (ii) recorrer casos guiados con la secuencia evento → variable → curva → equilibrio, (iii) revisar los supuestos del marco competitivo y cuándo conviene cambiar de marco, (iv) trabajar casos de política pública con evidencia, y (v) propagar shocks entre mercados acoplados. El énfasis está en la disciplina causal del mecanismo, no en el resultado numérico.</p>
       <div class="callout">
         <strong>Discusión causal esperada:</strong> <span>evento → variable → curva → equilibrio.</span>
         <ul class="checklist">
@@ -646,6 +645,7 @@ hr.sep {
         <div class="step"><div class="step-num">4</div><div><strong>Luego use “Comparador”.</strong> Ingrese un escenario base y después los valores post-shock. La plataforma mostrará el antes, el después y los cambios en <strong>ΔP</strong> y <strong>ΔQ</strong>.</div></div>
         <div class="step"><div class="step-num">5</div><div><strong>Explique el mecanismo.</strong> La respuesta esperada debe seguir la cadena <strong>evento → variable → curva → equilibrio</strong>. No basta con reportar números o decir “sube/baja”.</div></div>
         <div class="step"><div class="step-num">6</div><div><strong>Registrar resultados.</strong> Para tareas o discusión en clase, anote las ecuaciones y los valores de <strong>P*</strong> y <strong>Q*</strong>, o tome una captura de pantalla del escenario trabajado.</div></div>
+        <div class="step"><div class="step-num">★</div><div>Si es tu primera vez, comienza por <strong>Casos guiados → Caso 0 (Ejemplo de referencia)</strong> para ver la plantilla de lectura aplicada paso a paso.</div></div>
       </div>
 
       <hr class="sep">
@@ -690,7 +690,7 @@ hr.sep {
           <li>Use <strong>Simulador</strong> para demostración inicial.</li>
           <li>Pase luego a <strong>Comparador</strong> para ejercicios de shock.</li>
           <li>Pida primero una predicción verbal, y solo después permita verificar con la plataforma.</li>
-          <li>Use <strong>Ejemplo resuelto</strong> como estándar mínimo de calidad explicativa.</li>
+          <li>Use <strong><a href="#casos" onclick="activateTab('casos')" style="color:inherit;">Casos guiados → Caso 0 (Ejemplo de referencia)</a></strong> como estándar mínimo de calidad explicativa.</li>
         </ol>
       </div>
       <div class="quick-box" style="margin-top:14px;">
@@ -963,6 +963,35 @@ hr.sep {
     <h2>Casos guiados</h2>
     <p class="note">Estos casos están diseñados para aprovechar una fortaleza central del simulador: trabajar con <strong>variables exógenas explícitas</strong>, no solo con cambios mecánicos en interceptos. La secuencia sugerida es: leer el evento, traducirlo a la variable relevante, anticipar el desplazamiento de curva y recién después verificarlo en el simulador o en el comparador.</p>
     <div class="warning"><strong>Sugerencia de uso:</strong> antes de tocar los parámetros, pide una predicción verbal breve del tipo <em>evento → variable → curva → equilibrio</em>.</div>
+
+    <div id="caso-0" style="margin-top:16px;padding:16px;background:#fcfdff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 18px rgba(24,49,83,.05);">
+      <div class="case-top">
+        <div>
+          <h3 class="case-title">Caso 0 · Ejemplo de referencia</h3>
+        </div>
+        <div class="case-num">0</div>
+      </div>
+      <p style="margin:0 0 12px;font-style:italic;">Caso introductorio que fija la plantilla de lectura del resto de los casos guiados: evento → variable → curva → equilibrio.</p>
+      <div class="badge" style="margin-bottom:12px;">Estándar mínimo de explicación esperada</div>
+      <ol class="checklist" style="margin-top:8px;">
+        <li><strong>Equilibrio base:</strong> <code class="inline">Qd = 120 - P</code> y <code class="inline">Qs = -30 + 2P</code>. Se obtiene <strong>P* = 50</strong> y <strong>Q* = 70</strong>.</li>
+        <li><strong>Evento:</strong> una disrupción geopolítica reduce la capacidad efectiva de oferta.</li>
+        <li><strong>Variable / curva:</strong> cae la oferta; la curva de oferta se desplaza a la <strong>izquierda</strong>.</li>
+        <li><strong>Nueva oferta:</strong> <code class="inline">Qs' = -60 + 2P</code>. La demanda no cambia.</li>
+        <li><strong>Nuevo equilibrio:</strong> <strong>P* = 60</strong> y <strong>Q* = 60</strong>.</li>
+        <li><strong>Lectura económica:</strong> sube el precio y cae la cantidad, porque el ajuste viene desde la oferta.</li>
+      </ol>
+      <div class="footer-note">Obsérvese que aquí el cambio relevante es un desplazamiento de oferta; la demanda no se desplaza. Lo que cambia del lado de la demanda es la cantidad demandada a lo largo de la curva.</div>
+      <h4 style="margin:16px 0 8px;font-size:15px;">Representación gráfica</h4>
+      <svg id="exampleChart" viewBox="0 0 760 420" aria-label="Contracción de oferta: ejemplo resuelto"></svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:#355cde"></i> Demanda</span>
+        <span><i class="swatch" style="background:#d94f3b"></i> Oferta inicial</span>
+        <span><i class="swatch" style="background:#ea580c"></i> Oferta post</span>
+        <span><i class="swatch" style="background:#0f766e"></i> Equilibrios</span>
+      </div>
+    </div>
+
     <div id="caseCards" class="cases-grid" style="margin-top:14px;"></div>
     <div class="edit-tip">Para modificar o reemplazar estos casos, busca en el archivo <code class="inline">index.html</code> la sección <strong>TEXTO EDITABLE: casos guiados</strong>.</div>
   </div>
@@ -974,6 +1003,60 @@ hr.sep {
     <p data-i18n="supuestos.intro" class="ml-supuestos__intro"></p>
   </header>
   <div class="ml-supuestos__list" role="list"></div>
+
+  <div id="especificacion-calibracion" style="margin-top:2rem;padding:1rem 1.15rem;background:rgba(0,0,0,0.03);border-left:3px solid currentColor;border-radius:4px;">
+    <h3 style="margin:0 0 1rem;font-size:1.1rem;">Especificación funcional y calibración</h3>
+
+    <p class="mini-title">Especificación funcional</p>
+    <p style="margin:0 0 .75rem;line-height:1.55;">El simulador resuelve el modelo competitivo lineal con las siguientes funciones de demanda y oferta. Los signos de los coeficientes recogen los supuestos teóricos estándar; los valores numéricos de la calibración por defecto se justifican en el bloque siguiente.</p>
+    <pre style="background:#f1f4f8;padding:10px 14px;border-radius:8px;font-size:13px;overflow-x:auto;line-height:1.6;margin:0 0 .75rem;">Qd = α₀ − α₁·P + α₂·Y + α₃·Ps + α₄·Pc + α₅·Exp
+Qs = β₀ + β₁·P − β₂·Pi + β₃·Tec + β₄·N</pre>
+    <ul class="checklist" style="margin:0 0 1.5rem;">
+      <li>α₁, β₁ &gt; 0: efectos de precio propio (pendientes con signo correcto en cada curva).</li>
+      <li>α₂ &gt; 0 si el bien es normal; α₂ &lt; 0 si es inferior.</li>
+      <li>α₃ &gt; 0 (sustituto), α₄ &lt; 0 (complemento).</li>
+      <li>α₅: signo según naturaleza de la expectativa (positivo si se espera escasez/alza futura).</li>
+      <li>β₂ &gt; 0: el alza del precio del insumo desplaza la oferta a la izquierda.</li>
+      <li>β₃, β₄ &gt; 0: mejora tecnológica y mayor número de oferentes desplazan la oferta a la derecha.</li>
+    </ul>
+
+    <p class="mini-title">Calibración por defecto</p>
+    <table style="margin-bottom:.75rem;">
+      <thead>
+        <tr><th>Parámetro</th><th>Valor</th><th>Justificación breve</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>α₀</td><td>179</td><td>Intercepto de demanda que sitúa el equilibrio base en P* ≈ 40, Q* ≈ 99.</td></tr>
+        <tr><td>α₁</td><td>2</td><td>Pendiente moderada; demanda algo inelástica en el equilibrio base.</td></tr>
+        <tr><td>β₀</td><td>−20</td><td>Intercepto negativo: el mercado solo opera por encima de un precio mínimo de reserva.</td></tr>
+        <tr><td>β₁</td><td>3</td><td>Oferta más elástica que la demanda en el equilibrio base.</td></tr>
+        <tr><td>Y, Ps, Pc, Pi, Tec, N, Exp</td><td>exógenas</td><td>Calibradas en valores neutros; el usuario las modifica en Simulador y Comparador.</td></tr>
+      </tbody>
+    </table>
+    <p style="margin:0 0 1.5rem;line-height:1.55;">
+      Equilibrio base: 179 − 2·P = −20 + 3·P &nbsp;→&nbsp; 5·P = 199 &nbsp;→&nbsp; <strong>P* = 39.8</strong>, <strong>Q* = 99.4</strong>.<br>
+      Elasticidad-precio de la demanda en el equilibrio: ε_d = −α₁·(P*/Q*) ≈ <strong>−0.80</strong> (inelástica).<br>
+      Elasticidad-precio de la oferta en el equilibrio: ε_s = β₁·(P*/Q*) ≈ <strong>+1.20</strong> (ligeramente elástica).<br>
+      Esta calibración es ilustrativa, no estimada: su propósito es generar equilibrios con números enteros o casi enteros, signos correctos y elasticidades realistas para Introducción a la Economía.
+    </p>
+
+    <p class="mini-title">Ejemplo trazado: shock de Pi en mercado acoplado</p>
+    <p style="margin:0 0 .75rem;line-height:1.55;">Para ilustrar cómo se traduce un shock en el resultado del simulador (en particular en la pestaña <strong>Cadenas</strong>), aquí va la traza algebraica completa de un alza del precio del insumo en un par de mercados acoplados.</p>
+    <pre style="background:#f1f4f8;padding:10px 14px;border-radius:8px;font-size:13px;overflow-x:auto;line-height:1.6;margin:0 0 .75rem;">Supuesto:    dos mercados acoplados; el precio del insumo Pi en el mercado
+             aguas abajo se determina aguas arriba. β₂ = 1, ΔPi = +5.
+
+Paso 1 — Shock exógeno:        ΔPi = +5.
+Paso 2 — Desplazamiento:       cae el intercepto efectivo de oferta en β₂·ΔPi = 5;
+                               β₀' = −20 − 5 = −25. La demanda no cambia.
+Paso 3 — Nuevo equilibrio:     179 − 2·P = −25 + 3·P
+                               5·P = 204  →  P*' = 40.8,  Q*' = 97.4.
+
+Resultado:   ΔP* = +1.0,  ΔQ* = −2.0.
+Lectura:     sube el precio y cae la cantidad, consistente con contracción
+             de oferta inducida por costo de insumo. La magnitud depende de
+             β₂ (intensidad del acoplamiento) y de las elasticidades relativas.</pre>
+    <p style="margin:0;line-height:1.55;">Toda predicción de Cadenas se construye con esta misma mecánica: un shock paramétrico aguas arriba modifica el intercepto efectivo de la curva relevante aguas abajo, y el simulador resuelve el nuevo equilibrio. Cambiar β₂ cambia la magnitud de la propagación; ponerlo en cero rompe el acoplamiento.</p>
+  </div>
 </section>
 
 <section id="politica" class="section ml-politica">
@@ -994,33 +1077,6 @@ hr.sep {
   <div class="ml-cadenas__contenido" role="tabpanel"></div>
 </section>
 
-<section id="ejemplo" class="section">
-  <div class="grid">
-    <div class="card">
-      <h2>Ejemplo resuelto</h2>
-      <div class="badge">Estándar mínimo de explicación esperada</div>
-      <ol class="checklist" style="margin-top:14px;">
-        <li><strong>Equilibrio base:</strong> <code class="inline">Qd = 120 - P</code> y <code class="inline">Qs = -30 + 2P</code>. Se obtiene <strong>P* = 50</strong> y <strong>Q* = 70</strong>.</li>
-        <li><strong>Evento:</strong> una disrupción geopolítica reduce la capacidad efectiva de oferta.</li>
-        <li><strong>Variable / curva:</strong> cae la oferta; la curva de oferta se desplaza a la <strong>izquierda</strong>.</li>
-        <li><strong>Nueva oferta:</strong> <code class="inline">Qs' = -60 + 2P</code>. La demanda no cambia.</li>
-        <li><strong>Nuevo equilibrio:</strong> <strong>P* = 60</strong> y <strong>Q* = 60</strong>.</li>
-        <li><strong>Lectura económica:</strong> sube el precio y cae la cantidad, porque el ajuste viene desde la oferta.</li>
-      </ol>
-      <div class="footer-note">Obsérvese que aquí el cambio relevante es un desplazamiento de oferta; la demanda no se desplaza. Lo que cambia del lado de la demanda es la cantidad demandada a lo largo de la curva.</div>
-    </div>
-    <div class="card">
-      <h2>Representación gráfica</h2>
-      <svg id="exampleChart" viewBox="0 0 760 420" aria-label="Ejemplo resuelto"></svg>
-      <div class="legend">
-        <span><i class="swatch" style="background:#355cde"></i> Demanda</span>
-        <span><i class="swatch" style="background:#d94f3b"></i> Oferta inicial</span>
-        <span><i class="swatch" style="background:#ea580c"></i> Oferta post</span>
-        <span><i class="swatch" style="background:#0f766e"></i> Equilibrios</span>
-      </div>
-    </div>
-  </div>
-</section>
 </main>
 
 <script>
