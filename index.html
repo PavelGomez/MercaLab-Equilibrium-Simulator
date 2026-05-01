@@ -577,16 +577,15 @@ hr.sep {
 <body>
 <div class="top-strip">MercaLab · Laboratorio de razonamiento económico aplicado 2026</div>
 <header>
-  <div class="header-wrap">
-    <div class="header-top">
+  <div class="header-wrap" style="padding:10px 24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
       <div>
-        <h1>MercaLab Equilibrium Simulator</h1>
-        <div class="subtitle">Laboratorio de razonamiento económico aplicado para cursos de Introducción a la Economía. Traduce eventos en variables exógenas, curvas y equilibrios; muestra cuándo el modelo competitivo basta, cuándo opera como primera aproximación y cuándo conviene cambiar de marco. Cubre simulación de equilibrio parcial, comparación de escenarios, supuestos y condiciones de validez, casos de política pública con evidencia, y propagación de shocks entre mercados acoplados. Funciona en cualquier navegador, sin instalación; una vez descargado, puede usarse sin conexión a internet.</div>
+        <div class="eyebrow">Laboratorio de razonamiento económico aplicado</div>
+        <h1 style="font-size:20px;margin:2px 0 0;">MercaLab Equilibrium Simulator</h1>
       </div>
-      <div class="meta">
-        <div class="meta-card"><div class="label">Curso</div><div class="value">Introducción a la Economía</div></div>
-        <div class="meta-card"><div class="label">Profesor</div><div class="value">Pável Gómez Valera</div></div>
-        <div class="meta-card"><div class="label">Año</div><div class="value">2026</div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:12px;color:var(--muted);background:var(--soft-blue);border:1px solid #cad8ee;border-radius:8px;padding:4px 10px;">Introducción a la Economía</span>
+        <span style="font-size:12px;color:var(--muted);background:var(--soft-blue);border:1px solid #cad8ee;border-radius:8px;padding:4px 10px;">Pável Gómez Valera · 2026</span>
       </div>
     </div>
   </div>
@@ -2719,11 +2718,9 @@ function updateCmp() {
 function renderExampleChart() {
   const base = {A:120, B:1, C:-30, D:2, eqP:50, eqQ:70};
   const post = {A:120, B:1, C:-60, D:2, eqP:60, eqQ:60};
+  // Solo sombrear el equilibrio base para evitar solapamiento de etiquetas EC/EP
   const sb = computeSurplus(base);
-  const sp = computeSurplus(post);
-  const shades = [];
-  if (sb) shades.push({Pd_max: sb.Pd_max, Ps_min: sb.Ps_min, eqP: base.eqP, eqQ: base.eqQ});
-  if (sp) shades.push({Pd_max: sp.Pd_max, Ps_min: sp.Ps_min, eqP: post.eqP, eqQ: post.eqQ});
+  const shades = sb ? [{Pd_max: sb.Pd_max, Ps_min: sb.Ps_min, eqP: base.eqP, eqQ: base.eqQ}] : [];
   const domLabels = [{pdMax: base.A / base.B, psMin: Math.max(0, -base.C / base.D)}];
   svgChart($('exampleChart'), [
     {type:'demand', market:base, color:'#355cde'},
