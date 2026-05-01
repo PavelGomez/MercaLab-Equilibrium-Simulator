@@ -512,6 +512,47 @@ hr.sep {
 .ml-cadenas__rep-table td:first-child { font-weight: 600; }
 .ml-cadenas__rep-nota { margin: .5rem 0 0; font-size: .82rem; opacity: .75; line-height: 1.5; }
 .top-strip { background: #0f172a; color: #fff; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; padding: 7px 24px; }
+
+/* ── Sticky first-timer banner ────────────────────────────────── */
+.first-time-banner {
+  position: sticky; top: 54px; z-index: 39;
+  background: #fef08a; border-bottom: 2px solid #ca8a04;
+  padding: 7px 24px; display: flex; align-items: center; gap: 12px;
+  font-weight: 700; font-size: 13px; color: #78350f;
+  margin: -24px -24px 20px -24px;
+}
+.first-time-banner button {
+  background: #ca8a04; color: #fff; border: none;
+  padding: 4px 14px; border-radius: 999px; cursor: pointer;
+  font-weight: 700; font-size: 12px;
+}
+
+/* ── Collapsible parameter groups ─────────────────────────────── */
+.param-details { display: block; }
+.param-details summary {
+  cursor: pointer; user-select: none;
+  list-style: none; display: flex; align-items: center;
+  justify-content: space-between;
+}
+.param-details summary::-webkit-details-marker { display: none; }
+.param-details summary .table-title { margin: 0; flex: 1; }
+.param-details summary::after {
+  content: '▼'; font-size: 10px; color: var(--muted); margin-left: 6px;
+}
+.param-details[open] > summary::after { content: '▲'; }
+
+/* ── Surplus / bienestar ──────────────────────────────────────── */
+.surplus-panel { margin-top: 12px; }
+.surplus-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-top: 8px;
+}
+.surplus-kpi {
+  padding: 10px 12px; border-radius: 12px;
+  border: 1px solid #b8ddc2; background: var(--soft-green);
+}
+.surplus-kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.surplus-kpi .value { font-size: 18px; font-weight: 700; margin-top: 3px; font-family: monospace; }
 </style>
 <script type="application/ld+json">
 {
@@ -552,93 +593,78 @@ hr.sep {
 </header>
 <nav>
   <button class="tab active" data-target="inicio">Inicio</button>
-  <button class="tab" data-target="uso">Cómo usar</button>
   <button class="tab" data-target="simulador">Simulador</button>
   <button class="tab" data-target="comparador">Comparador</button>
-  <button class="tab" data-target="casos">Casos guiados</button>
-  <button class="tab" data-target="supuestos">Supuestos</button>
-  <button class="tab" data-target="politica">Política</button>
+  <button class="tab" data-target="casos">Casos</button>
+  <button class="tab" data-target="marco-teorico">Marco teórico</button>
   <button class="tab" data-target="cadenas">Cadenas</button>
 </nav>
 
 <main>
 <section id="inicio" class="section active">
-  <div class="hero">
-    <div class="card">
-      <h2>Qué es esta plataforma</h2>
-      <p>MercaLab es un laboratorio de razonamiento económico aplicado para Introducción a la Economía. Resuelve el modelo competitivo lineal de demanda y oferta y permite (i) simular escenarios y comparar antes/después de un shock, (ii) recorrer casos guiados con la secuencia evento → variable → curva → equilibrio, (iii) revisar los supuestos del marco competitivo y cuándo conviene cambiar de marco, (iv) trabajar casos de política pública con evidencia, y (v) propagar shocks entre mercados acoplados. El énfasis está en la disciplina causal del mecanismo, no en el resultado numérico.</p>
-      <div class="callout">
-        <strong>Discusión causal esperada:</strong> <span>evento → variable → curva → equilibrio.</span>
-        <ul class="checklist">
-          <li><strong>Evento:</strong> ¿qué pasó en la realidad o en el caso?</li>
-          <li><strong>Variable:</strong> ¿qué variable exógena del modelo cambió?</li>
-          <li><strong>Curva:</strong> ¿qué curva se desplaza y en qué dirección?</li>
-          <li><strong>Equilibrio:</strong> ¿qué ocurre con el precio y la cantidad de equilibrio?</li>
-        </ul>
-      </div>
-      <hr class="sep">
-      <!-- TEXTO EDITABLE: ejemplo causal de Inicio -->
-      <h3>Ejemplo breve ilustrativo</h3>
-      <p><strong>Evento:</strong> mejora el mercado laboral y sube el ingreso disponible de los hogares.<br>
-      <strong>Variable:</strong> en el modelo, esto se representa como un aumento de <code class="inline">Y</code>.<br>
-      <strong>Curva:</strong> si el bien es normal, la <strong>demanda</strong> se desplaza a la <strong>derecha</strong>.<br>
-      <strong>Equilibrio:</strong> si la oferta no cambia, tienden a subir <strong>P*</strong> y <strong>Q*</strong>.</p>
-      <div class="footer-note">Conviene distinguir el <strong>evento</strong> (hecho del caso) de la <strong>variable</strong> (cómo traducimos ese hecho al modelo). Mientras más claro sea ese paso de traducción, mejor será la explicación causal.</div>
+  <div class="card" style="max-width:700px;margin:0 auto;">
+    <h2 style="margin-bottom:8px;">MercaLab Equilibrium Simulator</h2>
+    <p style="margin:0 0 18px;font-size:15px;color:var(--muted);">Laboratorio de razonamiento económico aplicado. Traduce eventos en variables exógenas, curvas y equilibrios bajo la secuencia <strong>evento → variable → curva → equilibrio</strong>.</p>
+    <div class="actions" style="margin-top:0;">
+      <button onclick="activateTab('casos'); setTimeout(()=>document.getElementById('caso-0').scrollIntoView({behavior:'smooth'}),80);" style="font-size:15px;padding:12px 24px;">Comenzar → Caso 0</button>
     </div>
-
-    <div class="card">
-      <h2>Configuración base por defecto</h2>
-      <div class="output">
-        <strong>Demanda efectiva</strong>
-        <span id="baseDemandEq"></span>
+    <hr class="sep" style="margin-top:18px;">
+    <details>
+      <summary style="cursor:pointer;font-weight:700;color:var(--navy);list-style:none;display:flex;align-items:center;gap:6px;user-select:none;">
+        <span>Más información</span><span style="font-size:10px;color:var(--muted);">▼</span>
+      </summary>
+      <div style="margin-top:14px;">
+        <div class="hero">
+          <div>
+            <p>MercaLab resuelve el modelo competitivo lineal de demanda y oferta y permite (i) simular escenarios y comparar antes/después de un shock, (ii) recorrer casos guiados con la secuencia evento → variable → curva → equilibrio, (iii) revisar los supuestos del marco competitivo y cuándo conviene cambiar de marco, (iv) trabajar casos de política pública con evidencia, y (v) propagar shocks entre mercados acoplados.</p>
+            <div class="callout">
+              <strong>Discusión causal esperada:</strong> <span>evento → variable → curva → equilibrio.</span>
+              <ul class="checklist">
+                <li><strong>Evento:</strong> ¿qué pasó en la realidad o en el caso?</li>
+                <li><strong>Variable:</strong> ¿qué variable exógena del modelo cambió?</li>
+                <li><strong>Curva:</strong> ¿qué curva se desplaza y en qué dirección?</li>
+                <li><strong>Equilibrio:</strong> ¿qué ocurre con el precio y la cantidad de equilibrio?</li>
+              </ul>
+            </div>
+            <!-- TEXTO EDITABLE: ejemplo causal de Inicio -->
+            <hr class="sep">
+            <h3>Ejemplo breve ilustrativo</h3>
+            <p><strong>Evento:</strong> mejora el mercado laboral y sube el ingreso disponible de los hogares.<br>
+            <strong>Variable:</strong> en el modelo, esto se representa como un aumento de <code class="inline">Y</code>.<br>
+            <strong>Curva:</strong> si el bien es normal, la <strong>demanda</strong> se desplaza a la <strong>derecha</strong>.<br>
+            <strong>Equilibrio:</strong> si la oferta no cambia, tienden a subir <strong>P*</strong> y <strong>Q*</strong>.</p>
+          </div>
+          <div>
+            <h3>Configuración base por defecto</h3>
+            <div class="output"><strong>Demanda efectiva</strong><span id="baseDemandEq"></span></div>
+            <div class="output"><strong>Oferta efectiva</strong><span id="baseSupplyEq"></span></div>
+            <div class="kpis" style="margin-top:10px;">
+              <div class="kpi"><div class="label">Precio de equilibrio</div><div id="baseP" class="value"></div></div>
+              <div class="kpi"><div class="label">Cantidad de equilibrio</div><div id="baseQ" class="value"></div></div>
+            </div>
+            <div class="footer-note" style="margin-top:10px;">Esta configuración sirve como punto de partida. En <strong>Simulador</strong> puedes modificar parámetros y variables.</div>
+            <hr class="sep">
+            <h3>Parámetros de demanda</h3>
+            <ul class="checklist">
+              <li><code class="inline">α₀</code>: demanda autónoma (intercepto).</li>
+              <li><code class="inline">α₁</code>: sensibilidad al precio propio.</li>
+              <li><code class="inline">α₂</code> con <code class="inline">Y</code>: ingreso.</li>
+              <li><code class="inline">α₃</code> con <code class="inline">Ps</code>: precio del sustituto.</li>
+              <li><code class="inline">α₄</code> con <code class="inline">Pc</code>: precio del complemento.</li>
+              <li><code class="inline">α₅</code> con <code class="inline">Exp</code>: expectativas (-1, 0, 1).</li>
+            </ul>
+            <h3 style="margin-top:12px;">Parámetros de oferta</h3>
+            <ul class="checklist">
+              <li><code class="inline">β₀</code>: oferta autónoma (intercepto).</li>
+              <li><code class="inline">β₁</code>: sensibilidad al precio propio.</li>
+              <li><code class="inline">β₂</code> con <code class="inline">Pi</code>: precio del insumo.</li>
+              <li><code class="inline">β₃</code> con <code class="inline">Tec</code>: tecnología.</li>
+              <li><code class="inline">β₄</code> con <code class="inline">N</code>: número de oferentes.</li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="output">
-        <strong>Oferta efectiva</strong>
-        <span id="baseSupplyEq"></span>
-      </div>
-      <div class="kpis" style="margin-top:10px;">
-        <div class="kpi"><div class="label">Precio de equilibrio</div><div id="baseP" class="value"></div></div>
-        <div class="kpi"><div class="label">Cantidad de equilibrio</div><div id="baseQ" class="value"></div></div>
-      </div>
-      <div class="footer-note">Esta configuración sirve como punto de partida. En <strong>Simulador</strong> puedes modificar parámetros y variables; en <strong>Comparador</strong> puedes analizar un antes y un después.</div>
-      <div class="actions">
-        <button onclick="activateTab('simulador')">Ir al simulador</button>
-        <button class="secondary" onclick="activateTab('comparador')">Ir al comparador</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid-3" style="margin-top:20px;">
-    <div class="card">
-      <h3>Parámetros de demanda</h3>
-      <ul class="checklist">
-        <li><code class="inline">α₀</code>: intercepto.</li>
-        <li><code class="inline">α₁</code>: coeficiente del precio propio.</li>
-        <li><code class="inline">α₂</code> con <code class="inline">Y</code>: ingreso.</li>
-        <li><code class="inline">α₃</code> con <code class="inline">Ps</code>: precio del sustituto.</li>
-        <li><code class="inline">α₄</code> con <code class="inline">Pc</code>: precio del complemento.</li>
-        <li><code class="inline">α₅</code> con <code class="inline">Exp</code>: expectativas.</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3>Parámetros de oferta</h3>
-      <ul class="checklist">
-        <li><code class="inline">β₀</code>: intercepto.</li>
-        <li><code class="inline">β₁</code>: coeficiente del precio propio.</li>
-        <li><code class="inline">β₂</code> con <code class="inline">Pi</code>: precio del insumo.</li>
-        <li><code class="inline">β₃</code> con <code class="inline">Tec</code>: tecnología.</li>
-        <li><code class="inline">β₄</code> con <code class="inline">N</code>: número de oferentes.</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3>Lectura de colores</h3>
-      <ul class="checklist">
-        <li><strong>Campos amarillos:</strong> entradas editables.</li>
-        <li><strong>Resultados rosados:</strong> salidas calculadas.</li>
-        <li><strong>Gráficos:</strong> muestran solo el primer cuadrante, de modo que las curvas parten desde los ejes.</li>
-        <li><strong>Exp:</strong> usar <strong>-1</strong>, <strong>0</strong> o <strong>1</strong>.</li>
-      </ul>
-    </div>
+    </details>
   </div>
 </section>
 
@@ -714,6 +740,10 @@ hr.sep {
 </section>
 
 <section id="simulador" class="section">
+  <div class="first-time-banner">
+    ¿Primera vez aquí?
+    <button onclick="activateTab('casos'); setTimeout(()=>document.getElementById('caso-0').scrollIntoView({behavior:'smooth'}),80);">→ Comenzar con Caso 0</button>
+  </div>
   <div class="grid">
     <div class="card">
       <h2>Simulador de equilibrio único</h2>
@@ -740,43 +770,51 @@ hr.sep {
       </div>
       <div class="two-cols">
         <div>
-          <div class="table-title">Parámetros de demanda</div>
-          <table>
-            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
-            <tr><td>α₀</td><td><input id="sim_a0" type="number" step="any"></td><td class="desc">Demanda autónoma</td></tr>
-            <tr><td>α₁</td><td><input id="sim_a1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
-            <tr><td>α₂</td><td><input id="sim_a2" type="number" step="any"></td><td class="desc">Coeficiente ingreso</td></tr>
-            <tr><td>α₃</td><td><input id="sim_a3" type="number" step="any"></td><td class="desc">Coeficiente P sustituto</td></tr>
-            <tr><td>α₄</td><td><input id="sim_a4" type="number" step="any"></td><td class="desc">Coeficiente P complemento</td></tr>
-            <tr><td>α₅</td><td><input id="sim_a5" type="number" step="any"></td><td class="desc">Coeficiente expectativas</td></tr>
-          </table>
-          <div class="table-title" style="margin-top:14px;">Variables exógenas de demanda</div>
-          <table>
-            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
-            <tr><td>Y</td><td><input id="sim_Y" type="number" step="any"></td><td class="desc">Ingreso</td></tr>
-            <tr><td>Ps</td><td><input id="sim_Ps" type="number" step="any"></td><td class="desc">Precio del sustituto</td></tr>
-            <tr><td>Pc</td><td><input id="sim_Pc" type="number" step="any"></td><td class="desc">Precio del complemento</td></tr>
-            <tr><td>Exp</td><td><input id="sim_Exp" type="number" step="1" min="-1" max="1"></td><td class="desc">Use -1, 0 o 1</td></tr>
-          </table>
+          <details class="param-details">
+            <summary><div class="table-title">Parámetros de demanda</div></summary>
+            <table>
+              <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+              <tr><td>α₀</td><td><input id="sim_a0" type="number" step="any" title="Demanda autónoma: cantidad demandada cuando P=0 y todas las exógenas valen cero. Desplaza la curva hacia arriba/abajo."></td><td class="desc">Demanda autónoma</td></tr>
+              <tr><td>α₁</td><td><input id="sim_a1" type="number" step="any" title="Coeficiente del precio propio (negativo): una subida de P reduce Qd. Determina la pendiente de la curva de demanda."></td><td class="desc">Coeficiente precio</td></tr>
+              <tr><td>α₂</td><td><input id="sim_a2" type="number" step="any" title="Coeficiente del ingreso Y: positivo si el bien es normal (más ingreso → más demanda); negativo si es bien inferior."></td><td class="desc">Coeficiente ingreso</td></tr>
+              <tr><td>α₃</td><td><input id="sim_a3" type="number" step="any" title="Coeficiente del precio del sustituto Ps: positivo (un alza en Ps sube la demanda del bien analizado)."></td><td class="desc">Coeficiente P sustituto</td></tr>
+              <tr><td>α₄</td><td><input id="sim_a4" type="number" step="any" title="Coeficiente del precio del complemento Pc: negativo (un alza en Pc reduce la demanda del bien analizado)."></td><td class="desc">Coeficiente P complemento</td></tr>
+              <tr><td>α₅</td><td><input id="sim_a5" type="number" step="any" title="Coeficiente de expectativas Exp: positivo si expectativas de alza futura elevan demanda presente. Usar Exp = -1, 0 o 1."></td><td class="desc">Coeficiente expectativas</td></tr>
+            </table>
+          </details>
+          <details class="param-details" style="margin-top:14px;">
+            <summary><div class="table-title">Variables exógenas de demanda</div></summary>
+            <table>
+              <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+              <tr><td>Y</td><td><input id="sim_Y" type="number" step="any" title="Ingreso disponible de los consumidores. Desplaza la curva de demanda según el signo de α₂."></td><td class="desc">Ingreso</td></tr>
+              <tr><td>Ps</td><td><input id="sim_Ps" type="number" step="any" title="Precio del bien sustituto. Un alza desplaza la demanda a la derecha (si α₃ > 0)."></td><td class="desc">Precio del sustituto</td></tr>
+              <tr><td>Pc</td><td><input id="sim_Pc" type="number" step="any" title="Precio del bien complementario. Un alza desplaza la demanda a la izquierda (si α₄ < 0)."></td><td class="desc">Precio del complemento</td></tr>
+              <tr><td>Exp</td><td><input id="sim_Exp" type="number" step="1" min="-1" max="1" title="Expectativas de precio futuro: usar -1 (bajan), 0 (neutral), 1 (suben). Afecta la demanda presente."></td><td class="desc">Use -1, 0 o 1</td></tr>
+            </table>
+          </details>
         </div>
 
         <div>
-          <div class="table-title">Parámetros de oferta</div>
-          <table>
-            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
-            <tr><td>β₀</td><td><input id="sim_b0" type="number" step="any"></td><td class="desc">Oferta autónoma</td></tr>
-            <tr><td>β₁</td><td><input id="sim_b1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
-            <tr><td>β₂</td><td><input id="sim_b2" type="number" step="any"></td><td class="desc">Coeficiente P insumo</td></tr>
-            <tr><td>β₃</td><td><input id="sim_b3" type="number" step="any"></td><td class="desc">Coeficiente tecnología</td></tr>
-            <tr><td>β₄</td><td><input id="sim_b4" type="number" step="any"></td><td class="desc">Coeficiente Nº oferentes</td></tr>
-          </table>
-          <div class="table-title" style="margin-top:14px;">Variables exógenas de oferta</div>
-          <table>
-            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
-            <tr><td>Pi</td><td><input id="sim_Pi" type="number" step="any"></td><td class="desc">Precio del insumo</td></tr>
-            <tr><td>Tec</td><td><input id="sim_Tec" type="number" step="any"></td><td class="desc">Tecnología</td></tr>
-            <tr><td>N</td><td><input id="sim_N" type="number" step="any"></td><td class="desc">Número de oferentes</td></tr>
-          </table>
+          <details class="param-details">
+            <summary><div class="table-title">Parámetros de oferta</div></summary>
+            <table>
+              <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+              <tr><td>β₀</td><td><input id="sim_b0" type="number" step="any" title="Oferta autónoma: cantidad ofrecida cuando P=0 y todas las exógenas valen cero. Un β₀ negativo implica precio mínimo de reserva (Ps_min)."></td><td class="desc">Oferta autónoma</td></tr>
+              <tr><td>β₁</td><td><input id="sim_b1" type="number" step="any" title="Coeficiente del precio propio (positivo): una subida de P aumenta Qs. Determina la pendiente de la curva de oferta."></td><td class="desc">Coeficiente precio</td></tr>
+              <tr><td>β₂</td><td><input id="sim_b2" type="number" step="any" title="Coeficiente del precio del insumo Pi: negativo (un alza del insumo desplaza la oferta a la izquierda, eleva costos)."></td><td class="desc">Coeficiente P insumo</td></tr>
+              <tr><td>β₃</td><td><input id="sim_b3" type="number" step="any" title="Coeficiente de tecnología Tec: positivo (mejora tecnológica reduce costos, desplaza la oferta a la derecha)."></td><td class="desc">Coeficiente tecnología</td></tr>
+              <tr><td>β₄</td><td><input id="sim_b4" type="number" step="any" title="Coeficiente del número de oferentes N: positivo (más productores amplían la oferta del mercado)."></td><td class="desc">Coeficiente Nº oferentes</td></tr>
+            </table>
+          </details>
+          <details class="param-details" style="margin-top:14px;">
+            <summary><div class="table-title">Variables exógenas de oferta</div></summary>
+            <table>
+              <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+              <tr><td>Pi</td><td><input id="sim_Pi" type="number" step="any" title="Precio del insumo principal. Un alza desplaza la oferta a la izquierda (si β₂ < 0)."></td><td class="desc">Precio del insumo</td></tr>
+              <tr><td>Tec</td><td><input id="sim_Tec" type="number" step="any" title="Índice de tecnología disponible. Un aumento desplaza la oferta a la derecha (si β₃ > 0)."></td><td class="desc">Tecnología</td></tr>
+              <tr><td>N</td><td><input id="sim_N" type="number" step="any" title="Número de oferentes (firmas) en el mercado. Un aumento desplaza la oferta a la derecha (si β₄ > 0)."></td><td class="desc">Número de oferentes</td></tr>
+            </table>
+          </details>
         </div>
       </div>
       <div class="actions">
@@ -839,10 +877,21 @@ hr.sep {
             <td id="simEpo" class="elast-val"></td>
             <td id="simEpoClass" class="elast-class"></td>
           </tr>
+          <tr><td colspan="4" id="simDomainRow" class="desc" style="font-size:12px;padding:6px 10px;"></td></tr>
         </table>
-        <div style="font-size:12px;color:var(--muted);margin-top:6px;">Qd(P) = A − B·P  |  Qs(P) = C + D·P  |  Las elasticidades de demanda (Epd, Eid, Ecd) y de oferta (Epo) son puntuales: dependen del precio P y de la cantidad resultante en ese punto de la función.</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">Qd(P) = A − B·P  |  Qs(P) = C + D·P  |  Las elasticidades son puntuales: dependen del precio P elegido.</div>
         <div id="simElastInterp" class="elast-interp"></div>
         <div id="simElastApplied" style="margin-top:8px;"></div>
+      </div>
+      <!-- ── Excedentes: Simulador ───────────────────────────────────── -->
+      <div class="surplus-panel">
+        <div class="table-title">Excedente del consumidor, productor y bienestar total</div>
+        <div class="surplus-row">
+          <div class="surplus-kpi"><div class="label">EC (excedente consumidor)</div><div id="simEC" class="value">—</div></div>
+          <div class="surplus-kpi"><div class="label">EP (excedente productor)</div><div id="simEP" class="value">—</div></div>
+          <div class="surplus-kpi"><div class="label">BT = EC + EP (bienestar total)</div><div id="simBT" class="value">—</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">EC = ½·(Pd_max − P*)·Q*  |  EP = ½·(P* − Ps_min)·Q*  |  Pd_max = A/B  |  Ps_min = max(0, −C/D). Solo válido en el equilibrio de mercado (P* en el interior de ambos dominios).</div>
       </div>
 
       <div style="margin-top:16px;">
@@ -859,47 +908,58 @@ hr.sep {
 </section>
 
 <section id="comparador" class="section">
+  <div class="first-time-banner">
+    ¿Primera vez aquí?
+    <button onclick="activateTab('casos'); setTimeout(()=>document.getElementById('caso-0').scrollIntoView({behavior:'smooth'}),80);">→ Comenzar con Caso 0</button>
+  </div>
   <div class="grid">
     <div class="card">
       <h2>Comparador de shocks</h2>
       <p class="note">Use esta pestaña para contrastar un escenario base con un escenario post-shock. Las celdas de la izquierda definen el estado inicial; las de la derecha recogen solo los valores que cambian tras el shock.</p>
       <div class="two-cols">
         <div>
-          <div class="table-title">Escenario base: demanda</div>
-          <table>
-            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
-            <tr><td>α₀</td><td><input id="cmp_a0" type="number" step="any"></td><td class="desc">Intercepto de demanda</td></tr>
-            <tr><td>α₁</td><td><input id="cmp_a1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
-            <tr><td>α₂</td><td><input id="cmp_a2" type="number" step="any"></td><td class="desc">Coeficiente ingreso</td></tr>
-            <tr><td>α₃</td><td><input id="cmp_a3" type="number" step="any"></td><td class="desc">Coeficiente Ps</td></tr>
-            <tr><td>α₄</td><td><input id="cmp_a4" type="number" step="any"></td><td class="desc">Coeficiente Pc</td></tr>
-            <tr><td>α₅</td><td><input id="cmp_a5" type="number" step="any"></td><td class="desc">Coeficiente Exp</td></tr>
-          </table>
-          <div class="table-title" style="margin-top:14px;">Escenario base: exógenas de demanda</div>
-          <table>
-            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
-            <tr><td>Y</td><td><input id="cmp_Y" type="number" step="any"></td><td class="desc">Ingreso</td></tr>
-            <tr><td>Ps</td><td><input id="cmp_Ps" type="number" step="any"></td><td class="desc">Precio del sustituto</td></tr>
-            <tr><td>Pc</td><td><input id="cmp_Pc" type="number" step="any"></td><td class="desc">Precio del complemento</td></tr>
-            <tr><td>Exp</td><td><input id="cmp_Exp" type="number" step="1" min="-1" max="1"></td><td class="desc">Use -1, 0 o 1</td></tr>
-          </table>
-
-          <div class="table-title" style="margin-top:14px;">Escenario base: oferta</div>
-          <table>
-            <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
-            <tr><td>β₀</td><td><input id="cmp_b0" type="number" step="any"></td><td class="desc">Intercepto de oferta</td></tr>
-            <tr><td>β₁</td><td><input id="cmp_b1" type="number" step="any"></td><td class="desc">Coeficiente precio</td></tr>
-            <tr><td>β₂</td><td><input id="cmp_b2" type="number" step="any"></td><td class="desc">Coeficiente Pi</td></tr>
-            <tr><td>β₃</td><td><input id="cmp_b3" type="number" step="any"></td><td class="desc">Coeficiente Tec</td></tr>
-            <tr><td>β₄</td><td><input id="cmp_b4" type="number" step="any"></td><td class="desc">Coeficiente N</td></tr>
-          </table>
-          <div class="table-title" style="margin-top:14px;">Escenario base: exógenas de oferta</div>
-          <table>
-            <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
-            <tr><td>Pi</td><td><input id="cmp_Pi" type="number" step="any"></td><td class="desc">Precio del insumo</td></tr>
-            <tr><td>Tec</td><td><input id="cmp_Tec" type="number" step="any"></td><td class="desc">Tecnología</td></tr>
-            <tr><td>N</td><td><input id="cmp_N" type="number" step="any"></td><td class="desc">Número de oferentes</td></tr>
-          </table>
+          <details class="param-details">
+            <summary><div class="table-title">Escenario base: demanda</div></summary>
+            <table>
+              <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+              <tr><td>α₀</td><td><input id="cmp_a0" type="number" step="any" title="Demanda autónoma (intercepto)."></td><td class="desc">Intercepto de demanda</td></tr>
+              <tr><td>α₁</td><td><input id="cmp_a1" type="number" step="any" title="Sensibilidad al precio propio (negativo)."></td><td class="desc">Coeficiente precio</td></tr>
+              <tr><td>α₂</td><td><input id="cmp_a2" type="number" step="any" title="Sensibilidad al ingreso Y. Positivo: bien normal; negativo: bien inferior."></td><td class="desc">Coeficiente ingreso</td></tr>
+              <tr><td>α₃</td><td><input id="cmp_a3" type="number" step="any" title="Sensibilidad al precio del sustituto Ps (positivo)."></td><td class="desc">Coeficiente Ps</td></tr>
+              <tr><td>α₄</td><td><input id="cmp_a4" type="number" step="any" title="Sensibilidad al precio del complemento Pc (negativo)."></td><td class="desc">Coeficiente Pc</td></tr>
+              <tr><td>α₅</td><td><input id="cmp_a5" type="number" step="any" title="Sensibilidad a expectativas Exp. Usar -1, 0 o 1."></td><td class="desc">Coeficiente Exp</td></tr>
+            </table>
+          </details>
+          <details class="param-details" style="margin-top:14px;">
+            <summary><div class="table-title">Escenario base: exógenas de demanda</div></summary>
+            <table>
+              <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+              <tr><td>Y</td><td><input id="cmp_Y" type="number" step="any" title="Ingreso base de los consumidores."></td><td class="desc">Ingreso</td></tr>
+              <tr><td>Ps</td><td><input id="cmp_Ps" type="number" step="any" title="Precio base del bien sustituto."></td><td class="desc">Precio del sustituto</td></tr>
+              <tr><td>Pc</td><td><input id="cmp_Pc" type="number" step="any" title="Precio base del bien complementario."></td><td class="desc">Precio del complemento</td></tr>
+              <tr><td>Exp</td><td><input id="cmp_Exp" type="number" step="1" min="-1" max="1" title="Expectativas base (-1, 0 o 1)."></td><td class="desc">Use -1, 0 o 1</td></tr>
+            </table>
+          </details>
+          <details class="param-details" style="margin-top:14px;">
+            <summary><div class="table-title">Escenario base: oferta</div></summary>
+            <table>
+              <tr><th>Parámetro</th><th>Valor</th><th>Descripción</th></tr>
+              <tr><td>β₀</td><td><input id="cmp_b0" type="number" step="any" title="Oferta autónoma (intercepto). β₀ negativo implica precio mínimo de reserva."></td><td class="desc">Intercepto de oferta</td></tr>
+              <tr><td>β₁</td><td><input id="cmp_b1" type="number" step="any" title="Sensibilidad al precio propio (positivo)."></td><td class="desc">Coeficiente precio</td></tr>
+              <tr><td>β₂</td><td><input id="cmp_b2" type="number" step="any" title="Sensibilidad al precio del insumo Pi (negativo: alza del insumo contrae oferta)."></td><td class="desc">Coeficiente Pi</td></tr>
+              <tr><td>β₃</td><td><input id="cmp_b3" type="number" step="any" title="Sensibilidad a tecnología Tec (positivo: mejora tecnológica expande oferta)."></td><td class="desc">Coeficiente Tec</td></tr>
+              <tr><td>β₄</td><td><input id="cmp_b4" type="number" step="any" title="Sensibilidad al número de oferentes N (positivo: más firmas expanden oferta)."></td><td class="desc">Coeficiente N</td></tr>
+            </table>
+          </details>
+          <details class="param-details" style="margin-top:14px;">
+            <summary><div class="table-title">Escenario base: exógenas de oferta</div></summary>
+            <table>
+              <tr><th>Variable</th><th>Valor</th><th>Unidad / nota</th></tr>
+              <tr><td>Pi</td><td><input id="cmp_Pi" type="number" step="any" title="Precio base del insumo."></td><td class="desc">Precio del insumo</td></tr>
+              <tr><td>Tec</td><td><input id="cmp_Tec" type="number" step="any" title="Índice de tecnología base."></td><td class="desc">Tecnología</td></tr>
+              <tr><td>N</td><td><input id="cmp_N" type="number" step="any" title="Número base de oferentes."></td><td class="desc">Número de oferentes</td></tr>
+            </table>
+          </details>
         </div>
 
         <div>
@@ -929,6 +989,16 @@ hr.sep {
           <div class="kpis" style="margin-top:12px;">
             <div class="kpi"><div class="label">ΔP</div><div id="cmpDeltaP" class="value"></div></div>
             <div class="kpi"><div class="label">ΔQ</div><div id="cmpDeltaQ" class="value"></div></div>
+          </div>
+          <!-- ── Excedentes: Comparador ─────────────────────────────── -->
+          <div class="surplus-panel">
+            <div class="table-title" style="margin-top:12px;">Excedentes: base vs. post-shock</div>
+            <div class="surplus-row">
+              <div class="surplus-kpi"><div class="label">ΔEC</div><div id="cmpDeltaEC" class="value">—</div></div>
+              <div class="surplus-kpi"><div class="label">ΔEP</div><div id="cmpDeltaEP" class="value">—</div></div>
+              <div class="surplus-kpi"><div class="label">ΔBT</div><div id="cmpDeltaBT" class="value">—</div></div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">EC_base=<span id="cmpEC0">—</span> → EC_post=<span id="cmpEC1">—</span> &nbsp;|&nbsp; EP_base=<span id="cmpEP0">—</span> → EP_post=<span id="cmpEP1">—</span></div>
           </div>
 
           <!-- PANEL ELASTICIDADES: Comparador -->
@@ -1005,7 +1075,8 @@ hr.sep {
   </div>
 </section>
 
-<section id="supuestos" class="section ml-supuestos">
+<section id="marco-teorico" class="section">
+<div class="ml-supuestos">
   <header class="ml-supuestos__header">
     <h2 data-i18n="supuestos.titulo"></h2>
     <p data-i18n="supuestos.intro" class="ml-supuestos__intro"></p>
@@ -1064,15 +1135,18 @@ Lectura:     sube el precio y cae la cantidad, consistente con contracción
              β₂ (intensidad del acoplamiento) y de las elasticidades relativas.</pre>
     <p style="margin:0;line-height:1.55;">Toda predicción de Cadenas se construye con esta misma mecánica: un shock paramétrico aguas arriba modifica el intercepto efectivo de la curva relevante aguas abajo, y el simulador resuelve el nuevo equilibrio. La calibración específica de Cadenas (M1, M2) está documentada en su propio panel.</p>
   </div>
-</section>
+</div><!-- end ml-supuestos -->
 
-<section id="politica" class="section ml-politica">
+<hr class="sep" style="margin:2rem 0;">
+
+<div class="ml-politica">
   <header class="ml-politica__header">
     <h2 data-i18n="politica.titulo"></h2>
     <p data-i18n="politica.intro" class="ml-politica__intro"></p>
   </header>
   <div class="ml-politica__casos" role="list"></div>
-</section>
+</div><!-- end ml-politica -->
+</section><!-- end marco-teorico -->
 
 <section id="cadenas" class="section ml-cadenas">
   <header class="ml-cadenas__header">
@@ -1931,12 +2005,15 @@ function applyCase(caseId) {
 }
 
 function activateTab(targetId) {
+  // Redirect legacy section IDs merged into marco-teorico
+  if (targetId === 'supuestos' || targetId === 'politica' || targetId === 'uso') targetId = 'marco-teorico';
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.target === targetId));
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === targetId));
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goToAnchor(tabId, anchorId) {
+  if (tabId === 'supuestos' || tabId === 'politica' || tabId === 'uso') tabId = 'marco-teorico';
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.target === tabId));
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === tabId));
   const el = document.getElementById(anchorId);
@@ -2043,8 +2120,9 @@ function axisRanges(markets) {
   return {pTop, qTop};
 }
 
-function svgChart(el, series, eqPoints, title='') {
-  const w = 760, h = 420, m = {l:72, r:24, t:30, b:58};
+// opts: { shade: [{Pd_max, Ps_min, eqP, eqQ, demandColor, supplyColor}], domainLabels: [{pdMax, psMin}] }
+function svgChart(el, series, eqPoints, title='', opts={}) {
+  const w = 760, h = 420, mg = {l:80, r:24, t:30, b:58};
   const markets = series.map(s => s.market);
   const {pTop, qTop} = axisRanges(markets);
 
@@ -2054,35 +2132,103 @@ function svgChart(el, series, eqPoints, title='') {
   }
 
   for (let i = 0; i <= 5; i++) {
-    const py = m.t + i * (h - m.t - m.b) / 5;
+    const py = mg.t + i * (h - mg.t - mg.b) / 5;
     const pVal = pTop - i * (pTop / 5);
-    out += `<line x1="${m.l}" y1="${py}" x2="${w-m.r}" y2="${py}" stroke="#e7edf5"/>`;
-    out += `<text x="${m.l-10}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(pVal)}</text>`;
+    out += `<line x1="${mg.l}" y1="${py}" x2="${w-mg.r}" y2="${py}" stroke="#e7edf5"/>`;
+    out += `<text x="${mg.l-8}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(pVal)}</text>`;
   }
 
   for (let i = 0; i <= 5; i++) {
-    const px = m.l + i * (w - m.l - m.r) / 5;
+    const px = mg.l + i * (w - mg.l - mg.r) / 5;
     const qVal = i * (qTop / 5);
-    out += `<line x1="${px}" y1="${m.t}" x2="${px}" y2="${h-m.b}" stroke="#e7edf5"/>`;
-    out += `<text x="${px}" y="${h-m.b+20}" text-anchor="middle" class="axis-label">${fmt(qVal)}</text>`;
+    out += `<line x1="${px}" y1="${mg.t}" x2="${px}" y2="${h-mg.b}" stroke="#e7edf5"/>`;
+    out += `<text x="${px}" y="${h-mg.b+20}" text-anchor="middle" class="axis-label">${fmt(qVal)}</text>`;
   }
 
-  out += `<line x1="${m.l}" y1="${h-m.b}" x2="${w-m.r}" y2="${h-m.b}" stroke="#64748b" stroke-width="2"/>`;
-  out += `<line x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${h-m.b}" stroke="#64748b" stroke-width="2"/>`;
-  out += `<text x="${w/2}" y="${h-16}" text-anchor="middle" class="axis-label">Cantidad (Q)</text>`;
-  out += `<text x="18" y="${h/2}" transform="rotate(-90 18 ${h/2})" text-anchor="middle" class="axis-label">Precio (P)</text>`;
+  out += `<line x1="${mg.l}" y1="${h-mg.b}" x2="${w-mg.r}" y2="${h-mg.b}" stroke="#64748b" stroke-width="2"/>`;
+  out += `<line x1="${mg.l}" y1="${mg.t}" x2="${mg.l}" y2="${h-mg.b}" stroke="#64748b" stroke-width="2"/>`;
+  out += `<text x="${w/2}" y="${h-6}" text-anchor="middle" class="axis-label">Cantidad (Q)</text>`;
+  out += `<text x="14" y="${h/2}" transform="rotate(-90 14 ${h/2})" text-anchor="middle" class="axis-label">Precio (P)</text>`;
 
+  // ── EC/EP surplus shading (drawn before curves so curves appear on top) ──
+  const shades = opts.shade || [];
+  shades.forEach(s => {
+    if (!Number.isFinite(s.Pd_max) || !Number.isFinite(s.eqP) || !Number.isFinite(s.eqQ)) return;
+    if (s.eqP < 0 || s.eqQ < 0) return;
+    const x0 = mg.l;
+    const xEqQ = xForQ(s.eqQ, qTop, w, mg);
+    const yEqP  = yForP(s.eqP,  pTop, h, mg);
+
+    // EC: triangle (0, Pd_max) — (0, P*) — (Q*, P*)
+    if (s.Pd_max <= pTop * 1.01) {
+      const yPdMax = yForP(Math.min(s.Pd_max, pTop), pTop, h, mg);
+      out += `<polygon points="${x0},${yPdMax} ${x0},${yEqP} ${xEqQ},${yEqP}" fill="rgba(53,92,222,0.22)" stroke="none"/>`;
+      const ecLabelX = x0 + (xEqQ - x0) * 0.22;
+      const ecLabelY = yPdMax + (yEqP - yPdMax) * 0.45;
+      out += `<text x="${ecLabelX}" y="${ecLabelY}" text-anchor="middle" style="font-size:11px;fill:#355cde;font-weight:700;">EC</text>`;
+    }
+    // EP: triangle (0, Ps_min) — (0, P*) — (Q*, P*)
+    if (Number.isFinite(s.Ps_min) && s.Ps_min >= 0 && s.Ps_min < s.eqP) {
+      const yPsMin = yForP(s.Ps_min, pTop, h, mg);
+      out += `<polygon points="${x0},${yPsMin} ${x0},${yEqP} ${xEqQ},${yEqP}" fill="rgba(15,118,110,0.22)" stroke="none"/>`;
+      const epLabelX = x0 + (xEqQ - x0) * 0.22;
+      const epLabelY = yEqP - (yEqP - yPsMin) * 0.45;
+      out += `<text x="${epLabelX}" y="${epLabelY}" text-anchor="middle" style="font-size:11px;fill:#0f766e;font-weight:700;">EP</text>`;
+    }
+  });
+
+  // ── Curves ───────────────────────────────────────────────────────
   series.forEach(s => {
-    const pts = visibleCurvePoints(s.market, s.type, pTop, qTop, w, h, m);
+    const pts = visibleCurvePoints(s.market, s.type, pTop, qTop, w, h, mg);
     if (pts.length >= 2) {
       out += `<polyline fill="none" stroke="${s.color}" stroke-width="3" points="${pts.join(' ')}"/>`;
     }
   });
 
-  eqPoints.forEach(p => {
-    if (Number.isFinite(p.q) && Number.isFinite(p.p) && p.q >= 0 && p.p >= 0) {
-      out += `<circle cx="${xForQ(p.q, qTop, w, m)}" cy="${yForP(p.p, pTop, h, m)}" r="5" fill="${p.color}"/>`;
-      out += `<text x="${xForQ(p.q, qTop, w, m)+8}" y="${yForP(p.p, pTop, h, m)-8}" style="font-size:12px;font-weight:700;fill:${p.color}">${p.label}</text>`;
+  // ── Pd_max and Ps_min Y-axis labels ─────────────────────────────
+  const domLabels = opts.domainLabels || [];
+  domLabels.forEach(dl => {
+    if (Number.isFinite(dl.pdMax) && dl.pdMax > 0 && dl.pdMax <= pTop * 1.01) {
+      const yDl = yForP(Math.min(dl.pdMax, pTop), pTop, h, mg);
+      out += `<line x1="${mg.l-5}" y1="${yDl}" x2="${mg.l}" y2="${yDl}" stroke="#355cde" stroke-width="1.5"/>`;
+      out += `<text x="${mg.l-8}" y="${yDl+4}" text-anchor="end" style="font-size:9px;fill:#355cde;font-weight:700;">Pd=${fmt(dl.pdMax,1)}</text>`;
+    }
+    if (Number.isFinite(dl.psMin) && dl.psMin >= 0 && dl.psMin <= pTop) {
+      const yDl = yForP(dl.psMin, pTop, h, mg);
+      out += `<line x1="${mg.l-5}" y1="${yDl}" x2="${mg.l}" y2="${yDl}" stroke="#d94f3b" stroke-width="1.5"/>`;
+      out += `<text x="${mg.l-8}" y="${yDl+4}" text-anchor="end" style="font-size:9px;fill:#d94f3b;font-weight:700;">Ps=${fmt(dl.psMin,1)}</text>`;
+    }
+  });
+
+  // ── Dashed equilibrium lines + axis labels ───────────────────────
+  eqPoints.forEach(pt => {
+    if (Number.isFinite(pt.q) && Number.isFinite(pt.p) && pt.q >= 0 && pt.p >= 0 && pt.p <= pTop && pt.q <= qTop) {
+      const cx = xForQ(pt.q, qTop, w, mg);
+      const cy = yForP(pt.p, pTop, h, mg);
+      const dc = pt.dashColor || pt.color;
+      // Vertical dashed line to X-axis
+      out += `<line x1="${cx}" y1="${cy}" x2="${cx}" y2="${h-mg.b}" stroke="${dc}" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`;
+      // Horizontal dashed line to Y-axis
+      out += `<line x1="${mg.l}" y1="${cy}" x2="${cx}" y2="${cy}" stroke="${dc}" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`;
+      // P* label on Y-axis (white bg for legibility)
+      const pLbl = fmt(pt.p, 1);
+      const pLblW = pLbl.length * 6 + 4;
+      out += `<rect x="${mg.l-8-pLblW}" y="${cy-8}" width="${pLblW}" height="13" fill="white" opacity="0.85"/>`;
+      out += `<text x="${mg.l-8}" y="${cy+3}" text-anchor="end" style="font-size:10px;font-weight:700;fill:${dc};">${pLbl}</text>`;
+      // Q* label on X-axis
+      const qLbl = fmt(pt.q, 1);
+      out += `<rect x="${cx-12}" y="${h-mg.b+5}" width="${qLbl.length*6+4}" height="13" fill="white" opacity="0.85"/>`;
+      out += `<text x="${cx}" y="${h-mg.b+16}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:${dc};">${qLbl}</text>`;
+    }
+  });
+
+  // ── Equilibrium circles and labels ──────────────────────────────
+  eqPoints.forEach(pt => {
+    if (Number.isFinite(pt.q) && Number.isFinite(pt.p) && pt.q >= 0 && pt.p >= 0) {
+      const cx = xForQ(pt.q, qTop, w, mg);
+      const cy = yForP(pt.p, pTop, h, mg);
+      out += `<circle cx="${cx}" cy="${cy}" r="5" fill="${pt.color}"/>`;
+      out += `<text x="${cx+8}" y="${cy-8}" style="font-size:12px;font-weight:700;fill:${pt.color}">${pt.label}</text>`;
     }
   });
 
@@ -2090,24 +2236,51 @@ function svgChart(el, series, eqPoints, title='') {
 }
 
 // ── Elasticidades ────────────────────────────────────────────────
-// Calcula elasticidades en un precio P arbitrario (por defecto P*)
+// Calcula elasticidades en un precio P arbitrario (por defecto P*).
+// Desacopla demanda y oferta: Epo puede ser "indefinida" si P < Ps_min,
+// mientras que las elasticidades de demanda se calculan con normalidad.
 function computeElasticities(p, m, evalP) {
   if (!Number.isFinite(m.eqP)) return null;
   const P = (Number.isFinite(evalP) && evalP !== null) ? evalP : m.eqP;
   if (!Number.isFinite(P) || P < 0) return null;
-  const Qd = m.A - m.B * P;   // cantidad demandada en P
-  const Qs = m.C + m.D * P;   // cantidad ofrecida en P
-  if (Math.abs(Qd) < 1e-9 || Math.abs(Qs) < 1e-9) return null;
+
+  const Pd_max = (m.B > 0) ? m.A / m.B : Infinity;  // intercepto demanda en Y
+  const Ps_min = (m.D > 0 && m.C < 0) ? -m.C / m.D : 0; // precio mínimo oferta
+
+  const Qd = m.A - m.B * P;
+  const Qs = m.C + m.D * P;
+
+  // P > Pd_max → Qd ≤ 0: todas las elasticidades indefinidas
+  if (Qd <= 1e-9) {
+    return { P, Qd, Qs, Pd_max, Ps_min, demandZero: true,
+      Epd: null, Eid: null, EcdS: null, EcdC: null, Epo: null };
+  }
+
+  // P < Ps_min → oferta no definida en este dominio: solo Epo indefinida
+  const supplyUndef = P < Ps_min - 1e-9;
+
   return {
-    P,
-    Qd,
-    Qs,
+    P, Qd, Qs, Pd_max, Ps_min, demandZero: false, supplyUndef,
     Epd:  p.a1 * P / Qd,
     Eid:  p.a2 * p.Y  / Qd,
     EcdS: p.a3 * p.Ps / Qd,
     EcdC: p.a4 * p.Pc / Qd,
-    Epo:  p.b1 * P / Qs
+    Epo:  supplyUndef ? ('undef:' + fmt(Ps_min, 2)) :
+          (Math.abs(Qs) < 1e-9 ? null : p.b1 * P / Qs)
   };
+}
+
+// ── Excedente del consumidor y productor ─────────────────────────
+function computeSurplus(m) {
+  if (!Number.isFinite(m.eqP) || !Number.isFinite(m.eqQ)) return null;
+  if (m.eqP < 0 || m.eqQ < 0) return null;
+  if (m.B <= 0 || m.D <= 0) return null;
+  const Pd_max = m.A / m.B;
+  const Ps_min = Math.max(0, -m.C / m.D);
+  if (m.eqP >= Pd_max || m.eqP < Ps_min - 1e-9) return null;
+  const EC = 0.5 * (Pd_max - m.eqP) * m.eqQ;
+  const EP = 0.5 * (m.eqP - Ps_min) * m.eqQ;
+  return { EC, EP, BT: EC + EP, Pd_max, Ps_min };
 }
 
 const elastClass = {
@@ -2138,6 +2311,12 @@ const elastClass = {
 function renderElastRow(idVal, idClass, v, classifier) {
   const ve = $(idVal), ce = $(idClass);
   if (!ve) return;
+  if (typeof v === 'string' && v.startsWith('undef:')) {
+    const psMin = v.slice(6);
+    ve.textContent = 'No definida';
+    if (ce) { ce.textContent = `P < Ps_min (${psMin})`; ce.style.color = '#92400e'; }
+    return;
+  }
   if (v === null || !Number.isFinite(v)) {
     ve.textContent = '—';
     if (ce) { ce.textContent = '—'; ce.style.color = ''; }
@@ -2155,15 +2334,17 @@ function buildInterpText(e, atEquilibrium) {
   if (!e) return '';
   const pLabel = atEquilibrium ? `P* = ${fmt(e.P,2)} (equilibrio)` : `P = ${fmt(e.P,2)} (punto elegido)`;
   const qdLabel = `Qd(${fmt(e.P,2)}) = ${fmt(e.Qd,2)}`;
-  const qsLabel = `Qs(${fmt(e.P,2)}) = ${fmt(e.Qs,2)}`;
+  const qsLabel = e.supplyUndef ? `Qs: no definida en P < Ps_min` : `Qs(${fmt(e.P,2)}) = ${fmt(e.Qs,2)}`;
+  if (e.demandZero) return `<strong>Evaluadas en ${pLabel}</strong> — Qd ≤ 0: P supera el intercepto de la demanda. Elasticidades no definidas.`;
+  if (!Number.isFinite(e.Epd)) return '';
   const epdAbs = Math.abs(e.Epd);
   const epdDesc = epdAbs > 1 ? 'elástica' : epdAbs < 1 ? 'inelástica' : 'de elasticidad unitaria';
   const eidDesc = e.Eid > 1 ? 'de lujo o superior' : e.Eid > 0 ? 'normal' : e.Eid < 0 ? 'inferior' : 'neutro al ingreso';
-  const epoDesc = e.Epo > 1 ? 'elástica' : e.Epo < 1 ? 'inelástica' : 'de elasticidad unitaria';
+  const epoText = e.supplyUndef ? `Epo: no definida (P < Ps_min = ${e.Ps_min !== undefined ? fmt(e.Ps_min,2) : '?'}).` :
+    (Number.isFinite(e.Epo) ? `Epo = ${fmt(e.Epo,2)}: oferta <strong>${e.Epo > 1 ? 'elástica' : e.Epo < 1 ? 'inelástica' : 'unitaria'}</strong>.` : '');
   return `<strong>Evaluadas en ${pLabel}</strong> — ${qdLabel} | ${qsLabel}<br>` +
-    `Epd = ${fmt(e.Epd,2)}: demanda <strong>${epdDesc}</strong> (un alza de 1% en P cambia Qd en ${fmt(e.Epd,2)}%). ` +
-    `Eid = ${fmt(e.Eid,2)}: bien <strong>${eidDesc}</strong>. ` +
-    `Epo = ${fmt(e.Epo,2)}: oferta <strong>${epoDesc}</strong>.`;
+    `Epd = ${fmt(e.Epd,2)}: demanda <strong>${epdDesc}</strong>. ` +
+    `Eid = ${fmt(e.Eid,2)}: bien <strong>${eidDesc}</strong>. ` + epoText;
 }
 
 // Lectura aplicada de elasticidad:
@@ -2172,7 +2353,7 @@ function buildInterpText(e, atEquilibrium) {
 function renderElasticityApplied(e) {
   const el = $('simElastApplied');
   if (!el) return;
-  if (!e) { el.innerHTML = ''; return; }
+  if (!e || e.demandZero || !Number.isFinite(e.Epd)) { el.innerHTML = ''; return; }
 
   const epdAbs = Math.abs(e.Epd);
 
@@ -2229,29 +2410,45 @@ function renderElasticityApplied(e) {
     row('Implicación', implText);
 }
 
-function renderSimElasticities(e, atEquilibrium) {
-  renderElastRow('simEpd',  'simEpdClass',  e ? e.Epd  : null, elastClass.Epd);
-  renderElastRow('simEid',  'simEidClass',  e ? e.Eid  : null, elastClass.Eid);
-  renderElastRow('simEcdS', 'simEcdSClass', e ? e.EcdS : null, elastClass.Ecd);
-  renderElastRow('simEcdC', 'simEcdCClass', e ? e.EcdC : null, elastClass.Ecd);
-  renderElastRow('simEpo',  'simEpoClass',  e ? e.Epo  : null, elastClass.Epo);
+function renderSimElasticities(e, atEquilibrium, m) {
+  const allNull = !e || e.demandZero;
+  renderElastRow('simEpd',  'simEpdClass',  allNull ? null : e.Epd,  elastClass.Epd);
+  renderElastRow('simEid',  'simEidClass',  allNull ? null : e.Eid,  elastClass.Eid);
+  renderElastRow('simEcdS', 'simEcdSClass', allNull ? null : e.EcdS, elastClass.Ecd);
+  renderElastRow('simEcdC', 'simEcdCClass', allNull ? null : e.EcdC, elastClass.Ecd);
+  renderElastRow('simEpo',  'simEpoClass',  allNull ? null : e.Epo,  elastClass.Epo);
   const note = $('simElastInterp');
   if (note) note.innerHTML = e ? buildInterpText(e, atEquilibrium) : '';
+  // Domain row
+  const domEl = $('simDomainRow');
+  if (domEl && m && m.B > 0 && m.D > 0) {
+    const pdMax = m.A / m.B;
+    const psMin = Math.max(0, -m.C / m.D);
+    domEl.innerHTML = `<strong>Dominio demanda:</strong> [0,&nbsp;${fmt(pdMax,2)}] &emsp; <strong>Dominio oferta:</strong> [${fmt(psMin,2)},&nbsp;∞)`;
+  } else if (domEl) domEl.innerHTML = '';
 }
 
 function renderCmpElasticities(e0, e1) {
   const items = [['Epd','Epd'],['Eid','Eid'],['EcdS','EcdS'],['EcdC','EcdC'],['Epo','Epo']];
+  const toNum = v => (v !== null && typeof v === 'number' && Number.isFinite(v)) ? v : null;
+  const toTxt = v => {
+    if (v === null || v === undefined) return '—';
+    if (typeof v === 'string' && v.startsWith('undef:')) return `No def. (${v.slice(6)})`;
+    if (Number.isFinite(v)) return fmt(v, 2);
+    return '—';
+  };
   items.forEach(([key, suffix]) => {
     const v0 = e0 ? e0[key] : null;
     const v1 = e1 ? e1[key] : null;
     const el0 = $('cmp' + suffix + '0');
     const el1 = $('cmp' + suffix + '1');
     const eld = $('cmp' + suffix + 'D');
-    if (el0) el0.textContent = (v0 !== null && Number.isFinite(v0)) ? fmt(v0, 2) : '—';
-    if (el1) el1.textContent = (v1 !== null && Number.isFinite(v1)) ? fmt(v1, 2) : '—';
+    if (el0) el0.textContent = toTxt(v0);
+    if (el1) el1.textContent = toTxt(v1);
     if (eld) {
-      if (v0 !== null && v1 !== null && Number.isFinite(v0) && Number.isFinite(v1)) {
-        const d = v1 - v0;
+      const n0 = toNum(v0), n1 = toNum(v1);
+      if (n0 !== null && n1 !== null) {
+        const d = n1 - n0;
         eld.textContent = (d >= 0 ? '+' : '') + fmt(d, 2);
         eld.className = d > 0.005 ? 'delta-pos' : d < -0.005 ? 'delta-neg' : 'delta-neu';
       } else {
@@ -2405,37 +2602,54 @@ function updateSim() {
 
   showEquilWarning($('simWarning'), [m]);
 
+  // Surplus
+  const surplus = computeSurplus(m);
+  $('simEC').textContent = surplus ? fmt(surplus.EC) : '—';
+  $('simEP').textContent = surplus ? fmt(surplus.EP) : '—';
+  $('simBT').textContent = surplus ? fmt(surplus.BT) : '—';
+
+  // Chart with surplus shading and domain labels
+  const chartOpts = {
+    shade: surplus ? [{Pd_max: surplus.Pd_max, Ps_min: surplus.Ps_min, eqP: m.eqP, eqQ: m.eqQ}] : [],
+    domainLabels: (m.B > 0 && m.D > 0) ? [{pdMax: m.A / m.B, psMin: Math.max(0, -m.C / m.D)}] : []
+  };
   svgChart($('simChart'), [
     {type:'demand', market:m, color:'#355cde'},
     {type:'supply', market:m, color:'#d94f3b'}
   ], [
-    {p:m.eqP, q:m.eqQ, label:'E', color:'#0f766e'}
-  ], 'Demanda y oferta');
+    {p:m.eqP, q:m.eqQ, label:'E', color:'#0f766e', dashColor:'#0f766e'}
+  ], 'Demanda y oferta', chartOpts);
 
   // Lee precio de evaluación: si el campo está vacío o inválido, usa P*
   const evalPInput = $('simEvalP');
   const evalPRaw = evalPInput ? parseFloat(evalPInput.value) : NaN;
   const evalP = Number.isFinite(evalPRaw) ? evalPRaw : m.eqP;
 
-  // Valida que el precio elegido dé cantidades positivas
+  // Valida precio negativo (hard block)
   const evalWarn = $('simEvalWarning');
   if (evalWarn) {
-    const Qd_eval = m.A - m.B * evalP;
-    const Qs_eval = m.C + m.D * evalP;
-    if (Number.isFinite(evalPRaw) && (evalP < 0 || Qd_eval <= 0 || Qs_eval <= 0)) {
+    if (Number.isFinite(evalPRaw) && evalP < 0) {
       evalWarn.style.display = 'block';
-      evalWarn.textContent = `P = ${fmt(evalP,2)} produce Qd = ${fmt(Qd_eval,2)} o Qs = ${fmt(Qs_eval,2)}: al menos una cantidad no es positiva. Las elasticidades no son válidas en este punto. Ingresa un precio en el rango donde ambas curvas tienen cantidad positiva.`;
-      renderSimElasticities(null);
+      evalWarn.textContent = `P = ${fmt(evalP,2)} es negativo. Ingresa un precio ≥ 0.`;
+      renderSimElasticities(null, false, m);
       renderElasticityApplied(null);
       return;
-    } else {
-      evalWarn.style.display = 'none';
     }
+    // P > Pd_max: Qd ≤ 0 → all elasticities undefined; show warning
+    const Pd_max = m.B > 0 ? m.A / m.B : Infinity;
+    if (Number.isFinite(evalPRaw) && evalP > Pd_max) {
+      evalWarn.style.display = 'block';
+      evalWarn.textContent = `P = ${fmt(evalP,2)} supera Pd_max = ${fmt(Pd_max,2)}: la cantidad demandada es ≤ 0. Ingresa un precio en el dominio de demanda [0, ${fmt(Pd_max,2)}].`;
+      renderSimElasticities(null, false, m);
+      renderElasticityApplied(null);
+      return;
+    }
+    evalWarn.style.display = 'none';
   }
 
   const atEquil = !Number.isFinite(evalPRaw);
   const e = computeElasticities(p, m, evalP);
-  renderSimElasticities(e, atEquil);
+  renderSimElasticities(e, atEquil, m);
   renderElasticityApplied(e);
 }
 
@@ -2470,15 +2684,34 @@ function updateCmp() {
 
   showEquilWarning($('cmpWarning'), [mb, mp]);
 
+  // Surplus comparison
+  const sb = computeSurplus(mb);
+  const sp = computeSurplus(mp);
+  const fmtDelta = (a, b) => {
+    if (a == null || b == null) return '—';
+    const d = b - a;
+    return (d >= 0 ? '+' : '') + fmt(d);
+  };
+  $('cmpEC0').textContent = sb ? fmt(sb.EC) : '—';
+  $('cmpEC1').textContent = sp ? fmt(sp.EC) : '—';
+  $('cmpEP0').textContent = sb ? fmt(sb.EP) : '—';
+  $('cmpEP1').textContent = sp ? fmt(sp.EP) : '—';
+  $('cmpDeltaEC').textContent = fmtDelta(sb && sb.EC, sp && sp.EC);
+  $('cmpDeltaEP').textContent = fmtDelta(sb && sb.EP, sp && sp.EP);
+  $('cmpDeltaBT').textContent = fmtDelta(sb && sb.BT, sp && sp.BT);
+
+  // Chart with shading for post-shock equilibrium + dashed lines for both
+  const cmpShade = sp ? [{Pd_max: sp.Pd_max, Ps_min: sp.Ps_min, eqP: mp.eqP, eqQ: mp.eqQ}] : [];
+  const cmpDomLabels = (mp.B > 0 && mp.D > 0) ? [{pdMax: mp.A / mp.B, psMin: Math.max(0, -mp.C / mp.D)}] : [];
   svgChart($('cmpChart'), [
     {type:'demand', market:mb, color:'#355cde'},
     {type:'supply', market:mb, color:'#d94f3b'},
     {type:'demand', market:mp, color:'#7c3aed'},
     {type:'supply', market:mp, color:'#ea580c'}
   ], [
-    {p:mb.eqP, q:mb.eqQ, label:'E0', color:'#0f766e'},
-    {p:mp.eqP, q:mp.eqQ, label:'E1', color:'#0f766e'}
-  ], 'Comparación de equilibrios');
+    {p:mb.eqP, q:mb.eqQ, label:'E₀', color:'#0f766e', dashColor:'#64748b'},
+    {p:mp.eqP, q:mp.eqQ, label:'E₁', color:'#0f766e', dashColor:'#0f766e'}
+  ], 'Comparación de equilibrios', {shade: cmpShade, domainLabels: cmpDomLabels});
 
   renderCmpElasticities(computeElasticities(base, mb), computeElasticities(post, mp));
 }
@@ -2486,14 +2719,20 @@ function updateCmp() {
 function renderExampleChart() {
   const base = {A:120, B:1, C:-30, D:2, eqP:50, eqQ:70};
   const post = {A:120, B:1, C:-60, D:2, eqP:60, eqQ:60};
+  const sb = computeSurplus(base);
+  const sp = computeSurplus(post);
+  const shades = [];
+  if (sb) shades.push({Pd_max: sb.Pd_max, Ps_min: sb.Ps_min, eqP: base.eqP, eqQ: base.eqQ});
+  if (sp) shades.push({Pd_max: sp.Pd_max, Ps_min: sp.Ps_min, eqP: post.eqP, eqQ: post.eqQ});
+  const domLabels = [{pdMax: base.A / base.B, psMin: Math.max(0, -base.C / base.D)}];
   svgChart($('exampleChart'), [
     {type:'demand', market:base, color:'#355cde'},
     {type:'supply', market:base, color:'#d94f3b'},
     {type:'supply', market:post, color:'#ea580c'}
   ], [
-    {p:base.eqP, q:base.eqQ, label:'E0', color:'#0f766e'},
-    {p:post.eqP, q:post.eqQ, label:'E1', color:'#0f766e'}
-  ], 'Contracción de oferta: ejemplo resuelto');
+    {p:base.eqP, q:base.eqQ, label:'E₀', color:'#0f766e', dashColor:'#64748b'},
+    {p:post.eqP, q:post.eqQ, label:'E₁', color:'#0f766e', dashColor:'#0f766e'}
+  ], 'Contracción de oferta: ejemplo resuelto', {shade: shades, domainLabels: domLabels});
 }
 
 function renderCases() {
@@ -2543,8 +2782,7 @@ renderExampleChart();
   <p>
     MercaLab no entrega predicciones incondicionales. Entrega predicciones
     condicionales: dado este modelo y estos supuestos, esto debería ocurrir.
-    La pestaña <a href="#supuestos" onclick="activateTab('supuestos'); return false;">Supuestos</a> indica cuándo cambiar el marco;
-    <a href="#politica" onclick="activateTab('politica'); return false;">Política</a>, cómo intervenciones distintas operan dentro
+    La pestaña <a href="#marco-teorico" onclick="activateTab('marco-teorico'); return false;">Marco teórico</a> indica cuándo cambiar el marco y cómo intervenciones distintas operan dentro
     y fuera del equilibrio; <a href="#cadenas" onclick="activateTab('cadenas'); return false;">Cadenas</a>, cómo un shock se
     propaga (o se rompe) entre mercados acoplados.
   </p>
