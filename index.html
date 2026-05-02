@@ -3391,9 +3391,9 @@ function updatePrecios() {
       // F: triangle (Qd_f,Ps_Qd)-(eqQ,eqP)-(Qd_f,eqP)
       if (Number.isFinite(Ps_Qd) && Ps_Qd < eqP && Ps_Qd >= 0)
         polys.push({pts:[[Qd_f,Ps_Qd],[eqQ,eqP],[Qd_f,eqP]], fill:'rgba(234,88,12,0.22)', stroke:'rgba(234,88,12,0.5)', label:'F', labelX:Qd_f+(eqQ-Qd_f)*0.3, labelY:Ps_Qd+(eqP-Ps_Qd)*0.5, textColor:'#c2410c'});
-      // J: trapezoid (Qd_f,Ps_Qd)-(Qo_f,Preg)-(Qd_f,Preg) [case 2 only]
+      // J: trapezoid under supply curve from Qd to Qo [case 2 only]
       if (!knowsD && Number.isFinite(Ps_Qd) && Qo_f > Qd_f)
-        polys.push({pts:[[Qd_f,Ps_Qd],[Qo_f,Preg],[Qd_f,Preg]], fill:'rgba(30,30,30,0.15)', stroke:'rgba(0,0,0,0.4)', label:'J', labelX:(Qd_f+Qo_f)/2, labelY:(Ps_Qd+Preg)/2, textColor:'#1e293b'});
+        polys.push({pts:[[Qd_f,0],[Qo_f,0],[Qo_f,Preg],[Qd_f,Ps_Qd]], fill:'rgba(30,30,30,0.15)', stroke:'rgba(0,0,0,0.4)', label:'J', labelX:(Qd_f+Qo_f)/2, labelY:(Ps_Qd+Preg)/4, textColor:'#1e293b'});
 
       const vlines = [
         {q:Qd_f, color:'#355cde', label:`Qd=${fmt(Qd_f,1)}`},
