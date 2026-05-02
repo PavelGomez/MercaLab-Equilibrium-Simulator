@@ -2050,13 +2050,13 @@ const defaults = {
   // ── Simulador (mercado único) ──────────────────────────────────
   sim: {
     // Parámetros α (demanda): a1 es negativo por convención (pendiente de demanda)
-    a0: 120, a1: -2, a2: 0.5, a3: 0.3, a4: -0.2, a5: 0,
+    a0: 10000, a1: -0.5, a2: 0, a3: 0, a4: 0, a5: 0,
     // Variables exógenas de demanda
-    Y: 100, Ps: 50, Pc: 30, Exp: 0,
+    Y: 0, Ps: 0, Pc: 0, Exp: 0,
     // Parámetros β (oferta): b1 positivo (pendiente de oferta)
-    b0: -30, b1: 3, b2: -0.4, b3: 0.2, b4: 0.5,
+    b0: -1500, b1: 0.75, b2: 0, b3: 0, b4: 0,
     // Variables exógenas de oferta
-    Pi: 50, Tec: 100, N: 20
+    Pi: 0, Tec: 0, N: 0
   },
   // ── Comparador (antes / después de shock) ─────────────────────
   cmp: {
