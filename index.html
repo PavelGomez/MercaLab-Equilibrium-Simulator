@@ -553,6 +553,46 @@ hr.sep {
 }
 .surplus-kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .surplus-kpi .value { font-size: 18px; font-weight: 700; margin-top: 3px; font-family: monospace; }
+
+/* ── Sub-tabs (Intervenciones) ────────────────────────────────────── */
+.subtab-bar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  border-bottom: 2px solid var(--line); padding-bottom: 8px; margin-bottom: 18px;
+}
+.subtab {
+  border: 1px solid var(--line); background: #fff; color: var(--ink);
+  padding: 8px 18px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 14px;
+}
+.subtab.active { background: var(--navy-2); color: #fff; border-color: var(--navy-2); }
+.subsection { display: none; }
+.subsection.active { display: block; }
+
+/* ── ABCD parameter grid ─────────────────────────────────────────── */
+.abcd-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0;
+}
+.abcd-group { display: flex; flex-direction: column; gap: 4px; }
+.abcd-group label { font-size: 12px; font-weight: 700; color: var(--muted); }
+
+/* ── Welfare KPI tiles ───────────────────────────────────────────── */
+.welfare-row {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 8px;
+}
+.welfare-kpi {
+  padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: #fafcff;
+}
+.welfare-kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.welfare-kpi .value { font-size: 16px; font-weight: 700; margin-top: 2px; font-family: monospace; }
+.welfare-kpi.pos  { background: var(--soft-green); border-color: #b8ddc2; }
+.welfare-kpi.neg  { background: var(--soft-rose);  border-color: #f2d2c9; }
+.welfare-kpi.gov  { background: var(--soft-teal);  border-color: #caebea; }
+.welfare-kpi.loss { background: #fff3cd; border-color: #ead081; }
+.welfare-kpi.neutral { background: var(--soft-blue); border-color: #cad8ee; }
+
+@media (max-width: 1100px) {
+  .abcd-grid { grid-template-columns: repeat(2, 1fr); }
+  .welfare-row { grid-template-columns: 1fr; }
+}
 </style>
 <script type="application/ld+json">
 {
@@ -597,6 +637,8 @@ hr.sep {
   <button class="tab" data-target="casos">Casos</button>
   <button class="tab" data-target="marco-teorico">Marco teórico</button>
   <button class="tab" data-target="cadenas">Cadenas</button>
+  <button class="tab" data-target="excedentes">Excedentes</button>
+  <button class="tab" data-target="intervenciones">Intervenciones</button>
 </nav>
 
 <main>
@@ -1155,6 +1197,189 @@ Lectura:     sube el precio y cae la cantidad, consistente con contracción
   </header>
   <nav class="ml-cadenas__selector" role="tablist" aria-label="Selector de caso"></nav>
   <div class="ml-cadenas__contenido" role="tabpanel"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     EXCEDENTES
+═══════════════════════════════════════════════════════════════ -->
+<section id="excedentes" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Excedentes del consumidor y productor</h2>
+
+      <details class="param-details" style="margin-bottom:14px;">
+        <summary><div class="table-title" style="margin:0;">Concepto (clic para expandir)</div></summary>
+        <div style="padding:14px 0 4px;font-size:14px;line-height:1.7;">
+          <p><strong>EC — Excedente del consumidor:</strong> área entre la curva de demanda y el precio P*. Mide cuánto más valoran los consumidores el bien de lo que efectivamente pagan. En el modelo lineal: EC = ½·(Pd_max − P*)·Q*, donde Pd_max = A/B es el precio donde la demanda se hace cero.</p>
+          <p><strong>EP — Excedente del productor:</strong> área entre P* y la curva de oferta. Mide cuánto más reciben los productores por encima de su precio mínimo de reserva. EP = ½·(P* − Ps_min)·Q*, con Ps_min = max(0, −C/D).</p>
+          <p><strong>BT — Bienestar total:</strong> BT = EC + EP. En el equilibrio competitivo sin intervenciones, BT es el máximo posible. Cualquier intervención que aleje la cantidad de Q* genera pérdida de peso muerto (DWL).</p>
+          <p style="margin:0;padding:10px 12px;background:var(--soft-teal);border-radius:10px;border:1px solid #caebea;"><strong>Distribución según elasticidades:</strong> el lado más inelástico del mercado captura mayor proporción del bienestar total. Si la demanda es más inelástica que la oferta (|Epd| &lt; Epo), los consumidores se quedan con EC &gt; EP, y viceversa.</p>
+        </div>
+      </details>
+
+      <div class="table-title">Parámetros del mercado (Qd = A − B·P &nbsp;|&nbsp; Qs = C + D·P)</div>
+      <p class="note" style="margin:4px 0 8px;">Ingresa los coeficientes de las ecuaciones efectivas, o sincroniza directamente desde el Simulador.</p>
+      <button onclick="syncToExcedentes()" style="border:1px solid #cad8ee;background:var(--soft-blue);color:var(--navy-2);padding:7px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;">↓ Sincronizar con Simulador</button>
+      <div class="abcd-grid">
+        <div class="abcd-group"><label title="A: intercepto de demanda en Qd = A − B·P">A (intercepto D)</label><input id="exc_A" type="number" step="any" placeholder="ej. 120"></div>
+        <div class="abcd-group"><label title="B: pendiente (positiva) de demanda">B (pendiente D)</label><input id="exc_B" type="number" step="any" placeholder="ej. 1"></div>
+        <div class="abcd-group"><label title="C: intercepto de oferta en Qs = C + D·P">C (intercepto O)</label><input id="exc_C" type="number" step="any" placeholder="ej. -30"></div>
+        <div class="abcd-group"><label title="D: pendiente (positiva) de oferta">D (pendiente O)</label><input id="exc_D" type="number" step="any" placeholder="ej. 2"></div>
+      </div>
+
+      <div id="excWarning" class="warning" style="display:none;margin-bottom:10px;"></div>
+
+      <div class="output" style="margin-top:8px;"><strong>Demanda efectiva</strong> <span id="excDemandEq">—</span></div>
+      <div class="output" style="margin-top:6px;"><strong>Oferta efectiva</strong> <span id="excSupplyEq">—</span></div>
+      <div class="kpis" style="margin-top:10px;">
+        <div class="kpi"><div class="label">P* (precio equilibrio)</div><div id="excP" class="value">—</div></div>
+        <div class="kpi"><div class="label">Q* (cantidad equilibrio)</div><div id="excQ" class="value">—</div></div>
+      </div>
+
+      <div class="surplus-panel" style="margin-top:14px;">
+        <div class="table-title">Excedentes en el equilibrio competitivo</div>
+        <div class="surplus-row">
+          <div class="surplus-kpi"><div class="label">EC (excedente consumidor)</div><div id="excEC" class="value">—</div></div>
+          <div class="surplus-kpi"><div class="label">EP (excedente productor)</div><div id="excEP" class="value">—</div></div>
+          <div class="surplus-kpi"><div class="label">BT = EC + EP</div><div id="excBT" class="value">—</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">EC = ½·(A/B − P*)·Q* &nbsp;|&nbsp; EP = ½·(P* − max(0,−C/D))·Q* &nbsp;|&nbsp; BT = EC + EP</div>
+        <div id="excRatios" style="margin-top:8px;font-size:13px;line-height:1.6;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Gráfico de excedentes</h2>
+      <svg id="excChart" viewBox="0 0 760 420" aria-label="Excedentes del consumidor y productor"></svg>
+      <div class="legend" style="margin-top:8px;">
+        <span><i class="swatch" style="background:#355cde"></i> Demanda</span>
+        <span><i class="swatch" style="background:#d94f3b"></i> Oferta</span>
+        <span><i class="swatch" style="background:rgba(53,92,222,0.3)"></i> EC (triángulo azul)</span>
+        <span><i class="swatch" style="background:rgba(15,118,110,0.3)"></i> EP (triángulo verde)</span>
+      </div>
+      <div class="footer-note">Las líneas punteadas proyectan P* y Q* sobre los ejes. El triángulo azul es el excedente del consumidor; el verde, el del productor. Pd_max = A/B (intercepto en Y de demanda); Ps_min = −C/D (precio mínimo de oferta).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTERVENCIONES
+═══════════════════════════════════════════════════════════════ -->
+<section id="intervenciones" class="section">
+  <div class="subtab-bar">
+    <button class="subtab active" data-subtarget="preg-panel">Precios regulados</button>
+    <button class="subtab" data-subtarget="imp-panel">Impuestos y Subsidios</button>
+  </div>
+
+  <!-- ── Precios regulados ────────────────────────────────────── -->
+  <div id="preg-panel" class="subsection active">
+    <div class="grid">
+      <div class="card">
+        <h2>Precio regulado</h2>
+        <p class="note">Analiza los efectos de un precio máximo (techo) o mínimo (piso) sobre el bienestar. Solo tiene impacto si el precio regulado es efectivo respecto al equilibrio competitivo.</p>
+
+        <div class="table-title">Parámetros del mercado</div>
+        <button onclick="syncToIntPreg()" style="border:1px solid #cad8ee;background:var(--soft-blue);color:var(--navy-2);padding:7px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;margin-bottom:8px;">↓ Sincronizar con Simulador</button>
+        <div class="abcd-grid">
+          <div class="abcd-group"><label>A (intercepto D)</label><input id="preg_A" type="number" step="any" placeholder="ej. 120"></div>
+          <div class="abcd-group"><label>B (pendiente D)</label><input id="preg_B" type="number" step="any" placeholder="ej. 1"></div>
+          <div class="abcd-group"><label>C (intercepto O)</label><input id="preg_C" type="number" step="any" placeholder="ej. -30"></div>
+          <div class="abcd-group"><label>D (pendiente O)</label><input id="preg_D" type="number" step="any" placeholder="ej. 2"></div>
+        </div>
+
+        <div class="table-title" style="margin-top:12px;">Tipo de precio regulado</div>
+        <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:8px 0 10px;">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:700;cursor:pointer;"><input type="radio" name="pregType" id="preg_type_max" value="max" checked> Precio máximo (techo)</label>
+          <label style="display:flex;align-items:center;gap:6px;font-weight:700;cursor:pointer;"><input type="radio" name="pregType" id="preg_type_min" value="min"> Precio mínimo (piso)</label>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <label id="pregPregLabel" style="font-weight:700;font-size:14px;white-space:nowrap;">Precio máximo (Pmáx):</label>
+          <input id="preg_Preg" type="number" step="any" style="width:130px;" placeholder="ej. 45">
+        </div>
+
+        <div id="pregNoEqWarn" class="warning" style="display:none;"></div>
+        <div id="pregNoEffect" class="warning" style="display:none;"></div>
+
+        <div id="pregKnowsToggle" style="display:none;margin-top:10px;padding:10px 14px;border-radius:12px;background:var(--soft-gold);border:1px solid #ead081;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px;">¿Los productores conocen la demanda antes de producir?</div>
+          <div style="display:flex;gap:18px;flex-wrap:wrap;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="radio" name="pregKnows" id="preg_knows_yes" value="yes" checked> Sí conocen — producen exactamente Qd</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="radio" name="pregKnows" id="preg_knows_no" value="no"> No conocen — producen Qo, venden solo Qd</label>
+          </div>
+        </div>
+
+        <div id="pregResults" style="display:none;margin-top:14px;">
+          <div class="table-title">Resultados del análisis</div>
+          <table style="margin-top:8px;">
+            <thead><tr><th>Variable</th><th>Valor</th><th>Descripción</th></tr></thead>
+            <tbody id="pregResultsBody"></tbody>
+          </table>
+          <div class="table-title" style="margin-top:14px;">Impacto sobre el bienestar</div>
+          <div class="welfare-row" id="pregWelfareRow"></div>
+          <div id="pregWelfareSummary" style="margin-top:10px;font-size:13px;padding:10px 12px;border-radius:12px;background:var(--soft-rose);border:1px solid #f2d2c9;line-height:1.6;"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Gráfico</h2>
+        <svg id="pregChart" viewBox="0 0 760 420" aria-label="Precio regulado"></svg>
+        <div id="pregLegend" class="legend" style="margin-top:8px;"></div>
+        <div class="footer-note" id="pregFootnote"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Impuestos y Subsidios ────────────────────────────────── -->
+  <div id="imp-panel" class="subsection">
+    <div class="grid">
+      <div class="card">
+        <h2>Impuesto o subsidio unitario</h2>
+        <p class="note">Analiza los efectos de una cuña fiscal entre el precio del consumidor (Pc) y el precio del productor (Pp). La incidencia se distribuye según las elasticidades relativas.</p>
+
+        <div class="table-title">Parámetros del mercado</div>
+        <button onclick="syncToIntImp()" style="border:1px solid #cad8ee;background:var(--soft-blue);color:var(--navy-2);padding:7px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;margin-bottom:8px;">↓ Sincronizar con Simulador</button>
+        <div class="abcd-grid">
+          <div class="abcd-group"><label>A (intercepto D)</label><input id="imp_A" type="number" step="any" placeholder="ej. 120"></div>
+          <div class="abcd-group"><label>B (pendiente D)</label><input id="imp_B" type="number" step="any" placeholder="ej. 1"></div>
+          <div class="abcd-group"><label>C (intercepto O)</label><input id="imp_C" type="number" step="any" placeholder="ej. -30"></div>
+          <div class="abcd-group"><label>D (pendiente O)</label><input id="imp_D" type="number" step="any" placeholder="ej. 2"></div>
+        </div>
+
+        <div class="table-title" style="margin-top:12px;">Tipo de intervención fiscal</div>
+        <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:8px 0 10px;">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:700;cursor:pointer;"><input type="radio" name="impType" id="imp_type_tax" value="tax" checked> Impuesto unitario (t)</label>
+          <label style="display:flex;align-items:center;gap:6px;font-weight:700;cursor:pointer;"><input type="radio" name="impType" id="imp_type_sub" value="sub"> Subsidio unitario (s)</label>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <label id="impAmountLabel" style="font-weight:700;font-size:14px;white-space:nowrap;">Monto t (impuesto):</label>
+          <input id="imp_amount" type="number" step="any" min="0" style="width:130px;" placeholder="ej. 10">
+        </div>
+
+        <div id="impNoEqWarn" class="warning" style="display:none;"></div>
+
+        <div id="impResults" style="display:none;margin-top:14px;">
+          <div class="table-title">Nuevo equilibrio con cuña fiscal</div>
+          <table style="margin-top:8px;">
+            <thead><tr><th>Variable</th><th>Valor</th><th>Descripción</th></tr></thead>
+            <tbody id="impResultsBody"></tbody>
+          </table>
+          <div class="table-title" style="margin-top:14px;">Impacto sobre el bienestar</div>
+          <div class="welfare-row" id="impWelfareRow"></div>
+          <div id="impWelfareSummary" style="margin-top:10px;font-size:13px;padding:10px 12px;border-radius:12px;background:var(--soft-teal);border:1px solid #caebea;line-height:1.6;"></div>
+          <div id="impVerification" style="margin-top:8px;font-size:12px;color:var(--muted);font-family:monospace;padding:6px 10px;background:#f1f4f8;border-radius:8px;"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Gráfico</h2>
+        <svg id="impChart" viewBox="0 0 760 420" aria-label="Impuesto o subsidio"></svg>
+        <div id="impLegend" class="legend" style="margin-top:8px;"></div>
+        <div class="footer-note" id="impFootnote"></div>
+      </div>
+    </div>
+  </div>
 </section>
 
 </main>
@@ -2774,6 +2999,613 @@ renderCases();
 updateSim();
 updateCmp();
 renderExampleChart();
+
+// ═══════════════════════════════════════════════════════════════════
+// ── SVG chart for policy interventions ──────────────────────────────
+// polys: [{pts:[[Q,P],...], fill, stroke, label, labelX, labelY, textColor}]
+// hlines: [{p, color, dash, width, opacity, label}]
+// vlines: [{q, color, dash, opacity, label}]
+// eqPoints: [{p, q, color, label}]
+// ═══════════════════════════════════════════════════════════════════
+function svgChartPolicy(el, market, polys, hlines, vlines, eqPoints, title) {
+  const w = 760, h = 420, mg = {l:80, r:24, t:30, b:58};
+
+  // Auto-compute axis ranges from all data
+  const pCands = [10];
+  if (Number.isFinite(market.eqP) && market.eqP > 0) pCands.push(market.eqP);
+  if (market.B > 0 && market.A > 0) pCands.push(market.A / market.B);
+  if (market.D > 0 && market.C < 0) pCands.push(-market.C / market.D);
+  (hlines||[]).forEach(hl => { if (Number.isFinite(hl.p) && hl.p > 0) pCands.push(hl.p); });
+  (polys||[]).forEach(poly => poly.pts.forEach(([,p]) => { if (Number.isFinite(p) && p > 0) pCands.push(p); }));
+  (eqPoints||[]).forEach(pt => { if (Number.isFinite(pt.p) && pt.p > 0) pCands.push(pt.p); });
+  const pT = Math.max(...pCands.filter(Number.isFinite)) * 1.28 + 5;
+
+  const qCands = [10];
+  if (Number.isFinite(market.eqQ) && market.eqQ > 0) qCands.push(market.eqQ);
+  if (market.A > 0) qCands.push(market.A);
+  (vlines||[]).forEach(vl => { if (Number.isFinite(vl.q) && vl.q > 0) qCands.push(vl.q); });
+  (polys||[]).forEach(poly => poly.pts.forEach(([q]) => { if (Number.isFinite(q) && q > 0) qCands.push(q); }));
+  (eqPoints||[]).forEach(pt => { if (Number.isFinite(pt.q) && pt.q > 0) qCands.push(pt.q); });
+  const qT = Math.max(...qCands.filter(Number.isFinite)) * 1.28 + 5;
+
+  const xQ = q => mg.l + (q / qT) * (w - mg.l - mg.r);
+  const yP = p => h - mg.b - (p / pT) * (h - mg.t - mg.b);
+
+  let out = `<rect width="${w}" height="${h}" fill="white"/>`;
+  if (title) out += `<text x="${w/2}" y="18" text-anchor="middle" style="font-size:16px;font-weight:700;fill:#1f2a37">${title}</text>`;
+
+  // Grid
+  for (let i = 0; i <= 5; i++) {
+    const py = mg.t + i * (h - mg.t - mg.b) / 5;
+    const pv = pT - i * (pT / 5);
+    out += `<line x1="${mg.l}" y1="${py}" x2="${w-mg.r}" y2="${py}" stroke="#e7edf5"/>`;
+    out += `<text x="${mg.l-8}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(pv)}</text>`;
+  }
+  for (let i = 0; i <= 5; i++) {
+    const px = mg.l + i * (w - mg.l - mg.r) / 5;
+    const qv = i * (qT / 5);
+    out += `<line x1="${px}" y1="${mg.t}" x2="${px}" y2="${h-mg.b}" stroke="#e7edf5"/>`;
+    out += `<text x="${px}" y="${h-mg.b+20}" text-anchor="middle" class="axis-label">${fmt(qv)}</text>`;
+  }
+  out += `<line x1="${mg.l}" y1="${h-mg.b}" x2="${w-mg.r}" y2="${h-mg.b}" stroke="#64748b" stroke-width="2"/>`;
+  out += `<line x1="${mg.l}" y1="${mg.t}" x2="${mg.l}" y2="${h-mg.b}" stroke="#64748b" stroke-width="2"/>`;
+  out += `<text x="${w/2}" y="${h-6}" text-anchor="middle" class="axis-label">Cantidad (Q)</text>`;
+  out += `<text x="14" y="${h/2}" transform="rotate(-90 14 ${h/2})" text-anchor="middle" class="axis-label">Precio (P)</text>`;
+
+  // Shaded polygons (before curves so curves appear on top)
+  (polys||[]).forEach(poly => {
+    const pts = poly.pts.map(([q,p]) => `${xQ(q)},${yP(p)}`).join(' ');
+    out += `<polygon points="${pts}" fill="${poly.fill}" stroke="${poly.stroke||'none'}" stroke-width="1"/>`;
+    if (poly.label) {
+      const avgQ = poly.pts.reduce((s,[q]) => s+q, 0) / poly.pts.length;
+      const avgP = poly.pts.reduce((s,[,p]) => s+p, 0) / poly.pts.length;
+      const lx = poly.labelX !== undefined ? xQ(poly.labelX) : xQ(avgQ);
+      const ly = poly.labelY !== undefined ? yP(poly.labelY) : yP(avgP);
+      out += `<text x="${lx}" y="${ly}" text-anchor="middle" style="font-size:12px;fill:${poly.textColor||'#1f2a37'};font-weight:700;">${poly.label}</text>`;
+    }
+  });
+
+  // Demand curve
+  const dPts = visibleCurvePoints(market, 'demand', pT, qT, w, h, mg);
+  if (dPts.length >= 2) out += `<polyline fill="none" stroke="#355cde" stroke-width="3" points="${dPts.join(' ')}"/>`;
+  // Supply curve
+  const sPts = visibleCurvePoints(market, 'supply', pT, qT, w, h, mg);
+  if (sPts.length >= 2) out += `<polyline fill="none" stroke="#d94f3b" stroke-width="3" points="${sPts.join(' ')}"/>`;
+
+  // Horizontal price lines
+  (hlines||[]).forEach(hl => {
+    if (!Number.isFinite(hl.p) || hl.p < 0 || hl.p > pT) return;
+    const y = yP(hl.p);
+    const dashAttr = hl.dash ? `stroke-dasharray="${hl.dash}"` : '';
+    out += `<line x1="${mg.l}" y1="${y}" x2="${w-mg.r}" y2="${y}" stroke="${hl.color}" stroke-width="${hl.width||1.5}" ${dashAttr} opacity="${hl.opacity||1}"/>`;
+    if (hl.label) {
+      const lw = hl.label.length * 6 + 8;
+      out += `<rect x="${mg.l-lw-4}" y="${y-8}" width="${lw}" height="14" fill="white" opacity="0.9"/>`;
+      out += `<text x="${mg.l-6}" y="${y+3}" text-anchor="end" style="font-size:10px;font-weight:700;fill:${hl.color};">${hl.label}</text>`;
+    }
+  });
+
+  // Vertical quantity lines
+  (vlines||[]).forEach(vl => {
+    if (!Number.isFinite(vl.q) || vl.q < 0 || vl.q > qT) return;
+    const x = xQ(vl.q);
+    const fromY = Number.isFinite(vl.fromP) ? yP(Math.min(vl.fromP, pT)) : mg.t;
+    out += `<line x1="${x}" y1="${fromY}" x2="${x}" y2="${h-mg.b}" stroke="${vl.color}" stroke-width="1" stroke-dasharray="${vl.dash||'4,3'}" opacity="${vl.opacity||0.7}"/>`;
+    if (vl.label) {
+      out += `<rect x="${x-13}" y="${h-mg.b+5}" width="${vl.label.length*6+6}" height="13" fill="white" opacity="0.9"/>`;
+      out += `<text x="${x}" y="${h-mg.b+16}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:${vl.color};">${vl.label}</text>`;
+    }
+  });
+
+  // Equilibrium circles + labels
+  (eqPoints||[]).forEach(pt => {
+    if (!Number.isFinite(pt.q) || !Number.isFinite(pt.p) || pt.p > pT || pt.q > qT) return;
+    const cx = xQ(pt.q), cy = yP(pt.p);
+    out += `<circle cx="${cx}" cy="${cy}" r="5" fill="${pt.color}"/>`;
+    if (pt.label) out += `<text x="${cx+8}" y="${cy-8}" style="font-size:12px;font-weight:700;fill:${pt.color}">${pt.label}</text>`;
+  });
+
+  el.innerHTML = out;
+}
+
+// ── Helper: welfare KPI tile ─────────────────────────────────────────
+function welfareKpi(label, value, cls, note) {
+  const sign = Number.isFinite(value) && value > 0 ? '+' : '';
+  const disp = Number.isFinite(value) ? sign + fmt(value) : '—';
+  return `<div class="welfare-kpi ${cls}">` +
+    `<div class="label">${label}</div>` +
+    `<div class="value">${disp}</div>` +
+    (note ? `<div style="font-size:10px;color:var(--muted);margin-top:3px;">${note}</div>` : '') +
+    `</div>`;
+}
+
+// ── Helper: CSS class from sign ───────────────────────────────────────
+function welfareClass(v) {
+  if (!Number.isFinite(v)) return 'neutral';
+  return v > 0.005 ? 'pos' : v < -0.005 ? 'neg' : 'neutral';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ── EXCEDENTES TAB ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+function syncToExcedentes() {
+  const p = readParams('sim');
+  const m = computeMarket(p);
+  if (!Number.isFinite(m.A)) return;
+  const f = n => parseFloat(fmt(n, 6));
+  $('exc_A').value = f(m.A); $('exc_B').value = f(m.B);
+  $('exc_C').value = f(m.C); $('exc_D').value = f(m.D);
+  updateExcedentes();
+}
+
+function updateExcedentes() {
+  const A = parseFloat($('exc_A').value);
+  const B = parseFloat($('exc_B').value);
+  const C = parseFloat($('exc_C').value);
+  const D = parseFloat($('exc_D').value);
+  const warn = $('excWarning');
+  const chartEl = $('excChart');
+
+  const setBlank = () => {
+    ['excDemandEq','excSupplyEq','excP','excQ','excEC','excEP','excBT','excRatios'].forEach(id => {
+      const el = $(id); if (el) el.textContent = '—';
+    });
+    if (chartEl) chartEl.innerHTML = '';
+  };
+
+  if (!Number.isFinite(A)||!Number.isFinite(B)||!Number.isFinite(C)||!Number.isFinite(D)) {
+    setBlank(); if (warn) warn.style.display = 'none'; return;
+  }
+
+  $('excDemandEq').textContent = `Qd = ${fmt(A)} − ${fmt(B)}·P`;
+  $('excSupplyEq').textContent = `Qs = ${fmt(C)} + ${fmt(D)}·P`;
+
+  const denom = B + D;
+  let eqP = NaN, eqQ = NaN;
+  if (Math.abs(denom) > 1e-12) { eqP = (A - C) / denom; eqQ = A - B * eqP; }
+  const m = {A, B, C, D, eqP, eqQ};
+
+  $('excP').textContent = fmt(eqP);
+  $('excQ').textContent = fmt(eqQ);
+
+  const valid = Number.isFinite(eqP) && Number.isFinite(eqQ) && eqP > 0 && eqQ > 0;
+  if (warn) {
+    warn.style.display = valid ? 'none' : 'block';
+    if (!valid) warn.textContent = !Number.isFinite(eqP) ? 'No existe equilibrio único (B + D = 0).' : 'El equilibrio no está en el primer cuadrante con estos parámetros.';
+  }
+
+  const surplus = valid ? computeSurplus(m) : null;
+  $('excEC').textContent = surplus ? fmt(surplus.EC) : '—';
+  $('excEP').textContent = surplus ? fmt(surplus.EP) : '—';
+  $('excBT').textContent = surplus ? fmt(surplus.BT) : '—';
+
+  const ratiosEl = $('excRatios');
+  if (ratiosEl && surplus && surplus.BT > 0) {
+    const pEC = (surplus.EC / surplus.BT * 100).toFixed(1);
+    const pEP = (surplus.EP / surplus.BT * 100).toFixed(1);
+    const side = surplus.EC > surplus.EP ? 'consumidores (demanda más inelástica)' : surplus.EP > surplus.EC ? 'productores (oferta más inelástica)' : 'ambos por igual';
+    ratiosEl.innerHTML = `<span style="font-size:12px;color:var(--muted);">EC/BT = <strong>${pEC}%</strong> &nbsp;|&nbsp; EP/BT = <strong>${pEP}%</strong> &nbsp;— Mayor proporción: <strong>${side}</strong></span>`;
+  } else if (ratiosEl) ratiosEl.innerHTML = '';
+
+  if (chartEl) {
+    const opts = {
+      shade: surplus ? [{Pd_max:surplus.Pd_max, Ps_min:surplus.Ps_min, eqP, eqQ}] : [],
+      domainLabels: (B>0&&D>0) ? [{pdMax:A/B, psMin:Math.max(0,-C/D)}] : []
+    };
+    svgChart(chartEl,
+      [{type:'demand', market:m, color:'#355cde'}, {type:'supply', market:m, color:'#d94f3b'}],
+      valid ? [{p:eqP, q:eqQ, label:'E*', color:'#0f766e', dashColor:'#0f766e'}] : [],
+      'Excedentes del consumidor y productor', opts);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ── PRECIOS REGULADOS ───────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+function syncToIntPreg() {
+  const p = readParams('sim'), m = computeMarket(p);
+  if (!Number.isFinite(m.A)) return;
+  const f = n => parseFloat(fmt(n, 6));
+  $('preg_A').value=f(m.A); $('preg_B').value=f(m.B);
+  $('preg_C').value=f(m.C); $('preg_D').value=f(m.D);
+  updatePrecios();
+}
+
+function updatePrecios() {
+  const A = parseFloat($('preg_A').value), B = parseFloat($('preg_B').value);
+  const C = parseFloat($('preg_C').value), D = parseFloat($('preg_D').value);
+  const Preg = parseFloat($('preg_Preg').value);
+  const isMax = (document.querySelector('input[name="pregType"]:checked')||{}).value !== 'min';
+  const knowsD = (document.querySelector('input[name="pregKnows"]:checked')||{}).value !== 'no';
+
+  const lblEl = $('pregPregLabel');
+  if (lblEl) lblEl.textContent = isMax ? 'Precio máximo (Pmáx):' : 'Precio mínimo (Pmín):';
+
+  const toggle = $('pregKnowsToggle');
+  if (toggle) toggle.style.display = isMax ? 'none' : 'block';
+
+  const noEqEl = $('pregNoEqWarn'), noEffEl = $('pregNoEffect'), resEl = $('pregResults');
+  const chartEl = $('pregChart'), legEl = $('pregLegend'), fnEl = $('pregFootnote');
+  const hide = () => { if(resEl) resEl.style.display='none'; if(chartEl) chartEl.innerHTML=''; if(legEl) legEl.innerHTML=''; };
+
+  // Validate inputs
+  if (!Number.isFinite(A)||!Number.isFinite(B)||!Number.isFinite(C)||!Number.isFinite(D)) {
+    if(noEqEl) noEqEl.style.display='none'; if(noEffEl) noEffEl.style.display='none'; hide(); return;
+  }
+  const denom = B+D;
+  if (Math.abs(denom) < 1e-12) {
+    if(noEqEl){noEqEl.style.display='block'; noEqEl.textContent='No existe equilibrio único (B + D = 0).';} hide(); return;
+  }
+  const eqP = (A-C)/denom, eqQ = A-B*eqP;
+  if (!Number.isFinite(eqP)||eqP<0||eqQ<0) {
+    if(noEqEl){noEqEl.style.display='block'; noEqEl.textContent='El equilibrio base no existe en el primer cuadrante.';} hide(); return;
+  }
+  if(noEqEl) noEqEl.style.display='none';
+  if (!Number.isFinite(Preg)) { if(noEffEl) noEffEl.style.display='none'; hide(); return; }
+
+  // Check effectiveness
+  const effective = isMax ? (Preg < eqP - 1e-9) : (Preg > eqP + 1e-9);
+  if (!effective) {
+    if(noEffEl){
+      noEffEl.style.display='block';
+      noEffEl.textContent = isMax
+        ? `Precio máximo ${fmt(Preg)} ≥ P* = ${fmt(eqP)}: no es efectivo. El mercado ya opera por debajo de ese nivel.`
+        : `Precio mínimo ${fmt(Preg)} ≤ P* = ${fmt(eqP)}: no es efectivo. El mercado ya opera por encima de ese nivel.`;
+    }
+    hide(); return;
+  }
+  if(noEffEl) noEffEl.style.display='none';
+  if(resEl) resEl.style.display='block';
+
+  const mkt = {A, B, C, D, eqP, eqQ};
+  const tbody = $('pregResultsBody'), wRow = $('pregWelfareRow'), sumEl = $('pregWelfareSummary');
+
+  if (isMax) {
+    // ── Precio máximo ──────────────────────────────────────────────
+    const Qo    = C + D * Preg;                              // quantity offered at ceiling
+    const Qd_c  = A - B * Preg;                              // quantity demanded at ceiling
+    const short = Qd_c - Qo;
+    const Pd_Qo = B > 0 ? (A - Qo) / B : NaN;              // demand price at Qo
+
+    const Aarea = Number.isFinite(Pd_Qo) ? 0.5*(Pd_Qo-eqP)*(eqQ-Qo) : 0;
+    const Barea = 0.5*(eqP-Preg)*(eqQ-Qo);
+    const Carea = (eqP-Preg)*Qo;
+
+    const dEC = -Aarea + Carea;
+    const dEP = -Carea - Barea;
+    const dBS = -Aarea - Barea;   // deadweight loss (negative)
+
+    if (tbody) tbody.innerHTML = [
+      ['P*',        fmt(eqP),   'Precio competitivo de equilibrio'],
+      ['Q*',        fmt(eqQ),   'Cantidad competitiva de equilibrio'],
+      ['Pmáx',      fmt(Preg),  'Precio máximo regulado'],
+      ['Qo',        fmt(Qo),    'Cantidad ofrecida a Pmáx = C + D·Pmáx'],
+      ['Qd',        fmt(Qd_c),  'Cantidad demandada a Pmáx = A − B·Pmáx'],
+      ['Escasez',   fmt(short), 'Qd − Qo: unidades demandadas que no se ofrecen'],
+      ['Pd(Qo)',    fmt(Pd_Qo), 'Precio máximo que pagaría el consumidor marginal por la Qo-ésima unidad'],
+      ['Área A',    fmt(Aarea), '½·(Pd(Qo)−P*)·(Q*−Qo) — triángulo pérdida EC'],
+      ['Área B',    fmt(Barea), '½·(P*−Pmáx)·(Q*−Qo) — triángulo pérdida EP'],
+      ['Área C',    fmt(Carea), '(P*−Pmáx)·Qo — rectángulo transferencia EP→EC'],
+    ].map(([k,v,d]) => `<tr><td><strong>${k}</strong></td><td style="font-family:monospace;">${v}</td><td class="desc">${d}</td></tr>`).join('');
+
+    if (wRow) wRow.innerHTML =
+      welfareKpi('ΔEC', dEC, welfareClass(dEC), '−A + C') +
+      welfareKpi('ΔEP', dEP, welfareClass(dEP), '−C − B') +
+      welfareKpi('ΔBS (pérdida neta)', dBS, 'loss', '−A − B (Área Harberger)') +
+      welfareKpi('Transferencia EC↔EP', Carea, 'neutral', `C = ${fmt(Carea)} de productores a consumidores`);
+
+    if (sumEl) sumEl.innerHTML = `<strong>Precio máximo efectivo:</strong> consumidores que logran comprar ganan C = ${fmt(Carea)} (pagan menos), pero la escasez de ${fmt(short)} unidades genera pérdida de peso muerto A + B = ${fmt(-dBS)}.`;
+
+    // Chart
+    if (chartEl) {
+      const polys = [];
+      // C: rectangle (0,Preg)-(0,eqP)-(Qo,eqP)-(Qo,Preg)
+      polys.push({pts:[[0,Preg],[0,eqP],[Qo,eqP],[Qo,Preg]], fill:'rgba(22,101,52,0.22)', stroke:'rgba(22,101,52,0.5)', label:'C', labelX:Qo*0.4, labelY:(eqP+Preg)/2, textColor:'#166534'});
+      // A: triangle (Qo,eqP)-(eqQ,eqP)-(Qo,Pd_Qo)
+      if (Number.isFinite(Pd_Qo) && Pd_Qo > eqP)
+        polys.push({pts:[[Qo,eqP],[eqQ,eqP],[Qo,Pd_Qo]], fill:'rgba(53,92,222,0.22)', stroke:'rgba(53,92,222,0.5)', label:'A', labelX:Qo+(eqQ-Qo)*0.35, labelY:eqP+(Pd_Qo-eqP)*0.45, textColor:'#355cde'});
+      // B: triangle (Qo,Preg)-(Qo,eqP)-(eqQ,eqP)
+      polys.push({pts:[[Qo,Preg],[Qo,eqP],[eqQ,eqP]], fill:'rgba(217,79,59,0.22)', stroke:'rgba(217,79,59,0.5)', label:'B', labelX:Qo+(eqQ-Qo)*0.35, labelY:Preg+(eqP-Preg)*0.45, textColor:'#b91c1c'});
+
+      svgChartPolicy(chartEl, mkt, polys,
+        [{p:eqP,  color:'#64748b', dash:'4,3', width:1, label:`P*=${fmt(eqP,1)}`, opacity:0.8},
+         {p:Preg, color:'#b91c1c', width:2,    label:`Pmáx=${fmt(Preg,1)}`},
+         Number.isFinite(Pd_Qo) ? {p:Pd_Qo, color:'#355cde', dash:'3,3', width:1, label:`Pd(Qo)=${fmt(Pd_Qo,1)}`, opacity:0.7} : null].filter(Boolean),
+        [{q:Qo,  color:'#166534', label:`Qo=${fmt(Qo,1)}`},
+         {q:eqQ, color:'#64748b', label:`Q*=${fmt(eqQ,1)}`}],
+        [{p:eqP, q:eqQ, color:'#0f766e', label:'E*'}],
+        'Precio máximo: efectos sobre el bienestar');
+
+      if (legEl) legEl.innerHTML = `<span><i class="swatch" style="background:rgba(22,101,52,0.3)"></i> C (transf. EP→EC)</span><span><i class="swatch" style="background:rgba(53,92,222,0.3)"></i> A (pérd. EC)</span><span><i class="swatch" style="background:rgba(217,79,59,0.3)"></i> B (pérd. EP)</span>`;
+      if (fnEl) fnEl.textContent = 'El precio máximo crea escasez: la cantidad transada es Qo (limitada por la oferta). Los consumidores ganan C (pagan menos) pero pierden A (unidades que valoran más que P* y no pueden comprar).';
+    }
+
+  } else {
+    // ── Precio mínimo ──────────────────────────────────────────────
+    const Qd_f  = A - B * Preg;                              // quantity traded
+    const Qo_f  = C + D * Preg;                              // quantity offered
+    const excess = Qo_f - Qd_f;
+    const Ps_Qd = D > 0 ? (Qd_f - C) / D : NaN;            // supply price at Qd (inverse supply)
+
+    const Earea = 0.5*(Preg-eqP)*(eqQ-Qd_f);
+    const Farea = Number.isFinite(Ps_Qd)&&Ps_Qd<eqP ? 0.5*(eqP-Ps_Qd)*(eqQ-Qd_f) : 0;
+    const Harea = (Preg-eqP)*Qd_f;
+
+    const dEC  = -Earea - Harea;
+    const dEP1 = Harea - Farea;
+    const dBS1 = -Earea - Farea;
+
+    let J1=0, J2=0, dEP2, dBS2;
+    if (!knowsD && Number.isFinite(Ps_Qd) && Qo_f > Qd_f) {
+      J1 = 0.5 * (Preg - Ps_Qd) * (Qo_f - Qd_f);          // triangle above supply line
+      J2 = Ps_Qd * (Qo_f - Qd_f);                           // rectangle below supply line
+      dEP2 = Harea - Farea - (J1+J2);
+      dBS2 = -Earea - Farea - (J1+J2);
+    }
+
+    const dEP = knowsD ? dEP1 : dEP2;
+    const dBS = knowsD ? dBS1 : dBS2;
+
+    const rows = [
+      ['P*',        fmt(eqP),   'Precio competitivo de equilibrio'],
+      ['Q*',        fmt(eqQ),   'Cantidad competitiva de equilibrio'],
+      ['Pmín',      fmt(Preg),  'Precio mínimo regulado'],
+      ['Qd (transada)', fmt(Qd_f), 'Cantidad transada a Pmín = A − B·Pmín'],
+      ['Qo (ofrecida)', fmt(Qo_f), 'Cantidad ofrecida a Pmín = C + D·Pmín'],
+      ['Exceso oferta', fmt(excess), 'Qo − Qd: unidades producidas pero no vendidas'],
+      ['Ps(Qd)',    fmt(Ps_Qd), 'Precio mínimo de oferta para la Qd-ésima unidad (oferta inversa)'],
+      ['Área E',    fmt(Earea), '½·(Pmín−P*)·(Q*−Qd) — triángulo pérdida EC superior'],
+      ['Área F',    fmt(Farea), '½·(P*−Ps(Qd))·(Q*−Qd) — triángulo pérdida EP inferior'],
+      ['Área H',    fmt(Harea), '(Pmín−P*)·Qd — rectángulo transferencia EC→EP'],
+    ];
+    if (!knowsD) {
+      rows.push(['J1', fmt(J1), '½·(Pmín−Ps(Qd))·(Qo−Qd) — triángulo costo excedente (sobre curva oferta)']);
+      rows.push(['J2', fmt(J2), 'Ps(Qd)·(Qo−Qd) — rectángulo costo excedente (bajo curva oferta)']);
+      rows.push(['J=J1+J2', fmt(J1+J2), 'Costo total de producción de las unidades no vendidas']);
+    }
+
+    if (tbody) tbody.innerHTML = rows.map(([k,v,d]) =>
+      `<tr><td><strong>${k}</strong></td><td style="font-family:monospace;">${v}</td><td class="desc">${d}</td></tr>`).join('');
+
+    if (wRow) wRow.innerHTML =
+      welfareKpi('ΔEC', dEC, welfareClass(dEC), '−E − H') +
+      welfareKpi('ΔEP', dEP, welfareClass(dEP), knowsD ? 'H − F' : 'H − F − J') +
+      welfareKpi('ΔBS (pérdida neta)', dBS, 'loss', knowsD ? '−E − F' : '−E − F − J') +
+      welfareKpi('Exceso oferta', excess, 'neutral', `Qo − Qd = ${fmt(excess)}`);
+
+    if (sumEl) {
+      sumEl.style.background = knowsD ? 'var(--soft-rose)' : '#fff3cd';
+      sumEl.style.borderColor = knowsD ? '#f2d2c9' : '#ead081';
+      sumEl.innerHTML = !knowsD
+        ? `<strong>Caso 2 (no conocen demanda):</strong> Los productores fabrican Qo = ${fmt(Qo_f)} pero solo venden Qd = ${fmt(Qd_f)}. Costo adicional de excedente J = ${fmt(J1+J2)}. Pérdida de eficiencia total = ${fmt(-(dBS2))}.`
+        : `<strong>Caso 1 (conocen demanda):</strong> Los productores adaptan producción a Qd = ${fmt(Qd_f)}. Transferencia H = ${fmt(Harea)} de EC a EP, con pérdida de eficiencia neta E + F = ${fmt(Earea+Farea)}.`;
+    }
+
+    // Chart
+    if (chartEl) {
+      const polys = [];
+      // H: rectangle (0,eqP)-(0,Preg)-(Qd_f,Preg)-(Qd_f,eqP)
+      polys.push({pts:[[0,eqP],[0,Preg],[Qd_f,Preg],[Qd_f,eqP]], fill:'rgba(217,79,59,0.22)', stroke:'rgba(217,79,59,0.5)', label:'H', labelX:Qd_f*0.4, labelY:(eqP+Preg)/2, textColor:'#b91c1c'});
+      // E: triangle (Qd_f,eqP)-(eqQ,eqP)-(Qd_f,Preg)
+      polys.push({pts:[[Qd_f,eqP],[eqQ,eqP],[Qd_f,Preg]], fill:'rgba(53,92,222,0.22)', stroke:'rgba(53,92,222,0.5)', label:'E', labelX:Qd_f+(eqQ-Qd_f)*0.35, labelY:eqP+(Preg-eqP)*0.45, textColor:'#355cde'});
+      // F: triangle (Qd_f,Ps_Qd)-(eqQ,eqP)-(Qd_f,eqP)
+      if (Number.isFinite(Ps_Qd) && Ps_Qd < eqP && Ps_Qd >= 0)
+        polys.push({pts:[[Qd_f,Ps_Qd],[eqQ,eqP],[Qd_f,eqP]], fill:'rgba(234,88,12,0.22)', stroke:'rgba(234,88,12,0.5)', label:'F', labelX:Qd_f+(eqQ-Qd_f)*0.3, labelY:Ps_Qd+(eqP-Ps_Qd)*0.5, textColor:'#c2410c'});
+      // J: trapezoid (Qd_f,Ps_Qd)-(Qo_f,Preg)-(Qd_f,Preg) [case 2 only]
+      if (!knowsD && Number.isFinite(Ps_Qd) && Qo_f > Qd_f)
+        polys.push({pts:[[Qd_f,Ps_Qd],[Qo_f,Preg],[Qd_f,Preg]], fill:'rgba(30,30,30,0.15)', stroke:'rgba(0,0,0,0.4)', label:'J', labelX:(Qd_f+Qo_f)/2, labelY:(Ps_Qd+Preg)/2, textColor:'#1e293b'});
+
+      const vlines = [
+        {q:Qd_f, color:'#355cde', label:`Qd=${fmt(Qd_f,1)}`},
+        {q:eqQ,  color:'#64748b', label:`Q*=${fmt(eqQ,1)}`},
+      ];
+      if (!knowsD && Qo_f > Qd_f)
+        vlines.push({q:Qo_f, color:'#166534', label:`Qo=${fmt(Qo_f,1)}`});
+
+      svgChartPolicy(chartEl, mkt, polys,
+        [{p:eqP, color:'#64748b', dash:'4,3', width:1, label:`P*=${fmt(eqP,1)}`, opacity:0.8},
+         {p:Preg, color:'#166534', width:2, label:`Pmín=${fmt(Preg,1)}`},
+         Number.isFinite(Ps_Qd)&&Ps_Qd>=0 ? {p:Ps_Qd, color:'#d94f3b', dash:'3,3', width:1, label:`Ps(Qd)=${fmt(Ps_Qd,1)}`, opacity:0.7} : null].filter(Boolean),
+        vlines,
+        [{p:eqP, q:eqQ, color:'#0f766e', label:'E*'}],
+        knowsD ? 'Precio mínimo: caso 1 (productores conocen demanda)' : 'Precio mínimo: caso 2 (productores no conocen demanda)');
+
+      if (legEl) {
+        let leg = `<span><i class="swatch" style="background:rgba(217,79,59,0.3)"></i> H (transf. EC→EP)</span><span><i class="swatch" style="background:rgba(53,92,222,0.3)"></i> E (pérd. EC)</span><span><i class="swatch" style="background:rgba(234,88,12,0.3)"></i> F (pérd. EP)</span>`;
+        if (!knowsD) leg += `<span><i class="swatch" style="background:rgba(30,30,30,0.2)"></i> J (costo prod. excedente)</span>`;
+        legEl.innerHTML = leg;
+      }
+      if (fnEl) fnEl.textContent = !knowsD
+        ? 'Caso 2: los productores fabrican Qo pero solo venden Qd. El área J (costo de la producción no vendida) se agrega a la pérdida de bienestar.'
+        : 'Caso 1: los productores ajustan producción a Qd. Transferencia H de consumidores a productores; pérdida neta = E + F.';
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ── IMPUESTOS Y SUBSIDIOS ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+function syncToIntImp() {
+  const p = readParams('sim'), m = computeMarket(p);
+  if (!Number.isFinite(m.A)) return;
+  const f = n => parseFloat(fmt(n, 6));
+  $('imp_A').value=f(m.A); $('imp_B').value=f(m.B);
+  $('imp_C').value=f(m.C); $('imp_D').value=f(m.D);
+  updateImpuesto();
+}
+
+function updateImpuesto() {
+  const A = parseFloat($('imp_A').value), B = parseFloat($('imp_B').value);
+  const C = parseFloat($('imp_C').value), D = parseFloat($('imp_D').value);
+  const amount = parseFloat($('imp_amount').value);
+  const isTax = (document.querySelector('input[name="impType"]:checked')||{}).value !== 'sub';
+
+  const lblEl = $('impAmountLabel');
+  if (lblEl) lblEl.textContent = isTax ? 'Monto t (impuesto):' : 'Monto s (subsidio):';
+
+  const noEqEl = $('impNoEqWarn'), resEl = $('impResults');
+  const chartEl = $('impChart'), legEl = $('impLegend'), fnEl = $('impFootnote');
+  const hide = () => { if(resEl) resEl.style.display='none'; if(chartEl) chartEl.innerHTML=''; if(legEl) legEl.innerHTML=''; };
+
+  if (!Number.isFinite(A)||!Number.isFinite(B)||!Number.isFinite(C)||!Number.isFinite(D)||!Number.isFinite(amount)||amount<=0) {
+    if(noEqEl) noEqEl.style.display='none'; hide(); return;
+  }
+  const denom = B+D;
+  if (Math.abs(denom)<1e-12) {
+    if(noEqEl){noEqEl.style.display='block'; noEqEl.textContent='No existe equilibrio único (B + D = 0).';} hide(); return;
+  }
+  const eqP = (A-C)/denom, eqQ = A-B*eqP;
+  if (!Number.isFinite(eqP)||eqP<0||eqQ<0) {
+    if(noEqEl){noEqEl.style.display='block'; noEqEl.textContent='El equilibrio base no existe en el primer cuadrante.';} hide(); return;
+  }
+  if(noEqEl) noEqEl.style.display='none';
+  if(resEl) resEl.style.display='block';
+
+  const t = amount;
+  const mkt = {A, B, C, D, eqP, eqQ};
+  const Pd_max = B>0 ? A/B : Infinity;
+  const Ps_min = D>0&&C<0 ? -C/D : 0;
+
+  // New equilibrium
+  let Pc, Pp, Qt;
+  if (isTax) {
+    // A−B·Pc = C+D·(Pc−t)  →  Pc=(A−C+D·t)/(B+D)
+    Pc = (A - C + D*t) / denom;
+    Pp = Pc - t;
+    Qt = A - B*Pc;
+  } else {
+    // A−B·Pc = C+D·(Pc+t)  →  Pc=(A−C−D·t)/(B+D)
+    Pc = (A - C - D*t) / denom;
+    Pp = Pc + t;
+    Qt = A - B*Pc;
+  }
+
+  // Surplus calculation using direct triangle areas
+  const EC_pre = Number.isFinite(Pd_max) && Pd_max > eqP ? 0.5*(Pd_max-eqP)*eqQ : 0;
+  const EP_pre = eqP > Ps_min ? 0.5*(eqP-Ps_min)*eqQ : 0;
+  const EC_post = Number.isFinite(Pd_max) && Pd_max > Pc && Qt >= 0 ? 0.5*(Pd_max-Pc)*Qt : 0;
+  const EP_post = Pp >= Ps_min && Qt >= 0 ? 0.5*(Pp-Ps_min)*Qt : 0;
+
+  const dEC = EC_post - EC_pre;
+  const dEP = EP_post - EP_pre;
+  const PPM = 0.5 * t * Math.abs(eqQ - Qt);                 // Harberger triangle
+
+  const govFlow  = isTax ? t*Qt : -t*Qt;                    // + = revenue, - = fiscal cost
+  const checkSum = dEC + dEP + govFlow + (isTax ? PPM : -PPM); // ≈ 0
+
+  // Incidence
+  const incC = isTax ? (Pc-eqP) : (eqP-Pc);                // how much consumers pay more (tax) or less (sub)
+  const incP = isTax ? (eqP-Pp) : (Pp-eqP);
+  const pctC = t>0 ? (incC/t*100).toFixed(1) : '—';
+  const pctP = t>0 ? (incP/t*100).toFixed(1) : '—';
+
+  const tbody = $('impResultsBody');
+  if (tbody) {
+    const rows = isTax ? [
+      ['P*',   fmt(eqP), 'Precio competitivo de equilibrio'],
+      ['Q*',   fmt(eqQ), 'Cantidad competitiva de equilibrio'],
+      ['t',    fmt(t),   'Impuesto unitario'],
+      ['Pc',   fmt(Pc),  'Precio pagado por el consumidor (Pc = Pp + t)'],
+      ['Pp',   fmt(Pp),  'Precio recibido por el productor'],
+      ['Qt',   fmt(Qt),  'Cantidad de equilibrio con impuesto'],
+      ['Incidencia consumidor', `${fmt(incC)} (${pctC}%)`, `Pc − P* = D·t/(B+D)`],
+      ['Incidencia productor',  `${fmt(incP)} (${pctP}%)`, `P* − Pp = B·t/(B+D)`],
+      ['Recaudación',           fmt(t*Qt),  `t · Qt = ${fmt(t)} × ${fmt(Qt)}`],
+      ['PPM',                   fmt(PPM),   `½·t·(Q*−Qt): pérdida de peso muerto (triángulo Harberger)`],
+    ] : [
+      ['P*',   fmt(eqP), 'Precio competitivo de equilibrio'],
+      ['Q*',   fmt(eqQ), 'Cantidad competitiva de equilibrio'],
+      ['s',    fmt(t),   'Subsidio unitario'],
+      ['Pc',   fmt(Pc),  'Precio pagado por el consumidor (baja)'],
+      ['Pp',   fmt(Pp),  'Precio recibido por el productor (sube)'],
+      ['Qsub', fmt(Qt),  'Cantidad de equilibrio con subsidio'],
+      ['Beneficio consumidor', `${fmt(incC)} (${pctC}%)`, `P* − Pc = D·s/(B+D)`],
+      ['Beneficio productor',  `${fmt(incP)} (${pctP}%)`, `Pp − P* = B·s/(B+D)`],
+      ['Costo fiscal',          fmt(t*Qt),  `s · Qsub = ${fmt(t)} × ${fmt(Qt)}`],
+      ['PIE',                   fmt(PPM),   `½·s·(Qsub−Q*): pérdida de eficiencia por sobreproducción`],
+    ];
+    tbody.innerHTML = rows.map(([k,v,d]) =>
+      `<tr><td><strong>${k}</strong></td><td style="font-family:monospace;">${v}</td><td class="desc">${d}</td></tr>`).join('');
+  }
+
+  const wRow = $('impWelfareRow');
+  if (wRow) wRow.innerHTML =
+    welfareKpi('ΔEC', dEC, welfareClass(dEC), isTax ? 'Pérdida consumidores' : 'Ganancia consumidores') +
+    welfareKpi('ΔEP', dEP, welfareClass(dEP), isTax ? 'Pérdida productores'  : 'Ganancia productores') +
+    welfareKpi(isTax ? 'Recaudación' : 'Costo fiscal (−)', isTax?t*Qt:-t*Qt, 'gov', isTax ? `t·Qt = ${fmt(t*Qt)}` : `s·Qsub = −${fmt(t*Qt)}`) +
+    welfareKpi(isTax ? 'PPM' : 'PIE', -PPM, 'loss', '½·t·|Q*−Qt|');
+
+  const sumEl = $('impWelfareSummary');
+  if (sumEl) sumEl.innerHTML = isTax
+    ? `<strong>Impuesto t = ${fmt(t)}:</strong> El precio al consumidor sube a Pc = ${fmt(Pc)} (+${fmt(incC)}, ${pctC}% de la cuña) y el productor recibe Pp = ${fmt(Pp)} (−${fmt(incP)}, ${pctP}% de la cuña). Recaudación = ${fmt(t*Qt)}. Pérdida de peso muerto (PPM) = ${fmt(PPM)}.`
+    : `<strong>Subsidio s = ${fmt(t)}:</strong> El consumidor paga Pc = ${fmt(Pc)} (−${fmt(incC)}, ${pctC}% del subsidio) y el productor recibe Pp = ${fmt(Pp)} (+${fmt(incP)}, ${pctP}% del subsidio). Costo fiscal = ${fmt(t*Qt)}. Pérdida de eficiencia (PIE) = ${fmt(PPM)}.`;
+
+  const verEl = $('impVerification');
+  if (verEl) verEl.textContent = `Verificación: ΔEC + ΔEP + ${isTax?'Recaud.':'(−CF)'} + ${isTax?'PPM':'−PIE'} = ${fmt(dEC)} + ${fmt(dEP)} + ${fmt(govFlow)} + ${fmt(isTax?PPM:-PPM)} = ${fmt(checkSum)} (≈ 0)`;
+
+  // Chart
+  if (chartEl) {
+    const polys = [];
+    if (isTax) {
+      // Revenue rectangle: (0,Pp)-(Qt,Pp)-(Qt,Pc)-(0,Pc)
+      polys.push({pts:[[0,Pp],[Qt,Pp],[Qt,Pc],[0,Pc]], fill:'rgba(100,116,139,0.22)', stroke:'rgba(100,116,139,0.5)', label:'R', labelX:Qt*0.45, labelY:(Pc+Pp)/2, textColor:'#475569'});
+      // PPM triangle: (Qt,Pp)-(Qt,Pc)-(eqQ,eqP)
+      polys.push({pts:[[Qt,Pp],[Qt,Pc],[eqQ,eqP]], fill:'rgba(185,28,28,0.22)', stroke:'rgba(185,28,28,0.5)', label:'PPM', labelX:Qt+(eqQ-Qt)*0.4, labelY:(Pc+Pp)/2, textColor:'#b91c1c'});
+    } else {
+      // Fiscal cost rectangle: (0,Pc)-(Qt,Pc)-(Qt,Pp)-(0,Pp)
+      polys.push({pts:[[0,Pc],[Qt,Pc],[Qt,Pp],[0,Pp]], fill:'rgba(100,116,139,0.22)', stroke:'rgba(100,116,139,0.5)', label:'CF', labelX:Qt*0.45, labelY:(Pc+Pp)/2, textColor:'#475569'});
+      // PIE triangle: (eqQ,eqP)-(Qt,Pc)-(Qt,Pp)
+      polys.push({pts:[[eqQ,eqP],[Qt,Pc],[Qt,Pp]], fill:'rgba(185,28,28,0.22)', stroke:'rgba(185,28,28,0.5)', label:'PIE', labelX:eqQ+(Qt-eqQ)*0.5, labelY:(Pc+Pp)/2, textColor:'#b91c1c'});
+    }
+
+    svgChartPolicy(chartEl, mkt, polys,
+      [{p:eqP, color:'#64748b', dash:'4,3', width:1, label:`P*=${fmt(eqP,1)}`, opacity:0.8},
+       {p:Pc,  color:'#355cde', width:1.5, label:`Pc=${fmt(Pc,1)}`},
+       {p:Pp,  color:'#d94f3b', width:1.5, label:`Pp=${fmt(Pp,1)}`}],
+      [{q:Qt,  color:'#64748b', label:`Q${isTax?'t':'sub'}=${fmt(Qt,1)}`},
+       {q:eqQ, color:'#64748b', dash:'3,2', label:`Q*=${fmt(eqQ,1)}`}],
+      [{p:eqP, q:eqQ, color:'#0f766e', label:'E*'},
+       {p:Pc,  q:Qt,  color:'#355cde',  label:'Ec'},
+       {p:Pp,  q:Qt,  color:'#d94f3b',  label:'Ep'}],
+      isTax ? 'Impuesto unitario: efectos sobre el bienestar' : 'Subsidio unitario: efectos sobre el bienestar');
+
+    if (legEl) legEl.innerHTML = isTax
+      ? `<span><i class="swatch" style="background:rgba(100,116,139,0.3)"></i> R (recaudación)</span><span><i class="swatch" style="background:rgba(185,28,28,0.3)"></i> PPM (triángulo Harberger)</span><span><i class="swatch" style="background:#355cde"></i> Pc (consumidor)</span><span><i class="swatch" style="background:#d94f3b"></i> Pp (productor)</span>`
+      : `<span><i class="swatch" style="background:rgba(100,116,139,0.3)"></i> CF (costo fiscal)</span><span><i class="swatch" style="background:rgba(185,28,28,0.3)"></i> PIE (ineficiencia)</span><span><i class="swatch" style="background:#355cde"></i> Pc (consumidor)</span><span><i class="swatch" style="background:#d94f3b"></i> Pp (productor)</span>`;
+    if (fnEl) fnEl.textContent = isTax
+      ? 'La cuña fiscal t separa Pc (precio consumidor) de Pp (precio productor). La recaudación es el rectángulo; el triángulo PPM es la pérdida de eficiencia irreversible.'
+      : 'El subsidio amplia la cantidad más allá de Q*. El costo fiscal (rectángulo CF) supera la ganancia conjunta de EC + EP; la diferencia es la pérdida de eficiencia PIE.';
+  }
+}
+
+// ── Sub-tab switching ────────────────────────────────────────────────
+document.querySelectorAll('.subtab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.subtarget;
+    const bar = btn.closest('.subtab-bar');
+    if (!bar) return;
+    bar.querySelectorAll('.subtab').forEach(b => b.classList.toggle('active', b === btn));
+    const sec = btn.closest('.section');
+    if (sec) sec.querySelectorAll('.subsection').forEach(s => s.classList.toggle('active', s.id === target));
+  });
+});
+
+// ── Wire up inputs ────────────────────────────────────────────────────
+['exc_A','exc_B','exc_C','exc_D'].forEach(id => {
+  const el = $(id); if (el) el.addEventListener('input', updateExcedentes);
+});
+['preg_A','preg_B','preg_C','preg_D','preg_Preg'].forEach(id => {
+  const el = $(id); if (el) el.addEventListener('input', updatePrecios);
+});
+document.querySelectorAll('input[name="pregType"], input[name="pregKnows"]').forEach(el => {
+  el.addEventListener('change', updatePrecios);
+});
+['imp_A','imp_B','imp_C','imp_D','imp_amount'].forEach(id => {
+  const el = $(id); if (el) el.addEventListener('input', updateImpuesto);
+});
+document.querySelectorAll('input[name="impType"]').forEach(el => {
+  el.addEventListener('change', updateImpuesto);
+});
 </script>
 <section class="ml-cierre">
   <p>
