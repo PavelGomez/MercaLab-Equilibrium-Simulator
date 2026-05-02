@@ -2355,18 +2355,54 @@ function svgChart(el, series, eqPoints, title='', opts={}) {
     out += `<text x="${w/2}" y="18" text-anchor="middle" style="font-size:18px;font-weight:700;fill:#1f2a37">${title}</text>`;
   }
 
-  for (let i = 0; i <= 5; i++) {
-    const py = mg.t + i * (h - mg.t - mg.b) / 5;
-    const pVal = pTop - i * (pTop / 5);
-    out += `<line x1="${mg.l}" y1="${py}" x2="${w-mg.r}" y2="${py}" stroke="#e7edf5"/>`;
-    out += `<text x="${mg.l-8}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(pVal)}</text>`;
+  // Semantic Y-axis ticks: only meaningful price values
+  {
+    const alreadyP = new Set();
+    (opts.domainLabels||[]).forEach(dl => {
+      if (Number.isFinite(dl.pdMax)) alreadyP.add(dl.pdMax);
+      if (Number.isFinite(dl.psMin)) alreadyP.add(dl.psMin);
+    });
+    eqPoints.forEach(pt => { if (Number.isFinite(pt.p)) alreadyP.add(pt.p); });
+    const pVals = new Set([0]);
+    markets.forEach(m => {
+      if (m.B > 0 && m.A > 0) pVals.add(m.A / m.B);
+      if (m.D > 0 && m.C < 0) pVals.add(-m.C / m.D);
+    });
+    eqPoints.forEach(pt => { if (Number.isFinite(pt.p) && pt.p > 0) pVals.add(pt.p); });
+    const pSorted = [...pVals].filter(v => v >= 0 && v <= pTop).sort((a,b) => a-b);
+    const pTicks = [];
+    for (const v of pSorted) {
+      const py = yForP(v, pTop, h, mg);
+      if (!pTicks.length || Math.abs(py - yForP(pTicks[pTicks.length-1], pTop, h, mg)) >= 14) pTicks.push(v);
+    }
+    pTicks.forEach(v => {
+      const py = yForP(v, pTop, h, mg);
+      out += `<line x1="${mg.l}" y1="${py}" x2="${w-mg.r}" y2="${py}" stroke="#e7edf5"/>`;
+      if (!alreadyP.has(v))
+        out += `<text x="${mg.l-8}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(v,1)}</text>`;
+    });
   }
-
-  for (let i = 0; i <= 5; i++) {
-    const px = mg.l + i * (w - mg.l - mg.r) / 5;
-    const qVal = i * (qTop / 5);
-    out += `<line x1="${px}" y1="${mg.t}" x2="${px}" y2="${h-mg.b}" stroke="#e7edf5"/>`;
-    out += `<text x="${px}" y="${h-mg.b+20}" text-anchor="middle" class="axis-label">${fmt(qVal)}</text>`;
+  // Semantic X-axis ticks: only meaningful quantity values
+  {
+    const alreadyQ = new Set();
+    eqPoints.forEach(pt => { if (Number.isFinite(pt.q)) alreadyQ.add(pt.q); });
+    const qVals = new Set([0]);
+    markets.forEach(m => {
+      if (m.A > 0) qVals.add(m.A);
+    });
+    eqPoints.forEach(pt => { if (Number.isFinite(pt.q) && pt.q > 0) qVals.add(pt.q); });
+    const qSorted = [...qVals].filter(v => v >= 0 && v <= qTop).sort((a,b) => a-b);
+    const qTicks = [];
+    for (const v of qSorted) {
+      const px = xForQ(v, qTop, w, mg);
+      if (!qTicks.length || Math.abs(px - xForQ(qTicks[qTicks.length-1], qTop, w, mg)) >= 44) qTicks.push(v);
+    }
+    qTicks.forEach(v => {
+      const px = xForQ(v, qTop, w, mg);
+      out += `<line x1="${px}" y1="${mg.t}" x2="${px}" y2="${h-mg.b}" stroke="#e7edf5"/>`;
+      if (!alreadyQ.has(v))
+        out += `<text x="${px}" y="${h-mg.b+20}" text-anchor="middle" class="axis-label">${fmt(v,1)}</text>`;
+    });
   }
 
   out += `<line x1="${mg.l}" y1="${h-mg.b}" x2="${w-mg.r}" y2="${h-mg.b}" stroke="#64748b" stroke-width="2"/>`;
@@ -3034,18 +3070,46 @@ function svgChartPolicy(el, market, polys, hlines, vlines, eqPoints, title) {
   let out = `<rect width="${w}" height="${h}" fill="white"/>`;
   if (title) out += `<text x="${w/2}" y="18" text-anchor="middle" style="font-size:16px;font-weight:700;fill:#1f2a37">${title}</text>`;
 
-  // Grid
-  for (let i = 0; i <= 5; i++) {
-    const py = mg.t + i * (h - mg.t - mg.b) / 5;
-    const pv = pT - i * (pT / 5);
-    out += `<line x1="${mg.l}" y1="${py}" x2="${w-mg.r}" y2="${py}" stroke="#e7edf5"/>`;
-    out += `<text x="${mg.l-8}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(pv)}</text>`;
+  // Semantic Y-axis ticks: only meaningful price values
+  {
+    const alreadyP = new Set((hlines||[]).map(hl => hl.p).filter(Number.isFinite));
+    const pVals = new Set([0]);
+    if (market.B > 0 && market.A > 0) pVals.add(market.A / market.B);
+    if (market.D > 0 && market.C < 0) pVals.add(-market.C / market.D);
+    (hlines||[]).forEach(hl => { if (Number.isFinite(hl.p) && hl.p > 0) pVals.add(hl.p); });
+    (eqPoints||[]).forEach(pt => { if (Number.isFinite(pt.p) && pt.p > 0) pVals.add(pt.p); });
+    const pSorted = [...pVals].filter(v => v >= 0 && v <= pT).sort((a,b) => a-b);
+    const pTicks = [];
+    for (const v of pSorted) {
+      const py = yP(v);
+      if (!pTicks.length || Math.abs(py - yP(pTicks[pTicks.length-1])) >= 14) pTicks.push(v);
+    }
+    pTicks.forEach(v => {
+      const py = yP(v);
+      out += `<line x1="${mg.l}" y1="${py}" x2="${w-mg.r}" y2="${py}" stroke="#e7edf5"/>`;
+      if (!alreadyP.has(v))
+        out += `<text x="${mg.l-8}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(v,1)}</text>`;
+    });
   }
-  for (let i = 0; i <= 5; i++) {
-    const px = mg.l + i * (w - mg.l - mg.r) / 5;
-    const qv = i * (qT / 5);
-    out += `<line x1="${px}" y1="${mg.t}" x2="${px}" y2="${h-mg.b}" stroke="#e7edf5"/>`;
-    out += `<text x="${px}" y="${h-mg.b+20}" text-anchor="middle" class="axis-label">${fmt(qv)}</text>`;
+  // Semantic X-axis ticks: only meaningful quantity values
+  {
+    const alreadyQ = new Set((vlines||[]).map(vl => vl.q).filter(Number.isFinite));
+    const qVals = new Set([0]);
+    if (market.A > 0) qVals.add(market.A);
+    (vlines||[]).forEach(vl => { if (Number.isFinite(vl.q) && vl.q > 0) qVals.add(vl.q); });
+    (eqPoints||[]).forEach(pt => { if (Number.isFinite(pt.q) && pt.q > 0) qVals.add(pt.q); });
+    const qSorted = [...qVals].filter(v => v >= 0 && v <= qT).sort((a,b) => a-b);
+    const qTicks = [];
+    for (const v of qSorted) {
+      const px = xQ(v);
+      if (!qTicks.length || Math.abs(px - xQ(qTicks[qTicks.length-1])) >= 44) qTicks.push(v);
+    }
+    qTicks.forEach(v => {
+      const px = xQ(v);
+      out += `<line x1="${px}" y1="${mg.t}" x2="${px}" y2="${h-mg.b}" stroke="#e7edf5"/>`;
+      if (!alreadyQ.has(v))
+        out += `<text x="${px}" y="${h-mg.b+20}" text-anchor="middle" class="axis-label">${fmt(v,1)}</text>`;
+    });
   }
   out += `<line x1="${mg.l}" y1="${h-mg.b}" x2="${w-mg.r}" y2="${h-mg.b}" stroke="#64748b" stroke-width="2"/>`;
   out += `<line x1="${mg.l}" y1="${mg.t}" x2="${mg.l}" y2="${h-mg.b}" stroke="#64748b" stroke-width="2"/>`;
