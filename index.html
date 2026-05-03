@@ -3358,7 +3358,7 @@ function updatePrecios() {
       welfareKpi('ΔBS (pérdida neta)', dBS, 'loss', '−A − B (Área Harberger)') +
       welfareKpi('Transferencia EC↔EP', Carea, 'neutral', `C = ${fmt(Carea)} de productores a consumidores`);
 
-    if (sumEl) sumEl.innerHTML = `<strong>Precio máximo efectivo:</strong> consumidores que logran comprar ganan C = ${fmt(Carea)} (pagan menos), pero la pérdida de eficiencia A + B = ${fmt(-dBS)} se debe a la caída en unidades transadas respecto del equilibrio competitivo (Q* − Qo = ${fmt(short)}).`;
+    if (sumEl) sumEl.innerHTML = `<strong>Precio máximo efectivo:</strong> consumidores que logran comprar ganan C = ${fmt(Carea)} (pagan menos), pero la pérdida de eficiencia A + B = ${fmt(-dBS)} se debe a la caída en unidades transadas respecto del equilibrio competitivo (Q* − Qo = ${fmt(eqQ - Qo)}).`;
 
     // Chart
     if (chartEl) {
