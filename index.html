@@ -3375,7 +3375,8 @@ function updatePrecios() {
         [{p:eqP,  color:'#64748b', dash:'4,3', width:1, label:`P*=${fmt(eqP,1)}`, opacity:0.8},
          {p:Preg, color:'#b91c1c', width:2,    label:`Pmáx=${fmt(Preg,1)}`},
          Number.isFinite(Pd_Qo) ? {p:Pd_Qo, color:'#355cde', dash:'3,3', width:1, label:`Pd(Qo)=${fmt(Pd_Qo,1)}`, opacity:0.7} : null].filter(Boolean),
-        [{q:Qo,  color:'#166534', label:`Qo=${fmt(Qo,1)}`},
+        [{q:Qd_c, color:'#355cde', label:'Qd', fromP:Preg},
+         {q:Qo,  color:'#166534', label:`Qo=${fmt(Qo,1)}`},
          {q:eqQ, color:'#64748b', label:`Q*=${fmt(eqQ,1)}`}],
         [{p:eqP, q:eqQ, color:'#0f766e', label:'E*'}],
         'Precio máximo: efectos sobre el bienestar');
@@ -3463,8 +3464,8 @@ function updatePrecios() {
         {q:Qd_f, color:'#355cde', label:`Qd=${fmt(Qd_f,1)}`},
         {q:eqQ,  color:'#64748b', label:`Q*=${fmt(eqQ,1)}`},
       ];
-      if (!knowsD && Qo_f > Qd_f)
-        vlines.push({q:Qo_f, color:'#166534', label:`Qo=${fmt(Qo_f,1)}`});
+      if (Qo_f > Qd_f)
+        vlines.push({q:Qo_f, color:'#166534', label:'Qo', fromP:Preg});
 
       svgChartPolicy(chartEl, mkt, polys,
         [{p:eqP, color:'#64748b', dash:'4,3', width:1, label:`P*=${fmt(eqP,1)}`, opacity:0.8},
