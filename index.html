@@ -3358,7 +3358,7 @@ function updatePrecios() {
       welfareKpi('ΔBS (pérdida neta)', dBS, 'loss', '−A − B (Área Harberger)') +
       welfareKpi('Transferencia EC↔EP', Carea, 'neutral', `C = ${fmt(Carea)} de productores a consumidores`);
 
-    if (sumEl) sumEl.innerHTML = `<strong>Precio máximo efectivo:</strong> consumidores que logran comprar ganan C = ${fmt(Carea)} (pagan menos), pero la escasez de ${fmt(short)} unidades genera pérdida de peso muerto A + B = ${fmt(-dBS)}.`;
+    if (sumEl) sumEl.innerHTML = `<strong>Precio máximo efectivo:</strong> consumidores que logran comprar ganan C = ${fmt(Carea)} (pagan menos), pero la pérdida de eficiencia A + B = ${fmt(-dBS)} se debe a la caída en unidades transadas respecto del equilibrio competitivo (Q* − Qo = ${fmt(short)}).`;
 
     // Chart
     if (chartEl) {
@@ -3423,7 +3423,7 @@ function updatePrecios() {
       ['Área H',    fmt(Harea), '(Pmín−P*)·Qd — rectángulo transferencia EC→EP'],
     ];
     if (!knowsD) {
-      rows.push(['J1', fmt(J1), '½·(Pmín−Ps(Qd))·(Qo−Qd) — triángulo costo excedente (sobre curva oferta)']);
+      rows.push(['J1', fmt(J1), '½·(Pmín−Ps(Qd))·(Qo−Qd) — triángulo costo excedente (bajo curva oferta)']);
       rows.push(['J2', fmt(J2), 'Ps(Qd)·(Qo−Qd) — rectángulo costo excedente (bajo curva oferta)']);
       rows.push(['J=J1+J2', fmt(J1+J2), 'Costo total de producción de las unidades no vendidas']);
     }
@@ -3442,7 +3442,7 @@ function updatePrecios() {
       sumEl.style.borderColor = knowsD ? '#f2d2c9' : '#ead081';
       sumEl.innerHTML = !knowsD
         ? `<strong>Caso 2 (no conocen demanda):</strong> Los productores fabrican Qo = ${fmt(Qo_f)} pero solo venden Qd = ${fmt(Qd_f)}. Costo adicional de excedente J = ${fmt(J1+J2)}. Pérdida de eficiencia total = ${fmt(-(dBS2))}.`
-        : `<strong>Caso 1 (conocen demanda):</strong> Los productores adaptan producción a Qd = ${fmt(Qd_f)}. Transferencia H = ${fmt(Harea)} de EC a EP, con pérdida de eficiencia neta E + F = ${fmt(Earea+Farea)}.`;
+        : `<strong>Caso 1 (conocen demanda):</strong> Los productores adaptan producción a Qd = ${fmt(Qd_f)}. Transferencia H = ${fmt(Harea)} de EC a EP, con pérdida de eficiencia E + F = ${fmt(Earea+Farea)} por la caída en unidades transadas respecto del equilibrio competitivo (Q* − Qd = ${fmt(eqQ-Qd_f)}).`;
     }
 
     // Chart
