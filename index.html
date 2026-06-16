@@ -1536,7 +1536,7 @@ Lectura:     sube el precio y cae la cantidad, consistente con contracción
         </div>
 
         <table>
-          <thead><tr><th>Bienestar</th><th>Autarquía</th><th>Escenario actual</th><th>Δ</th></tr></thead>
+          <thead id="ci_thead"><tr><th>Bienestar</th><th>Autarquía</th><th>Escenario actual</th><th>Δ</th></tr></thead>
           <tbody id="ci_tbody"></tbody>
         </table>
 
@@ -4091,6 +4091,7 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
       $('badges').innerHTML='<span class="badge b-prohib">⚠ Parámetros no válidos</span>';
       $('autarky').innerHTML=''; $('domestic').innerHTML='';
       ['kPd','kFlow','kRev'].forEach(id=>$(id).textContent='—');
+      $('thead').innerHTML='<tr><th>Bienestar</th><th>Autarquía</th><th>Escenario actual</th><th>Δ</th></tr>';
       $('tbody').innerHTML=''; $('verdict').innerHTML='';
       $('chartTitle').textContent = goodLabel ? ('Mercado de '+goodLabel) : 'Mercado del bien';
       return;
@@ -4122,20 +4123,38 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     else { $('kFlowL').textContent='Importaciones'; $('kFlow').textContent=fmt(s.imp); }
     $('kRev').textContent=fmt(s.rev);
 
-    // welfare table (vs autarky)
+    // welfare table — adaptativa
     const dCS=s.CS-s.CSa, dPS=s.PS-s.PSa, dTot=s.total-s.totalA;
     const cls=x=> x>1e-6?'pos':(x<-1e-6?'neg':'');
     const sg=x=> (x>1e-6?'+':'')+fmt(x);
-    const rows=[
-      ['Excedente consumidor', s.CSa, s.CS, dCS],
-      ['Excedente productor',  s.PSa, s.PS, dPS],
-      ['Recaudación fiscal',   0,     s.rev, s.rev],
-      ['Bienestar total',      s.totalA, s.total, dTot]
-    ];
-    $('tbody').innerHTML=rows.map((r,i)=>{
-      const strong=i===3?' style="font-weight:700"':'';
-      return `<tr${strong}><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td><td class="${cls(r[3])}">${sg(r[3])}</td></tr>`;
-    }).join('');
+    // con arancel parcial: añade columna "Libre comercio" y compara con arancel vs libre comercio
+    const showTariff = s.regime==='importador' && s.t>0 && !s.prohib && s.imp>0;
+    if(showTariff){
+      const free=engine(v.A,v.B,v.C,v.D,v.Pw,0);
+      $('thead').innerHTML='<tr><th>Bienestar</th><th>Autarquía</th><th>Libre comercio</th><th>Con arancel</th><th>Δ vs libre</th></tr>';
+      const rows=[
+        ['Excedente consumidor', s.CSa,    free.CS,    s.CS,    s.CS-free.CS],
+        ['Excedente productor',  s.PSa,    free.PS,    s.PS,    s.PS-free.PS],
+        ['Recaudación fiscal',   0,        free.rev,   s.rev,   s.rev-free.rev],
+        ['Bienestar total',      s.totalA, free.total, s.total, s.total-free.total]
+      ];
+      $('tbody').innerHTML=rows.map((r,i)=>{
+        const strong=i===3?' style="font-weight:700"':'';
+        return `<tr${strong}><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td><td>${fmt(r[3])}</td><td class="${cls(r[4])}">${sg(r[4])}</td></tr>`;
+      }).join('');
+    } else {
+      $('thead').innerHTML='<tr><th>Bienestar</th><th>Autarquía</th><th>Escenario actual</th><th>Δ</th></tr>';
+      const rows=[
+        ['Excedente consumidor', s.CSa, s.CS, dCS],
+        ['Excedente productor',  s.PSa, s.PS, dPS],
+        ['Recaudación fiscal',   0,     s.rev, s.rev],
+        ['Bienestar total',      s.totalA, s.total, dTot]
+      ];
+      $('tbody').innerHTML=rows.map((r,i)=>{
+        const strong=i===3?' style="font-weight:700"':'';
+        return `<tr${strong}><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td><td class="${cls(r[3])}">${sg(r[3])}</td></tr>`;
+      }).join('');
+    }
 
     // verdict note
     let note='';
