@@ -38,6 +38,10 @@
   --soft-rose:#fff1ec;
   --soft-green:#eaf7ee;
   --soft-teal:#e9f7f7;
+  --dem:#355cde;
+  --sup:#d94f3b;
+  --teal:#0f766e;
+  --gold:#b7791f;
   --shadow:0 12px 32px rgba(24,49,83,.08);
   --radius:18px;
 }
@@ -593,6 +597,70 @@ hr.sep {
   .abcd-grid { grid-template-columns: repeat(2, 1fr); }
   .welfare-row { grid-template-columns: 1fr; }
 }
+
+/* ── Comercio Internacional (módulo autónomo, estilos scoped) ─────── */
+#comercio .chip{display:inline-flex;align-items:center;gap:8px;background:var(--soft-blue);color:var(--navy-2);
+  font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px;letter-spacing:.02em}
+#comercio h1{font-size:30px;color:var(--navy);margin:14px 0 6px}
+#comercio h2{font-size:20px;color:var(--navy);margin:0 0 14px}
+#comercio h3{font-size:15px;color:var(--navy-2);margin:0 0 8px;text-transform:uppercase;letter-spacing:.04em}
+#comercio .lead{color:var(--muted);max-width:780px;margin:0 0 22px}
+#comercio .grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+@media(max-width:900px){#comercio .grid{grid-template-columns:1fr}}
+#comercio .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+#comercio .card + .card{margin-top:20px}
+#comercio .field{margin-bottom:13px}
+#comercio .field label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:5px;font-weight:600}
+#comercio .field label b{color:var(--navy-2);font-variant-numeric:tabular-nums}
+#comercio input[type=range]{width:100%;accent-color:var(--navy-2);height:4px}
+#comercio .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#comercio .num{display:flex;align-items:center;gap:6px}
+#comercio .num input{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:9px;font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums;background:#fff}
+#comercio .divider{height:1px;background:var(--line);margin:16px 0}
+#comercio .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+#comercio .presets button,#comercio .reset{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--navy-2);
+  font-weight:600;font-size:12.5px;padding:7px 11px;border-radius:10px;transition:.15s}
+#comercio .presets button:hover,#comercio .reset:hover{background:var(--soft-blue);border-color:#b9cdf2}
+#comercio .reset{width:100%;margin-top:6px;text-align:center}
+#comercio .badge{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px;background:none;border:none}
+#comercio .b-imp{background:var(--soft-blue);color:var(--navy-2)}
+#comercio .b-exp{background:var(--soft-green);color:#1f7a44}
+#comercio .b-prohib{background:var(--soft-rose);color:#b23a23}
+#comercio .b-partial{background:var(--soft-gold);color:#946a12}
+#comercio .chartcard svg{width:100%;height:auto;display:block}
+#comercio .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+#comercio .legend span{display:inline-flex;align-items:center;gap:6px}
+#comercio .sw{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid rgba(0,0,0,.06)}
+#comercio table{width:100%;border-collapse:collapse;font-size:13.5px}
+#comercio th,#comercio td{text-align:right;padding:8px 6px;border:none;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;vertical-align:top}
+#comercio th:first-child,#comercio td:first-child{text-align:left}
+#comercio thead th{background:transparent;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.04em}
+#comercio td.pos{color:#1f7a44;font-weight:600} #comercio td.neg{color:#b23a23;font-weight:600}
+#comercio .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 4px}
+#comercio .kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+#comercio .kpi .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+#comercio .kpi .v{font-size:21px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums;margin-top:2px}
+#comercio .note{background:var(--soft-blue);border-left:4px solid var(--navy-2);border-radius:0 10px 10px 0;
+  padding:12px 14px;font-size:13.5px;color:var(--navy);margin-top:14px}
+#comercio .note.gold{background:var(--soft-gold);border-color:var(--gold);color:#5c4612}
+#comercio .note.rose{background:var(--soft-rose);border-color:var(--sup);color:#7a2c1c}
+#comercio details{border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-top:14px;background:#fff}
+#comercio summary{cursor:pointer;font-weight:700;color:var(--navy-2);padding:13px 0;list-style:none}
+#comercio summary::-webkit-details-marker{display:none}
+#comercio summary::before{content:"▸ ";color:var(--navy-2)}
+#comercio details[open] summary::before{content:"▾ "}
+#comercio details .body{padding:0 0 14px;color:var(--ink);font-size:14px}
+#comercio details .body p{margin:0 0 10px}
+#comercio .foot{color:var(--muted);font-size:12px;margin-top:26px;text-align:center}
+#comercio code{background:#eef2f8;padding:1px 6px;border-radius:6px;font-size:13px}
+#comercio .eqline{font-size:13.5px;color:var(--muted);margin:2px 0 12px}
+#comercio .eqline b{color:var(--navy-2)}
+#comercio .chart-msg{font-size:13px;fill:#b23a23;font-weight:700}
+#comercio .hint{font-size:11.5px;color:var(--muted);margin:7px 0 0;line-height:1.4}
+#comercio .hint b{color:var(--navy-2)}
+#comercio .eqforms{font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:9px 11px;margin:0 0 12px;font-variant-numeric:tabular-nums}
+#comercio .eqforms .dem{color:var(--dem);font-weight:700} #comercio .eqforms .sup{color:var(--sup);font-weight:700}
 </style>
 <script type="application/ld+json">
 {
@@ -639,6 +707,7 @@ hr.sep {
   <button class="tab" data-target="cadenas">Cadenas</button>
   <button class="tab" data-target="excedentes">Excedentes</button>
   <button class="tab" data-target="intervenciones">Intervenciones</button>
+  <button class="tab" data-target="comercio">Comercio Internacional</button>
 </nav>
 
 <main>
@@ -1378,6 +1447,121 @@ Lectura:     sube el precio y cae la cantidad, consistente con contracción
         <div id="impLegend" class="legend" style="margin-top:8px;"></div>
         <div class="footer-note" id="impFootnote"></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     COMERCIO INTERNACIONAL
+═══════════════════════════════════════════════════════════════ -->
+<section id="comercio" class="section">
+  <span class="chip">⚖ MercaLab · Comercio Internacional</span>
+  <h1>Comercio Internacional y Aranceles</h1>
+  <p class="lead">Compara la economía <b>sin comercio</b> (autarquía) con la <b>apertura comercial</b> a un precio mundial,
+  y analiza el efecto de un <b>arancel</b>. El simulador distingue automáticamente si el país es exportador o importador, y
+  si el arancel <b>reduce</b> o <b>elimina</b> las importaciones.
+  Esta ventana usa la forma de la Lección 16:
+  Demanda <code>P = A − B·Q</code>, Oferta <code>P = C + D·Q</code>.</p>
+
+  <div class="grid">
+    <!-- ================= CONTROLES ================= -->
+    <div>
+      <div class="card">
+        <h2>Parámetros</h2>
+
+        <h3>Demanda · P = A − B·Q</h3>
+        <div class="row2">
+          <div class="num"><span>A</span><input id="ci_A" type="number" step="1" value="60"></div>
+          <div class="num"><span>B</span><input id="ci_B" type="number" step="0.5" value="1"></div>
+        </div>
+        <p class="hint">Introduce <b>B</b> como valor positivo (la magnitud de la pendiente). El modelo aplica el signo: la demanda es <b>decreciente</b>, su pendiente real es <b>−B</b>.</p>
+
+        <div class="divider"></div>
+        <h3>Oferta · P = C + D·Q</h3>
+        <div class="row2">
+          <div class="num"><span>C</span><input id="ci_C" type="number" step="1" value="10"></div>
+          <div class="num"><span>D</span><input id="ci_D" type="number" step="0.5" value="1"></div>
+        </div>
+
+        <div class="divider"></div>
+        <h3>Mercado mundial</h3>
+        <div class="field">
+          <label>Precio mundial (P<sub>w</sub>) <b id="ci_PwL">30</b></label>
+          <input id="ci_Pw" type="range" min="0" max="60" step="1" value="30">
+        </div>
+        <div class="field">
+          <label>Arancel unitario (t) <b id="ci_tL">3</b></label>
+          <input id="ci_t" type="range" min="0" max="40" step="1" value="3">
+        </div>
+
+        <div class="presets">
+          <button data-p="imp">Importador (TV)</button>
+          <button data-p="exp">Exportador (trigo)</button>
+          <button data-p="partial">Arancel parcial</button>
+          <button data-p="prohib">Arancel prohibitivo</button>
+        </div>
+        <button class="reset" id="ci_reset">↺ Restablecer valores por defecto</button>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:10px">Situación detectada</h3>
+        <p class="eqforms" id="ci_eqforms"></p>
+        <div id="ci_badges"></div>
+        <p class="eqline" id="ci_autarky" style="margin-top:12px"></p>
+        <p class="eqline" id="ci_domestic"></p>
+      </div>
+    </div>
+
+    <!-- ================= GRÁFICO + RESULTADOS ================= -->
+    <div>
+      <div class="card chartcard">
+        <h2 id="ci_chartTitle">Mercado de televisores</h2>
+        <div id="ci_chart"></div>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--dem)"></i>Demanda</span>
+          <span><i class="sw" style="background:var(--sup)"></i>Oferta</span>
+          <span><i class="sw" style="background:rgba(53,92,222,.20)"></i>Excedente consumidor</span>
+          <span><i class="sw" style="background:rgba(15,118,110,.20)"></i>Excedente productor</span>
+          <span><i class="sw" style="background:rgba(183,121,31,.30)"></i>Recaudación (E)</span>
+          <span><i class="sw" style="background:rgba(217,79,59,.28)"></i>Pérdida de eficiencia (D, F)</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Resultados</h2>
+        <div class="kpis">
+          <div class="kpi"><div class="l">Precio interno</div><div class="v" id="ci_kPd">—</div></div>
+          <div class="kpi"><div class="l" id="ci_kFlowL">Importaciones</div><div class="v" id="ci_kFlow">—</div></div>
+          <div class="kpi"><div class="l">Recaudación</div><div class="v" id="ci_kRev">—</div></div>
+        </div>
+
+        <table>
+          <thead><tr><th>Bienestar</th><th>Autarquía</th><th>Escenario actual</th><th>Δ</th></tr></thead>
+          <tbody id="ci_tbody"></tbody>
+        </table>
+
+        <div id="ci_verdict"></div>
+      </div>
+
+      <details>
+        <summary>Marco teórico · efectos de un arancel (Mankiw, cap. 9)</summary>
+        <div class="body">
+          <p>Cuando el precio mundial (P<sub>w</sub>) es <b>menor</b> que el precio de equilibrio sin comercio (P*),
+          el país es <b>importador</b>: con libre comercio el precio interno cae a P<sub>w</sub>, los consumidores ganan
+          y los productores pierden, con una ganancia neta de bienestar.</p>
+          <p>Un <b>arancel</b> eleva el precio interno a P<sub>w</sub> + t. Esto encarece el bien, reduce el consumo,
+          aumenta la producción nacional y <b>reduce las importaciones</b>. El Estado recauda t × (importaciones con arancel).
+          Aparece una <b>pérdida de eficiencia (peso muerto)</b>: dos triángulos, uno por sobreproducción nacional y otro
+          por subconsumo.</p>
+          <p><b>Arancel que reduce, pero no elimina:</b> si P<sub>w</sub> + t &lt; P*, todavía hay importaciones positivas
+          y el gobierno recauda.</p>
+          <p><b>Arancel prohibitivo (elimina importaciones):</b> si P<sub>w</sub> + t ≥ P*, el precio interno no puede
+          superar P*; las importaciones caen a cero, la recaudación es nula y el mercado vuelve a la autarquía. Cualquier
+          arancel adicional ya no tiene efecto.</p>
+          <p>Cuando P<sub>w</sub> es <b>mayor</b> que P*, el país es <b>exportador</b> y un arancel a las importaciones es
+          irrelevante (no hay importaciones que gravar).</p>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -3671,6 +3855,308 @@ document.querySelectorAll('input[name="pregType"], input[name="pregKnows"]').for
 document.querySelectorAll('input[name="impType"]').forEach(el => {
   el.addEventListener('change', updateImpuesto);
 });
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     COMERCIO INTERNACIONAL · módulo autónomo (IIFE aislado)
+     Convención propia (Lección 16): P = A − B·Q / P = C + D·Q.
+     No comparte globales con el resto del simulador.
+═══════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  const $ = id => document.getElementById('ci_'+id);
+  const ids = ['A','B','C','D','Pw','t'];
+  const DEFAULTS = {A:60,B:1,C:10,D:1,Pw:30,t:3};
+  const PRESETS = {
+    imp:     {A:60,B:1,C:10,D:1,Pw:30,t:0},
+    exp:     {A:300,B:10,C:60,D:5,Pw:180,t:0},
+    partial: {A:60,B:1,C:10,D:1,Pw:25,t:5},
+    prohib:  {A:60,B:1,C:10,D:1,Pw:30,t:6}
+  };
+  const GOODS = {imp:'televisores', exp:'trigo', partial:'televisores', prohib:'televisores'};
+  let goodLabel='televisores';   // título del mercado; null → genérico
+  const fmt = (x,d=1)=> (Math.abs(x)<1e-9?0:x).toLocaleString('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const tri = (b,h)=>0.5*b*h;
+
+  function readVals(){
+    const v={};
+    ids.forEach(k=>{ v[k]=parseFloat($(k).value)||0; });
+    return v;
+  }
+
+  // set sliders' max relative to A, THEN assign values (avoids browser clamping)
+  function applyVals(obj, label){
+    if(label!==undefined) goodLabel=label;
+    if('A' in obj) $('A').value=obj.A;
+    if('B' in obj) $('B').value=obj.B;
+    if('C' in obj) $('C').value=obj.C;
+    if('D' in obj) $('D').value=obj.D;
+    const A=parseFloat($('A').value)||60;
+    $('Pw').max=Math.max(60,Math.ceil(A));
+    $('t').max=Math.max(40,Math.ceil(A));
+    if('Pw' in obj) $('Pw').value=obj.Pw;
+    if('t' in obj) $('t').value=obj.t;
+    render();
+  }
+
+  function engine(A,B,C,D,Pw,t){
+    const Qd=p=>(A-p)/B, Qs=p=>(p-C)/D;
+    const Qe=(A-C)/(B+D), Pe=A-B*Qe;
+    let regime,Pd,imp=0,exp=0,prohib=false;
+    if(Pw>Pe+1e-9){ regime='exportador'; Pd=Pw; exp=Qs(Pw)-Qd(Pw); }
+    else if(Pw<Pe-1e-9){ regime='importador'; Pd=Math.min(Pw+t,Pe); imp=Math.max(0,Qd(Pd)-Qs(Pd)); prohib=(Pw+t>=Pe-1e-9); }
+    else { regime='sin comercio'; Pd=Pe; }
+    const CS=p=>tri(Qd(p),A-p), PS=p=>tri(Qs(p),p-C);
+    const rev=(regime==='importador'&&!prohib)?t*imp:0;
+    return {A,B,C,D,Pw,t,Qd,Qs,Qe,Pe,regime,Pd,imp,exp,prohib,
+            CS:CS(Pd),PS:PS(Pd),rev,total:CS(Pd)+PS(Pd)+rev,
+            CSa:CS(Pe),PSa:PS(Pe),totalA:CS(Pe)+PS(Pe)};
+  }
+
+  // ---------- SVG chart (estándar svgChartPolicy de MercaLab; convención P = A − B·Q) ----------
+  const W=760, H=420, MG={l:80,r:24,t:30,b:58};
+  const COL={grid:'#e7edf5', axis:'#64748b', dem:'#355cde', sup:'#d94f3b',
+             navy:'#183153', navy2:'#244a7b', teal:'#0f766e', gold:'#b7791f',
+             rose:'#d94f3b', green:'#1f7a44', muted:'#64748b', ink:'#1f2a37'};
+
+  // Liang–Barsky: clip data-space segment to [0,qT]×[0,pT]; returns clipped endpoints or null
+  function clipSeg(q1,p1,q2,p2,qT,pT){
+    let t0=0,t1=1; const dq=q2-q1, dp=p2-p1;
+    const tests=[[-dq,q1],[dq,qT-q1],[-dp,p1],[dp,pT-p1]];
+    for(const [pp,qq] of tests){
+      if(Math.abs(pp)<1e-12){ if(qq<0) return null; }
+      else { const r=qq/pp; if(pp<0){ if(r>t1) return null; if(r>t0) t0=r; } else { if(r<t0) return null; if(r<t1) t1=r; } }
+    }
+    return [q1+t0*dq, p1+t0*dp, q1+t1*dq, p1+t1*dp];
+  }
+
+  function buildChart(s){
+    const {A,B,C,D,Pw,Pd,regime,prohib,t}=s;
+    const Qd=s.Qd, Qs=s.Qs;
+    const QdPd=Qd(Pd), QsPd=Qs(Pd), QdPw=Qd(Pw), QsPw=Qs(Pw);
+
+    // axis ranges from meaningful values (×1.28 headroom, igual que MercaLab)
+    const pCands=[10,A,s.Pe,Pw,Pd].concat(C>0?[C]:[]);
+    const qCands=[10,A/B,s.Qe,QdPw,QsPw,QdPd,QsPd].concat(C<0?[-C/D]:[]);
+    const pT=Math.max(...pCands.filter(x=>Number.isFinite(x)&&x>0))*1.28+5;
+    const qT=Math.max(...qCands.filter(x=>Number.isFinite(x)&&x>0))*1.28+5;
+    const X=q=>MG.l+(Math.max(0,Math.min(q,qT))/qT)*(W-MG.l-MG.r);
+    const Y=p=>H-MG.b-(Math.max(0,Math.min(p,pT))/pT)*(H-MG.t-MG.b);
+
+    const aria=`Gráfico de oferta y demanda con P = A − B·Q. Régimen: ${regime}. Precio mundial ${fmt(Pw)}, precio interno ${fmt(Pd)}${regime==='importador'?(prohib?', arancel prohibitivo que elimina importaciones':(t>0?', arancel parcial que reduce importaciones':', libre comercio')):''}.`;
+    const e=[];
+    e.push(`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${aria}" font-family="Arial,Helvetica,sans-serif">`);
+
+    // ----- equilibria relevant to régime -----
+    const markers=[{q:s.Qe,p:s.Pe,color:COL.navy,label:`E (P*=${fmt(s.Pe)})`}];
+    if(regime==='importador'){
+      if(t>0 && !prohib){ markers.push({q:QsPd,p:Pd,color:COL.sup},{q:QdPd,p:Pd,color:COL.dem}); }
+      else if(t===0){ markers.push({q:QsPw,p:Pw,color:COL.sup},{q:QdPw,p:Pw,color:COL.dem}); }
+    } else if(regime==='exportador'){
+      markers.push({q:QdPw,p:Pw,color:COL.dem},{q:QsPw,p:Pw,color:COL.sup});
+    }
+    // prices/quantities that get dedicated colored labels → semantic ticks skip them
+    const labeledP=new Set([Pw]); if(Math.abs(Pd-Pw)>1e-6) labeledP.add(Pd); markers.forEach(m=>labeledP.add(m.p));
+    const labeledQ=new Set(); markers.forEach(m=>labeledQ.add(m.q));
+    const nearY=(set,v)=>[...set].some(u=>Math.abs(Y(u)-Y(v))<14);
+    const nearX=(set,v)=>[...set].some(u=>Math.abs(X(u)-X(v))<44);
+
+    // ----- semantic gridline ticks (behind everything) -----
+    [...new Set([0,A,s.Pe].concat(C>0?[C]:[]))].filter(v=>v>=0&&v<=pT).sort((a,b)=>a-b)
+      .reduce((acc,v)=>{ if(acc.length && Math.abs(Y(v)-Y(acc[acc.length-1]))<14) return acc; acc.push(v);
+        const py=Y(v); e.push(`<line x1="${MG.l}" y1="${py}" x2="${W-MG.r}" y2="${py}" stroke="${COL.grid}"/>`);
+        if(!nearY(labeledP,v)) e.push(`<text x="${MG.l-8}" y="${py+4}" text-anchor="end" class="axis-label">${fmt(v,1)}</text>`);
+        return acc; },[]);
+    [...new Set([0,A/B,s.Qe])].filter(v=>v>=0&&v<=qT).sort((a,b)=>a-b)
+      .reduce((acc,v)=>{ if(acc.length && Math.abs(X(v)-X(acc[acc.length-1]))<44) return acc; acc.push(v);
+        const px=X(v); e.push(`<line x1="${px}" y1="${MG.t}" x2="${px}" y2="${H-MG.b}" stroke="${COL.grid}"/>`);
+        if(!nearX(labeledQ,v)) e.push(`<text x="${px}" y="${H-MG.b+20}" text-anchor="middle" class="axis-label">${fmt(v,1)}</text>`);
+        return acc; },[]);
+
+    // ----- axes + titles -----
+    e.push(`<line x1="${MG.l}" y1="${H-MG.b}" x2="${W-MG.r}" y2="${H-MG.b}" stroke="${COL.axis}" stroke-width="2"/>`);
+    e.push(`<line x1="${MG.l}" y1="${MG.t}" x2="${MG.l}" y2="${H-MG.b}" stroke="${COL.axis}" stroke-width="2"/>`);
+    e.push(`<text x="${MG.l+(W-MG.l-MG.r)/2}" y="${H-6}" text-anchor="middle" class="axis-label">Cantidad (Q)</text>`);
+    const ymid=MG.t+(H-MG.t-MG.b)/2;
+    e.push(`<text x="14" y="${ymid}" transform="rotate(-90 14 ${ymid})" text-anchor="middle" class="axis-label">Precio (P)</text>`);
+
+    // ----- shaded polygons (before curves) -----
+    const poly=(pts,fill,label,lc)=>{
+      const ps=pts.map(([q,p])=>`${X(q)},${Y(p)}`).join(' ');
+      let str=`<polygon points="${ps}" fill="${fill}"/>`;
+      if(label){ const aq=pts.reduce((a,[q])=>a+q,0)/pts.length, ap=pts.reduce((a,[,p])=>a+p,0)/pts.length;
+        str+=`<text x="${X(aq)}" y="${Y(ap)+4}" text-anchor="middle" style="font-size:12px;font-weight:700;fill:${lc||COL.ink}">${label}</text>`; }
+      e.push(str);
+    };
+    // consumer surplus (above Pd, under demand)
+    poly([[0,A],[QdPd,Pd],[0,Pd]],'rgba(53,92,222,0.22)','EC',COL.navy2);
+    // producer surplus (below Pd, above supply) — robusto a C<0
+    poly(C>=0 ? [[0,Pd],[QsPd,Pd],[0,C]] : [[0,Pd],[QsPd,Pd],[-C/D,0],[0,0]],'rgba(15,118,110,0.22)','EP',COL.teal);
+    // tariff geometry (importador, arancel parcial)
+    if(regime==='importador' && t>0 && !prohib && s.imp>0){
+      poly([[QsPd,Pd],[QdPd,Pd],[QdPd,Pw],[QsPd,Pw]],'rgba(183,121,31,0.28)','E',COL.gold);
+      poly([[QsPw,Pw],[QsPd,Pw],[QsPd,Pd]],'rgba(217,79,59,0.28)','D',COL.rose);
+      poly([[QdPd,Pw],[QdPw,Pw],[QdPd,Pd]],'rgba(217,79,59,0.28)','F',COL.rose);
+    }
+
+    // ----- curves (clipped to box) -----
+    const seg=(q1,p1,q2,p2,col)=>{ const c=clipSeg(q1,p1,q2,p2,qT,pT); if(c) e.push(`<line x1="${X(c[0])}" y1="${Y(c[1])}" x2="${X(c[2])}" y2="${Y(c[3])}" stroke="${col}" stroke-width="3"/>`); };
+    seg(0,A,A/B,0,COL.dem);            // demanda P = A − B·Q
+    seg(0,C,qT,C+D*qT,COL.sup);        // oferta   P = C + D·Q
+    const qDend=Math.min(A/B,qT);
+    e.push(`<text x="${X(qDend)-6}" y="${Y(Math.max(0,A-B*qDend))-8}" fill="${COL.dem}" font-size="13" font-weight="bold" text-anchor="end">D</text>`);
+    const qSend=Math.min(qT,(pT-C)/D);
+    e.push(`<text x="${X(qSend)-6}" y="${Y(C+D*qSend)+14}" fill="${COL.sup}" font-size="13" font-weight="bold" text-anchor="end">O</text>`);
+
+    // ----- horizontal price lines Pw / Pd (white-bg Y label) -----
+    const hline=(p,col,lab)=>{ if(!(p>=0&&p<=pT)) return; const y=Y(p), lw=lab.length*6+8;
+      e.push(`<line x1="${MG.l}" y1="${y}" x2="${W-MG.r}" y2="${y}" stroke="${col}" stroke-width="1.5" stroke-dasharray="6 4"/>`);
+      e.push(`<rect x="${MG.l-lw-4}" y="${y-8}" width="${lw}" height="14" fill="white" opacity="0.9"/>`);
+      e.push(`<text x="${MG.l-6}" y="${y+3}" text-anchor="end" style="font-size:10px;font-weight:700;fill:${col}">${lab}</text>`); };
+    hline(Pw,COL.muted,`Pw=${fmt(Pw,1)}`);
+    if(Math.abs(Pd-Pw)>1e-6) hline(Pd,COL.navy2,`Pd=${fmt(Pd,1)}`);
+
+    // ----- traded-quantity bracket -----
+    if(regime==='importador' && s.imp>0){
+      e.push(`<line x1="${X(QsPd)}" y1="${Y(Pd)}" x2="${X(QdPd)}" y2="${Y(Pd)}" stroke="${COL.navy2}" stroke-width="6" stroke-linecap="round" opacity=".55"/>`);
+      e.push(`<text x="${(X(QsPd)+X(QdPd))/2}" y="${Y(Pd)-9}" fill="${COL.navy2}" font-size="13" font-weight="bold" text-anchor="middle">importaciones = ${fmt(s.imp)}</text>`);
+    } else if(regime==='exportador' && s.exp>0){
+      e.push(`<line x1="${X(QdPw)}" y1="${Y(Pw)}" x2="${X(QsPw)}" y2="${Y(Pw)}" stroke="${COL.green}" stroke-width="6" stroke-linecap="round" opacity=".55"/>`);
+      e.push(`<text x="${(X(QdPw)+X(QsPw))/2}" y="${Y(Pw)-9}" fill="${COL.green}" font-size="13" font-weight="bold" text-anchor="middle">exportaciones = ${fmt(s.exp)}</text>`);
+    }
+
+    // ----- markers: dashed projections to both axes + white-bg value labels + circle -----
+    const seenP=[], seenQ=[];
+    markers.forEach(m=>{
+      if(!(Number.isFinite(m.q)&&Number.isFinite(m.p)&&m.q>=0&&m.q<=qT&&m.p>=0&&m.p<=pT)) return;
+      const cx=X(m.q), cy=Y(m.p);
+      e.push(`<line x1="${cx}" y1="${cy}" x2="${cx}" y2="${H-MG.b}" stroke="${m.color}" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`);
+      e.push(`<line x1="${MG.l}" y1="${cy}" x2="${cx}" y2="${cy}" stroke="${m.color}" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`);
+      if(!seenQ.some(u=>Math.abs(u-cx)<12)){ seenQ.push(cx); const lab=fmt(m.q,1), lw=lab.length*6+6;
+        e.push(`<rect x="${cx-lw/2}" y="${H-MG.b+5}" width="${lw}" height="13" fill="white" opacity="0.9"/>`);
+        e.push(`<text x="${cx}" y="${H-MG.b+15}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:${m.color}">${lab}</text>`); }
+      const onPriceLine = Math.abs(m.p-Pw)<1e-6 || Math.abs(m.p-Pd)<1e-6;
+      if(!onPriceLine && !seenP.some(u=>Math.abs(u-cy)<12)){ seenP.push(cy); const lab=fmt(m.p,1), lw=lab.length*6+8;
+        e.push(`<rect x="${MG.l-lw-4}" y="${cy-8}" width="${lw}" height="14" fill="white" opacity="0.9"/>`);
+        e.push(`<text x="${MG.l-6}" y="${cy+3}" text-anchor="end" style="font-size:10px;font-weight:700;fill:${m.color}">${lab}</text>`); }
+      e.push(`<circle cx="${cx}" cy="${cy}" r="5" fill="${m.color}"/>`);
+      if(m.label) e.push(`<text x="${cx+8}" y="${cy-8}" style="font-size:12px;font-weight:700;fill:${m.color}">${m.label}</text>`);
+    });
+
+    e.push(`</svg>`);
+    return e.join('');
+  }
+
+  function chartMessage(msg){
+    return `<svg viewBox="0 0 ${W} 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${msg}" font-family="Arial,Helvetica,sans-serif">`+
+      `<rect width="${W}" height="130" fill="#fff"/>`+
+      `<text x="${W/2}" y="60" text-anchor="middle" class="chart-msg">Sin equilibrio válido en el primer cuadrante.</text>`+
+      `<text x="${W/2}" y="84" text-anchor="middle" class="axis-label">${msg}</text></svg>`;
+  }
+
+  // ---------- render ----------
+  function render(){
+    const v=readVals();
+    $('PwL').textContent=fmt(v.Pw,0); $('tL').textContent=fmt(v.t,0);
+    const s=engine(v.A,v.B,v.C,v.D,v.Pw,v.t);
+
+    // live signed equations: input is a positive magnitude, the model shows the real sign
+    const demTerm = v.B>=0 ? `${fmt(v.A)} − ${fmt(v.B)}·Q` : `${fmt(v.A)} + ${fmt(Math.abs(v.B))}·Q`;
+    const supTerm = v.C>=0 ? `${fmt(v.C)} + ${fmt(v.D)}·Q` : `${fmt(v.D)}·Q − ${fmt(Math.abs(v.C))}`;
+    $('eqforms').innerHTML =
+      `<span class="dem">Demanda:</span> P = ${demTerm} <span style="color:var(--muted)">(pendiente ${fmt(-v.B)})</span><br>`+
+      `<span class="sup">Oferta:</span> P = ${supTerm} <span style="color:var(--muted)">(pendiente +${fmt(v.D)})</span>`;
+
+    // domain guard: necesitamos equilibrio único en el primer cuadrante
+    const valid = v.A>0 && v.B>0 && v.D>0 && (v.B+v.D)>0 &&
+                  Number.isFinite(s.Pe) && Number.isFinite(s.Qe) && s.Pe>0 && s.Qe>0 && v.A>v.C;
+    if(!valid){
+      $('chart').innerHTML=chartMessage('Requiere A&gt;0, B&gt;0, D&gt;0 y A&gt;C.');
+      $('badges').innerHTML='<span class="badge b-prohib">⚠ Parámetros no válidos</span>';
+      $('autarky').innerHTML=''; $('domestic').innerHTML='';
+      ['kPd','kFlow','kRev'].forEach(id=>$(id).textContent='—');
+      $('tbody').innerHTML=''; $('verdict').innerHTML='';
+      $('chartTitle').textContent = goodLabel ? ('Mercado de '+goodLabel) : 'Mercado del bien';
+      return;
+    }
+    $('chart').innerHTML=buildChart(s);
+
+    // badges
+    let b='';
+    if(s.regime==='exportador') b+=`<span class="badge b-exp">▲ País exportador</span>`;
+    else if(s.regime==='importador') b+=`<span class="badge b-imp">▼ País importador</span>`;
+    else b+=`<span class="badge">● Sin comercio</span>`;
+    if(s.regime==='importador' && s.t>0){
+      b+=' '+(s.prohib
+        ? `<span class="badge b-prohib">⛔ Arancel prohibitivo · elimina importaciones</span>`
+        : `<span class="badge b-partial">↘ Arancel parcial · reduce importaciones</span>`);
+    }
+    $('badges').innerHTML=b;
+    $('autarky').innerHTML=`<b>Autarquía:</b> P* = ${fmt(s.Pe)} · Q* = ${fmt(s.Qe)}`;
+    $('domestic').innerHTML= s.regime==='sin comercio'
+      ? `El precio mundial coincide con P*: no hay comercio.`
+      : `<b>Con comercio:</b> precio interno = ${fmt(s.Pd)} (mundial ${fmt(s.Pw)}${s.t>0&&s.regime==='importador'?` + arancel ${fmt(s.t,0)}`:''}).`;
+
+    // title from active preset (no longer inferred from A)
+    $('chartTitle').textContent = goodLabel ? ('Mercado de '+goodLabel) : 'Mercado del bien';
+
+    // KPIs
+    $('kPd').textContent=fmt(s.Pd);
+    if(s.regime==='exportador'){ $('kFlowL').textContent='Exportaciones'; $('kFlow').textContent=fmt(s.exp); }
+    else { $('kFlowL').textContent='Importaciones'; $('kFlow').textContent=fmt(s.imp); }
+    $('kRev').textContent=fmt(s.rev);
+
+    // welfare table (vs autarky)
+    const dCS=s.CS-s.CSa, dPS=s.PS-s.PSa, dTot=s.total-s.totalA;
+    const cls=x=> x>1e-6?'pos':(x<-1e-6?'neg':'');
+    const sg=x=> (x>1e-6?'+':'')+fmt(x);
+    const rows=[
+      ['Excedente consumidor', s.CSa, s.CS, dCS],
+      ['Excedente productor',  s.PSa, s.PS, dPS],
+      ['Recaudación fiscal',   0,     s.rev, s.rev],
+      ['Bienestar total',      s.totalA, s.total, dTot]
+    ];
+    $('tbody').innerHTML=rows.map((r,i)=>{
+      const strong=i===3?' style="font-weight:700"':'';
+      return `<tr${strong}><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td><td class="${cls(r[3])}">${sg(r[3])}</td></tr>`;
+    }).join('');
+
+    // verdict note
+    let note='';
+    if(s.regime==='sin comercio'){
+      note=`<div class="note">El precio mundial es igual a P*. No hay incentivo a comerciar.</div>`;
+    } else if(s.regime==='exportador'){
+      note=`<div class="note green" style="background:var(--soft-green);border-color:#1f7a44;color:#1f5a34">
+        El país <b>exporta ${fmt(s.exp)}</b> unidades. El precio interno sube a ${fmt(s.Pd)}: ganan los productores, pierden los
+        consumidores, y el bienestar total aumenta en <b>${sg(dTot)}</b>. Un arancel a las importaciones no aplica.</div>`;
+    } else if(s.t===0){
+      note=`<div class="note">Libre comercio: el país <b>importa ${fmt(s.imp)}</b> unidades a precio ${fmt(s.Pd)}.
+        Ganan los consumidores (${sg(dCS)}), pierden los productores (${sg(dPS)}) y el bienestar total sube <b>${sg(dTot)}</b>.</div>`;
+    } else if(!s.prohib){
+      const free=engine(v.A,v.B,v.C,v.D,v.Pw,0);
+      const dwlVal=free.total-s.total;
+      note=`<div class="note gold">Arancel <b>parcial</b> (t = ${fmt(s.t,0)}): el precio interno sube a ${fmt(s.Pd)} y las
+        importaciones caen de ${fmt(free.imp)} a <b>${fmt(s.imp)}</b>. El Estado recauda <b>${fmt(s.rev)}</b>, pero se genera
+        una pérdida de eficiencia (peso muerto) de <b>${fmt(dwlVal)}</b> frente al libre comercio.</div>`;
+    } else {
+      const free=engine(v.A,v.B,v.C,v.D,v.Pw,0);
+      const dwlVal=free.total-s.total;
+      note=`<div class="note rose">Arancel <b>prohibitivo</b> (t = ${fmt(s.t,0)} ≥ P*−P<sub>w</sub> = ${fmt(s.Pe-s.Pw,0)}):
+        el precio interno llega a P* = ${fmt(s.Pe)}, las <b>importaciones desaparecen</b> y la recaudación es <b>0</b>.
+        El mercado vuelve a la autarquía y la pérdida de eficiencia es máxima (<b>${fmt(dwlVal)}</b>, igual a toda la ganancia
+        del comercio). Subir más el arancel ya no cambia nada.</div>`;
+    }
+    $('verdict').innerHTML=note;
+  }
+
+  // ---------- events ----------
+  ids.forEach(k=>{ $(k).addEventListener('input',()=>{ goodLabel=null; render(); }); });
+  document.querySelectorAll('#comercio .presets button').forEach(btn=>{
+    btn.addEventListener('click',()=> applyVals(PRESETS[btn.dataset.p], GOODS[btn.dataset.p]) );
+  });
+  $('reset').addEventListener('click',()=> applyVals(DEFAULTS,'televisores') );
+  applyVals(DEFAULTS,'televisores');
+})();
 </script>
 <section class="ml-cierre">
   <p>
