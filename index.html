@@ -3884,6 +3884,13 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     return v;
   }
 
+  // slider ranges scale with the market size (A) so Pw/t stay reachable for any exercise
+  function syncSliderMax(){
+    const A=parseFloat($('A').value)||60;
+    $('Pw').max=Math.max(60,Math.ceil(A));
+    $('t').max=Math.max(40,Math.ceil(A));
+  }
+
   // set sliders' max relative to A, THEN assign values (avoids browser clamping)
   function applyVals(obj, label){
     if(label!==undefined) goodLabel=label;
@@ -3891,9 +3898,7 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     if('B' in obj) $('B').value=obj.B;
     if('C' in obj) $('C').value=obj.C;
     if('D' in obj) $('D').value=obj.D;
-    const A=parseFloat($('A').value)||60;
-    $('Pw').max=Math.max(60,Math.ceil(A));
-    $('t').max=Math.max(40,Math.ceil(A));
+    syncSliderMax();
     if('Pw' in obj) $('Pw').value=obj.Pw;
     if('t' in obj) $('t').value=obj.t;
     render();
@@ -4072,6 +4077,7 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
 
   // ---------- render ----------
   function render(){
+    syncSliderMax();           // keep Pw/t ranges in sync when A is typed in directly
     const v=readVals();
     $('PwL').textContent=fmt(v.Pw,0); $('tL').textContent=fmt(v.t,0);
     const s=engine(v.A,v.B,v.C,v.D,v.Pw,v.t);
