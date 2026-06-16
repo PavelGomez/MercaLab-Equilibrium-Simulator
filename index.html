@@ -3950,7 +3950,16 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     // ----- equilibria relevant to régime -----
     const markers=[{q:s.Qe,p:s.Pe,color:COL.navy,label:`E (P*=${fmt(s.Pe)})`}];
     if(regime==='importador'){
-      if(t>0 && !prohib){ markers.push({q:QsPd,p:Pd,color:COL.sup},{q:QdPd,p:Pd,color:COL.dem}); }
+      if(t>0 && !prohib){
+        // arancel parcial: cantidades finales (a Pd = Pw+t, con arancel)
+        // y también las iniciales (a Pw, libre comercio) de oferta y demanda
+        markers.push(
+          {q:QsPd,p:Pd,color:COL.sup,label:'Qo₁',anchor:'end',dx:-7,dy:-7},
+          {q:QdPd,p:Pd,color:COL.dem,label:'Qd₁',dx:7,dy:-7},
+          {q:QsPw,p:Pw,color:COL.sup,label:'Qo₀',anchor:'end',dx:-7,dy:16},
+          {q:QdPw,p:Pw,color:COL.dem,label:'Qd₀',dx:7,dy:16}
+        );
+      }
       else if(t===0){ markers.push({q:QsPw,p:Pw,color:COL.sup},{q:QdPw,p:Pw,color:COL.dem}); }
     } else if(regime==='exportador'){
       markers.push({q:QdPw,p:Pw,color:COL.dem},{q:QsPw,p:Pw,color:COL.sup});
@@ -3979,6 +3988,9 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     e.push(`<text x="${MG.l+(W-MG.l-MG.r)/2}" y="${H-6}" text-anchor="middle" class="axis-label">Cantidad (Q)</text>`);
     const ymid=MG.t+(H-MG.t-MG.b)/2;
     e.push(`<text x="14" y="${ymid}" transform="rotate(-90 14 ${ymid})" text-anchor="middle" class="axis-label">Precio (P)</text>`);
+    // caption clarifying the ₀/₁ subscripts (only when a partial tariff is shown)
+    if(regime==='importador' && t>0 && !prohib && s.imp>0)
+      e.push(`<text x="${W-MG.r}" y="18" text-anchor="end" style="font-size:11px;font-weight:700;fill:${COL.muted}">₀ sin arancel (libre comercio) · ₁ con arancel</text>`);
 
     // ----- shaded polygons (before curves) -----
     const poly=(pts,fill,label,lc)=>{
@@ -4040,7 +4052,11 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
         e.push(`<rect x="${MG.l-lw-4}" y="${cy-8}" width="${lw}" height="14" fill="white" opacity="0.9"/>`);
         e.push(`<text x="${MG.l-6}" y="${cy+3}" text-anchor="end" style="font-size:10px;font-weight:700;fill:${m.color}">${lab}</text>`); }
       e.push(`<circle cx="${cx}" cy="${cy}" r="5" fill="${m.color}"/>`);
-      if(m.label) e.push(`<text x="${cx+8}" y="${cy-8}" style="font-size:12px;font-weight:700;fill:${m.color}">${m.label}</text>`);
+      if(m.label){
+        const lx=cx+(m.dx!==undefined?m.dx:8), ly=cy+(m.dy!==undefined?m.dy:-8);
+        const anc=m.anchor?` text-anchor="${m.anchor}"`:'';
+        e.push(`<text x="${lx}" y="${ly}"${anc} style="font-size:12px;font-weight:700;fill:${m.color}">${m.label}</text>`);
+      }
     });
 
     e.push(`</svg>`);
