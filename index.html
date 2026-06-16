@@ -1485,21 +1485,21 @@ Lectura:     sube el precio y cae la cantidad, consistente con contracción
 
         <div class="divider"></div>
         <h3>Mercado mundial</h3>
-        <div class="field">
-          <label>Precio mundial (P<sub>w</sub>) <b id="ci_PwL">30</b></label>
-          <input id="ci_Pw" type="range" min="0" max="60" step="1" value="30">
+        <div class="row2">
+          <div class="num"><span>P<sub>w</sub></span><input id="ci_Pw" type="number" step="any" value="30"></div>
+          <div class="num"><span>t</span><input id="ci_t" type="number" step="any" value="3"></div>
         </div>
-        <div class="field">
-          <label>Arancel unitario (t) <b id="ci_tL">3</b></label>
-          <input id="ci_t" type="range" min="0" max="40" step="1" value="3">
-        </div>
+        <p class="hint"><b>P<sub>w</sub></b>: precio mundial · <b>t</b>: arancel unitario. Introduce valores exactos; el modelo detecta el régimen automáticamente.</p>
 
+        <div class="divider"></div>
+        <h3>Ejemplos precargados</h3>
         <div class="presets">
-          <button data-p="imp">Importador (TV)</button>
-          <button data-p="exp">Exportador (trigo)</button>
-          <button data-p="partial">Arancel parcial</button>
-          <button data-p="prohib">Arancel prohibitivo</button>
+          <button data-p="imp" title="Precio mundial por debajo del equilibrio: el país importa (sin arancel).">Importador (TV)</button>
+          <button data-p="exp" title="Precio mundial por encima del equilibrio: el país exporta.">Exportador (trigo)</button>
+          <button data-p="partial" title="Arancel que encarece el bien y reduce las importaciones, sin eliminarlas.">Arancel parcial</button>
+          <button data-p="prohib" title="Arancel tan alto que elimina las importaciones; el mercado vuelve a la autarquía.">Arancel prohibitivo</button>
         </div>
+        <p class="hint">Cargan una calibración típica de cada caso (incluye el nombre del bien). Puedes ajustar cualquier valor después.</p>
         <button class="reset" id="ci_reset">↺ Restablecer valores por defecto</button>
       </div>
 
@@ -1524,6 +1524,7 @@ Lectura:     sube el precio y cae la cantidad, consistente con contracción
           <span><i class="sw" style="background:rgba(15,118,110,.20)"></i>Excedente productor</span>
           <span><i class="sw" style="background:rgba(183,121,31,.30)"></i>Recaudación (E)</span>
           <span><i class="sw" style="background:rgba(217,79,59,.28)"></i>Pérdida de eficiencia (D, F)</span>
+          <span><i class="sw" style="background:rgba(31,122,68,.20)"></i>Ganancia del comercio (G)</span>
         </div>
       </div>
 
@@ -3884,21 +3885,13 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     return v;
   }
 
-  // slider ranges scale with the market size (A) so Pw/t stay reachable for any exercise
-  function syncSliderMax(){
-    const A=parseFloat($('A').value)||60;
-    $('Pw').max=Math.max(60,Math.ceil(A));
-    $('t').max=Math.max(40,Math.ceil(A));
-  }
-
-  // set sliders' max relative to A, THEN assign values (avoids browser clamping)
+  // load a parameter set into the number inputs, then render
   function applyVals(obj, label){
     if(label!==undefined) goodLabel=label;
     if('A' in obj) $('A').value=obj.A;
     if('B' in obj) $('B').value=obj.B;
     if('C' in obj) $('C').value=obj.C;
     if('D' in obj) $('D').value=obj.D;
-    syncSliderMax();
     if('Pw' in obj) $('Pw').value=obj.Pw;
     if('t' in obj) $('t').value=obj.t;
     render();
@@ -3959,10 +3952,10 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
         // arancel parcial: cantidades finales (a Pd = Pw+t, con arancel)
         // y también las iniciales (a Pw, libre comercio) de oferta y demanda
         markers.push(
-          {q:QsPd,p:Pd,color:COL.sup,label:'Qo₁',anchor:'end',dx:-7,dy:-7},
-          {q:QdPd,p:Pd,color:COL.dem,label:'Qd₁',dx:7,dy:-7},
-          {q:QsPw,p:Pw,color:COL.sup,label:'Qo₀',anchor:'end',dx:-7,dy:16},
-          {q:QdPw,p:Pw,color:COL.dem,label:'Qd₀',dx:7,dy:16}
+          {q:QsPd,p:Pd,color:COL.sup,qlabel:'Qo₁',qrow:0},
+          {q:QdPd,p:Pd,color:COL.dem,qlabel:'Qd₁',qrow:0},
+          {q:QsPw,p:Pw,color:COL.sup,qlabel:'Qo₀',qrow:1},
+          {q:QdPw,p:Pw,color:COL.dem,qlabel:'Qd₀',qrow:1}
         );
       }
       else if(t===0){ markers.push({q:QsPw,p:Pw,color:COL.sup},{q:QdPw,p:Pw,color:COL.dem}); }
@@ -4015,6 +4008,14 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
       poly([[QsPw,Pw],[QsPd,Pw],[QsPd,Pd]],'rgba(217,79,59,0.28)','D',COL.rose);
       poly([[QdPd,Pw],[QdPw,Pw],[QdPd,Pd]],'rgba(217,79,59,0.28)','F',COL.rose);
     }
+    // gains from trade (libre comercio): triángulo entre O y D, de Pe a Pw, con su valor
+    if(t===0 && (regime==='importador'||regime==='exportador')){
+      const g=[[s.Qe,s.Pe],[QdPw,Pw],[QsPw,Pw]];
+      const gps=g.map(([q,p])=>`${X(q)},${Y(p)}`).join(' ');
+      const gain=s.total-s.totalA, aq=(s.Qe+QdPw+QsPw)/3, ap=(s.Pe+2*Pw)/3;
+      e.push(`<polygon points="${gps}" fill="rgba(31,122,68,0.18)" stroke="${COL.green}" stroke-width="1.5" stroke-dasharray="4,3"/>`);
+      e.push(`<text x="${X(aq)}" y="${Y(ap)+4}" text-anchor="middle" style="font-size:12px;font-weight:700;fill:${COL.green}">G = ${fmt(gain)}</text>`);
+    }
 
     // ----- curves (clipped to box) -----
     const seg=(q1,p1,q2,p2,col)=>{ const c=clipSeg(q1,p1,q2,p2,qT,pT); if(c) e.push(`<line x1="${X(c[0])}" y1="${Y(c[1])}" x2="${X(c[2])}" y2="${Y(c[3])}" stroke="${col}" stroke-width="3"/>`); };
@@ -4033,10 +4034,18 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     hline(Pw,COL.muted,`Pw=${fmt(Pw,1)}`);
     if(Math.abs(Pd-Pw)>1e-6) hline(Pd,COL.navy2,`Pd=${fmt(Pd,1)}`);
 
-    // ----- traded-quantity bracket -----
+    // ----- traded-quantity bracket(s) -----
     if(regime==='importador' && s.imp>0){
+      const isPartial = t>0 && !prohib;
+      // imports with tariff (at Pd)
       e.push(`<line x1="${X(QsPd)}" y1="${Y(Pd)}" x2="${X(QdPd)}" y2="${Y(Pd)}" stroke="${COL.navy2}" stroke-width="6" stroke-linecap="round" opacity=".55"/>`);
-      e.push(`<text x="${(X(QsPd)+X(QdPd))/2}" y="${Y(Pd)-9}" fill="${COL.navy2}" font-size="13" font-weight="bold" text-anchor="middle">importaciones = ${fmt(s.imp)}</text>`);
+      e.push(`<text x="${(X(QsPd)+X(QdPd))/2}" y="${Y(Pd)-9}" fill="${COL.navy2}" font-size="13" font-weight="bold" text-anchor="middle">importaciones${isPartial?'₁':''} = ${fmt(s.imp)}</text>`);
+      if(isPartial){
+        // imports without tariff (at Pw, libre comercio)
+        const imp0=Math.max(0,QdPw-QsPw);
+        e.push(`<line x1="${X(QsPw)}" y1="${Y(Pw)}" x2="${X(QdPw)}" y2="${Y(Pw)}" stroke="${COL.muted}" stroke-width="4" stroke-linecap="round" opacity=".4"/>`);
+        e.push(`<text x="${(X(QsPw)+X(QdPw))/2}" y="${Y(Pw)+16}" fill="${COL.muted}" font-size="12" font-weight="bold" text-anchor="middle">importaciones₀ = ${fmt(imp0)}</text>`);
+      }
     } else if(regime==='exportador' && s.exp>0){
       e.push(`<line x1="${X(QdPw)}" y1="${Y(Pw)}" x2="${X(QsPw)}" y2="${Y(Pw)}" stroke="${COL.green}" stroke-width="6" stroke-linecap="round" opacity=".55"/>`);
       e.push(`<text x="${(X(QdPw)+X(QsPw))/2}" y="${Y(Pw)-9}" fill="${COL.green}" font-size="13" font-weight="bold" text-anchor="middle">exportaciones = ${fmt(s.exp)}</text>`);
@@ -4049,9 +4058,11 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
       const cx=X(m.q), cy=Y(m.p);
       e.push(`<line x1="${cx}" y1="${cy}" x2="${cx}" y2="${H-MG.b}" stroke="${m.color}" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`);
       e.push(`<line x1="${MG.l}" y1="${cy}" x2="${cx}" y2="${cy}" stroke="${m.color}" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`);
-      if(!seenQ.some(u=>Math.abs(u-cx)<12)){ seenQ.push(cx); const lab=fmt(m.q,1), lw=lab.length*6+6;
-        e.push(`<rect x="${cx-lw/2}" y="${H-MG.b+5}" width="${lw}" height="13" fill="white" opacity="0.9"/>`);
-        e.push(`<text x="${cx}" y="${H-MG.b+15}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:${m.color}">${lab}</text>`); }
+      if(!seenQ.some(u=>Math.abs(u-cx)<12)){ seenQ.push(cx);
+        const lab = m.qlabel ? `${m.qlabel}=${fmt(m.q,1)}` : fmt(m.q,1);
+        const lw=lab.length*5.4+6, ry=(m.qrow===1)?(H-MG.b+19):(H-MG.b+5), ty=(m.qrow===1)?(H-MG.b+29):(H-MG.b+15);
+        e.push(`<rect x="${cx-lw/2}" y="${ry}" width="${lw}" height="13" fill="white" opacity="0.9"/>`);
+        e.push(`<text x="${cx}" y="${ty}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:${m.color}">${lab}</text>`); }
       const onPriceLine = Math.abs(m.p-Pw)<1e-6 || Math.abs(m.p-Pd)<1e-6;
       if(!onPriceLine && !seenP.some(u=>Math.abs(u-cy)<12)){ seenP.push(cy); const lab=fmt(m.p,1), lw=lab.length*6+8;
         e.push(`<rect x="${MG.l-lw-4}" y="${cy-8}" width="${lw}" height="14" fill="white" opacity="0.9"/>`);
@@ -4077,9 +4088,7 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
 
   // ---------- render ----------
   function render(){
-    syncSliderMax();           // keep Pw/t ranges in sync when A is typed in directly
     const v=readVals();
-    $('PwL').textContent=fmt(v.Pw,0); $('tL').textContent=fmt(v.t,0);
     const s=engine(v.A,v.B,v.C,v.D,v.Pw,v.t);
 
     // live signed equations: input is a positive magnitude, the model shows the real sign
