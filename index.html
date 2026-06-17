@@ -1524,7 +1524,7 @@ Lectura:     sube el precio y cae la cantidad, consistente con contracción
           <span><i class="sw" style="background:rgba(15,118,110,.20)"></i>Excedente productor</span>
           <span><i class="sw" style="background:rgba(183,121,31,.30)"></i>Recaudación (E)</span>
           <span><i class="sw" style="background:rgba(217,79,59,.28)"></i>Pérdida de eficiencia (D, F)</span>
-          <span><i class="sw" style="background:rgba(31,122,68,.20)"></i>Ganancia del comercio (G)</span>
+          <span><i class="sw" style="background:rgba(124,58,237,.22)"></i>Ganancia del comercio (G)</span>
         </div>
       </div>
 
@@ -3915,7 +3915,7 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
   const W=760, H=420, MG={l:80,r:24,t:30,b:58};
   const COL={grid:'#e7edf5', axis:'#64748b', dem:'#355cde', sup:'#d94f3b',
              navy:'#183153', navy2:'#244a7b', teal:'#0f766e', gold:'#b7791f',
-             rose:'#d94f3b', green:'#1f7a44', muted:'#64748b', ink:'#1f2a37'};
+             rose:'#d94f3b', green:'#1f7a44', gain:'#7c3aed', muted:'#64748b', ink:'#1f2a37'};
 
   // Liang–Barsky: clip data-space segment to [0,qT]×[0,pT]; returns clipped endpoints or null
   function clipSeg(q1,p1,q2,p2,qT,pT){
@@ -3946,7 +3946,7 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     e.push(`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${aria}" font-family="Arial,Helvetica,sans-serif">`);
 
     // ----- equilibria relevant to régime -----
-    const markers=[{q:s.Qe,p:s.Pe,color:COL.navy,label:`E (P*=${fmt(s.Pe)})`}];
+    const markers=[{q:s.Qe,p:s.Pe,color:COL.navy,qlabel:'Q*',plabel:'P*'}];
     if(regime==='importador'){
       if(t>0 && !prohib){
         // arancel parcial: cantidades finales (a Pd = Pw+t, con arancel)
@@ -4012,9 +4012,10 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     if(t===0 && (regime==='importador'||regime==='exportador')){
       const g=[[s.Qe,s.Pe],[QdPw,Pw],[QsPw,Pw]];
       const gps=g.map(([q,p])=>`${X(q)},${Y(p)}`).join(' ');
-      const gain=s.total-s.totalA, aq=(s.Qe+QdPw+QsPw)/3, ap=(s.Pe+2*Pw)/3;
-      e.push(`<polygon points="${gps}" fill="rgba(31,122,68,0.18)" stroke="${COL.green}" stroke-width="1.5" stroke-dasharray="4,3"/>`);
-      e.push(`<text x="${X(aq)}" y="${Y(ap)+4}" text-anchor="middle" style="font-size:12px;font-weight:700;fill:${COL.green}">G = ${fmt(gain)}</text>`);
+      // label placed ~58% from the Pw base toward E, clear of the imports/exports bracket on Pw
+      const gain=s.total-s.totalA, aq=(s.Qe+QdPw+QsPw)/3, ap=(s.Pe+Pw)/2;
+      e.push(`<polygon points="${gps}" fill="rgba(124,58,237,0.16)" stroke="${COL.gain}" stroke-width="1.5" stroke-dasharray="4,3"/>`);
+      e.push(`<text x="${X(aq)}" y="${Y(ap)+4}" text-anchor="middle" style="font-size:12px;font-weight:700;fill:${COL.gain}">G = ${fmt(gain)}</text>`);
     }
 
     // ----- curves (clipped to box) -----
@@ -4037,9 +4038,10 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
     // ----- traded-quantity bracket(s) -----
     if(regime==='importador' && s.imp>0){
       const isPartial = t>0 && !prohib;
-      // imports with tariff (at Pd)
+      // imports with tariff (at Pd); in free trade place the label below the line to clear the G triangle
+      const impLabY = (t===0) ? (Y(Pd)+18) : (Y(Pd)-9);
       e.push(`<line x1="${X(QsPd)}" y1="${Y(Pd)}" x2="${X(QdPd)}" y2="${Y(Pd)}" stroke="${COL.navy2}" stroke-width="6" stroke-linecap="round" opacity=".55"/>`);
-      e.push(`<text x="${(X(QsPd)+X(QdPd))/2}" y="${Y(Pd)-9}" fill="${COL.navy2}" font-size="13" font-weight="bold" text-anchor="middle">importaciones${isPartial?'₁':''} = ${fmt(s.imp)}</text>`);
+      e.push(`<text x="${(X(QsPd)+X(QdPd))/2}" y="${impLabY}" fill="${COL.navy2}" font-size="13" font-weight="bold" text-anchor="middle">importaciones${isPartial?'₁':''} = ${fmt(s.imp)}</text>`);
       if(isPartial){
         // imports without tariff (at Pw, libre comercio)
         const imp0=Math.max(0,QdPw-QsPw);
@@ -4064,7 +4066,8 @@ document.querySelectorAll('input[name="impType"]').forEach(el => {
         e.push(`<rect x="${cx-lw/2}" y="${ry}" width="${lw}" height="13" fill="white" opacity="0.9"/>`);
         e.push(`<text x="${cx}" y="${ty}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:${m.color}">${lab}</text>`); }
       const onPriceLine = Math.abs(m.p-Pw)<1e-6 || Math.abs(m.p-Pd)<1e-6;
-      if(!onPriceLine && !seenP.some(u=>Math.abs(u-cy)<12)){ seenP.push(cy); const lab=fmt(m.p,1), lw=lab.length*6+8;
+      if(!onPriceLine && !seenP.some(u=>Math.abs(u-cy)<12)){ seenP.push(cy);
+        const lab = m.plabel ? `${m.plabel}=${fmt(m.p,1)}` : fmt(m.p,1), lw=lab.length*6+8;
         e.push(`<rect x="${MG.l-lw-4}" y="${cy-8}" width="${lw}" height="14" fill="white" opacity="0.9"/>`);
         e.push(`<text x="${MG.l-6}" y="${cy+3}" text-anchor="end" style="font-size:10px;font-weight:700;fill:${m.color}">${lab}</text>`); }
       e.push(`<circle cx="${cx}" cy="${cy}" r="5" fill="${m.color}"/>`);
